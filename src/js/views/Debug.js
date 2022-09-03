@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
 import Button from '../components/Button';
+import LinksSentence from '../components/LinksSentence';
 import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -75,6 +76,7 @@ class Debug extends React.Component {
       log_pusher,
       log_snapcast,
       access_token,
+      uri_schemes = [],
     } = this.props;
     const {
       mopidy_call,
@@ -216,6 +218,14 @@ class Debug extends React.Component {
           </label>
 
           <h4 className="underline"><I18n path="services.mopidy.title" /></h4>
+          <label className="field">
+            <div className="name">Enabled sources</div>
+            <div className="input">
+              <span className="text">
+                <LinksSentence items={uri_schemes.map((name) => ({ name, uri: name }))} nolinks />
+              </span>
+            </div>
+          </label>
           <form onSubmit={this.callMopidy}>
             <label className="field">
               <div className="name"><I18n path="debug.call" /></div>
@@ -336,6 +346,7 @@ const mapStateToProps = (state) => ({
   test_mode: (state.ui.test_mode ? state.ui.test_mode : false),
   debug_info: (state.ui.debug_info ? state.ui.debug_info : false),
   debug_response: state.ui.debug_response,
+  uri_schemes: state.mopidy.uri_schemes,
 });
 
 const mapDispatchToProps = (dispatch) => ({

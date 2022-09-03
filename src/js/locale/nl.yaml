@@ -364,9 +364,6 @@ settings:
       touch_events_tooltip: Maakt het mogelijk om naar links of rechts te vegen om van tracks te veranderen
       grid_glow: Miniatuur gloei effect
       wide_scrollbars: Gebruik brede schuifbalken
-    sources_priority:
-      label: Prioriteit bronnen
-      description: Verslepen om voorrang van zoekmachines en resultaten te wijzigen
     reporting:
       label: Rapportering
       sublabel: Sta het versturen van anonieme gebruiksstatistieken toe
