@@ -6,6 +6,7 @@ import { I18n } from '../../locale';
 import Link from '../Link';
 import Icon from '../Icon';
 import {
+  loadTrack,
   loadAlbum,
   loadArtist,
   loadPlaylist,
@@ -163,6 +164,7 @@ const ContextMenuItems = ({
               <Divider />
             </>
           )}
+          <Refresh uri={item.uri} action={loadTrack} />
           <Copy uris={[item.uri]} />
           {can_edit && (
             <>

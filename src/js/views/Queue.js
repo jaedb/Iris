@@ -151,6 +151,7 @@ const Queue = ({
       current_track_image = current_track.images.large;
     }
   }
+  const current_track_name = current_track?.name || stream_title || '-'
 
   const options = (
     <>
@@ -186,15 +187,14 @@ const Queue = ({
           />
           <div className="current-track__details">
             <div className="current-track__title">
-              {stream_title && (
-                <span>{stream_title}</span>
-              )}
-              {!stream_title && current_track && (
+              {current_track?.uri ? (
                 <URILink type="track" uri={current_track.uri}>
-                  {current_track.name}
+                  {current_track_name}
                 </URILink>
+              ) : (
+                <span>{current_track_name}</span>
               )}
-              {!stream_title && !current_track && (<span>-</span>)}
+              
             </div>
 
             <LinksSentence
@@ -282,8 +282,8 @@ const mapStateToProps = (state) => {
       // Now merge in our queue metadata
       if (queue_metadata[`tlid_${track.tlid}`] !== undefined) {
         track = {
-          ...track,
           ...queue_metadata[`tlid_${track.tlid}`],
+          ...track,
         };
       }
 

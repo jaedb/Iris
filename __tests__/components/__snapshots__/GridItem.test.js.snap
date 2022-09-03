@@ -2,7 +2,7 @@
 
 exports[`<GridItem /> should handle album 1`] = `
 <div
-  className="grid__item grid__item--album"
+  className="grid__item grid__item--album "
   data-qa-file="GridItem"
   data-qa-node="div"
 >
@@ -96,7 +96,7 @@ exports[`<GridItem /> should handle album 1`] = `
 
 exports[`<GridItem /> should handle artist 1`] = `
 <div
-  className="grid__item grid__item--artist"
+  className="grid__item grid__item--artist "
   data-qa-file="GridItem"
   data-qa-node="div"
 >
@@ -174,7 +174,7 @@ exports[`<GridItem /> should handle artist 1`] = `
 
 exports[`<GridItem /> should handle playlist 1`] = `
 <div
-  className="grid__item grid__item--playlist"
+  className="grid__item grid__item--playlist "
   data-qa-file="GridItem"
   data-qa-node="div"
 >
