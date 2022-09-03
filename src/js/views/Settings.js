@@ -1,11 +1,8 @@
 import React from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Route, Link } from 'react-router-dom';
-import localForage from 'localforage';
-import ConfirmationButton from '../components/Fields/ConfirmationButton';
+import { Route } from 'react-router-dom';
 import PusherConnectionList from '../components/PusherConnectionList';
-import SourcesPriority from '../components/Fields/SourcesPriority';
 import Commands from '../components/Fields/Commands';
 import TextField from '../components/Fields/TextField';
 import SelectField from '../components/Fields/SelectField';
@@ -327,22 +324,6 @@ class Settings extends React.Component {
                 checked={ui.hide_scrollbars}
                 label={i18n('settings.interface.scrolling.hidden')}
               />
-            </div>
-          </div>
-
-          <div className="field sources-priority">
-            <div className="name">
-              <I18n path="settings.interface.sources_priority.label" />
-            </div>
-            <div className="input">
-              <SourcesPriority
-                uri_schemes={mopidy.uri_schemes ? mopidy.uri_schemes : []}
-                uri_schemes_priority={ui.uri_schemes_priority ? ui.uri_schemes_priority : []}
-                uiActions={uiActions}
-              />
-              <div className="description">
-                <I18n path="settings.interface.sources_priority.description" />
-              </div>
             </div>
           </div>
 

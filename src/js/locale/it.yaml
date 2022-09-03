@@ -366,9 +366,6 @@ settings:
       wide_scrollbars: Usa barra di scorrimento larga
       grid_glow: Effetto bagliore miniature
       grid_glow_tooltip: Disattiva l'effetto per dispositivi poco potenti o browser non recenti
-    sources_priority:
-      label: Priorità fonti
-      description: Trascina e rilascia per dare la priorità ai provider di ricerca e ai risultati
     reporting:
       label: Segnalazione
       sublabel: Consenti statistiche di utilizzo anonime

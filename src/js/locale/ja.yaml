@@ -331,9 +331,6 @@ settings:
       touch_events: 再生コントロールにタッチイベントを有効化
       touch_events_tooltip: 左右スワイプでトラックを変更可能
       wide_scrollbars: 広いスクロールバーを使用
-    sources_priority:
-      label: ソース優先順位
-      description: ソースの優先順位をドラッグ＆ドロップで決める
     reporting:
       label: リポート
       sublabel: 匿名で使用レポートを送信

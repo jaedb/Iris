@@ -367,9 +367,6 @@ settings:
       wide_scrollbars: Use wide scrollbars
       grid_glow: Thumbnail glow effect
       grid_glow_tooltip: Inaktivera effekten för lågenergi enheter eller äldre webbläsare
-    sources_priority:
-      label: Sources priority
-      description: Dra och släpp för att prioritera sök resultaten från olika utgivningar
     reporting:
       label: Rapportering
       sublabel: Tillåt rapportering av anonym användarstatistik

@@ -181,7 +181,6 @@ class Search extends React.Component {
       { value: 'name', label: i18n('common.name') },
       { value: 'artist', label: i18n('common.artist') },
       { value: 'duration', label: i18n('common.duration') },
-      { value: 'uri', label: i18n('common.source') },
     ];
 
     const provider_options = uri_schemes.map((item) => ({
