@@ -6,6 +6,10 @@ import * as uiActions from '../../services/ui/actions';
 import { I18n, i18n } from '../../locale';
 
 const hotkeys = [
+  { label: 'now_playing', keysets: [['1']] },
+  { label: 'search', keysets: [['2']] },
+  { label: 'kiosk_mode', keysets: [['3']] },
+  { label: 'info', keysets: [['i']] },
   { label: 'info', keysets: [['i']] },
   { label: 'play_pause', keysets: [['p'], ['spacebar']] },
   { label: 'stop', keysets: [['s']] },

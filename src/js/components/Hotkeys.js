@@ -99,6 +99,36 @@ const Hotkeys = () => {
     });
   });
 
+  useHotkeys('1', (e) => {
+    prepare({
+      e,
+      label: 'Now playing',
+      callback: () => {
+        history.push('/queue');
+      },
+    });
+  });
+
+  useHotkeys('2', (e) => {
+    prepare({
+      e,
+      label: 'Search',
+      callback: () => {
+        history.push('/search');
+      },
+    });
+  });
+
+  useHotkeys('3', (e) => {
+    prepare({
+      e,
+      label: 'Kiosk mode',
+      callback: () => {
+        history.push('/modal/kiosk-mode');
+      },
+    });
+  });
+
   useHotkeys('space,p', (e) => prepare({
     e,
     label: 'Play/pause',
