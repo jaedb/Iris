@@ -1169,6 +1169,7 @@ export function getAlbum(uri, { full, forceRefetch } = {}) {
         }
       },
       (error) => {
+        dispatch(coreActions.removeItem(uri));
         dispatch(coreActions.handleException(
           'Could not load album',
           error,
@@ -1414,6 +1415,7 @@ export function getPlaylist(uri, options = {}) {
           }
         },
         (error) => {
+          dispatch(coreActions.removeItem(uri));
           dispatch(coreActions.handleException(
             'Could not load playlist',
             error,
