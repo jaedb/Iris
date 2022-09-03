@@ -1,6 +1,6 @@
 /node_modules/
 /Mopidy_Iris.egg-info/
-/mopidy_iris/statc/*
+/mopidy_iris/static/*
 public_html
 /dist/
 /.sass-cache/
