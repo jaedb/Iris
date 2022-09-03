@@ -11,7 +11,7 @@
     "development": {
       "plugins": [
         "react-element-info"
-      ],
+      ]
     },
     "test": {
       "plugins": [

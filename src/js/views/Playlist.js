@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { connect, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ErrorMessage from '../components/ErrorMessage';
@@ -136,7 +136,7 @@ const Playlist = ({
     playPlaylist,
   },
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { uri: encodedUri, name } = useParams();
   const uri = decodeUri(encodedUri);
   const [filter, setFilter] = useState('');
@@ -156,7 +156,7 @@ const Playlist = ({
 
   useEffect(() => {
     if (playlist && playlist.moved_to) {
-      history.push(`/playlist/${encodeUri(playlist.moved_to)}/${encodeURIComponent(playlist.name.replace('%', ''))}`);
+      navigate(`/playlist/${encodeUri(playlist.moved_to)}/${encodeURIComponent(playlist.name.replace('%', ''))}`);
     }
   }, [playlist]);
 

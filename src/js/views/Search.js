@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Switch, Route } from 'react-router-dom';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
@@ -12,16 +11,13 @@ import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import { titleCase } from '../util/helpers';
+import { withRouter } from '../util';
 import { i18n } from '../locale';
 
 class Search extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      type: props.type || 'all',
-      term: props.term || '',
-    };
+    this.state = { term: props.term || '' };
   }
 
   componentDidMount = () => {
@@ -38,37 +34,28 @@ class Search extends React.Component {
     this.digestUri();
   }
 
-  componentDidUpdate = ({
-    type: prevType,
-    term: prevTerm,
-  }) => {
-    const {
-      type: typeProp,
-      term: termProp,
-    } = this.props;
-    const { type, term } = this.state;
-
-    if (prevType !== typeProp || prevTerm !== termProp) {
-      this.search(type, term);
+  componentDidUpdate = ({ term: prevTerm }) => {
+    const { term: termProp } = this.props;
+    if (prevTerm !== termProp) {
+      this.search();
     }
   }
 
   onSubmit = (term) => {
-    const { type } = this.state;
-    const { history } = this.props;
+    const { navigate, type } = this.props;
     const encodedTerm = encodeURIComponent(term);
 
     this.setState(
       { term },
       () => {
-        history.push(`/search/${type}/${encodedTerm}`);
+        navigate(`/search/${type}/${encodedTerm}`);
       },
     );
   }
 
   onReset = () => {
-    const { history } = this.props;
-    history.push('/search');
+    const { navigate } = this.props;
+    navigate('/search');
   }
 
   onSortChange = (value) => {
@@ -93,16 +80,10 @@ class Search extends React.Component {
   };
 
   digestUri = () => {
-    const {
-      type,
-      term,
-    } = this.props;
-
-    if (type && term) {
-      this.setState({ type, term }, () => {
-        this.search();
-      });
-    } else if (!term || term === '') {
+    const { term } = this.props;
+    if (term) {
+      this.setState({ term }, this.search);
+    } else {
       this.clearSearch();
     }
   }
@@ -130,11 +111,9 @@ class Search extends React.Component {
         type: existingType,
         term: existingTerm,
       },
-    } = this.props;
-    const {
       type,
-      term,
-    } = this.state;
+    } = this.props;
+    const { term } = this.state;
 
     setWindowTitle(i18n('search.title_window', { term: decodeURIComponent(term) }));
 
@@ -163,17 +142,14 @@ class Search extends React.Component {
   }
 
   render = () => {
-    const {
-      term,
-      type,
-    } = this.state;
+    const { term } = this.state;
     const {
       uri_schemes,
       sort,
       sort_reverse,
-      history,
       uri_schemes_search_enabled,
       uiActions,
+      type,
     } = this.props;
 
     const sort_options = [
@@ -211,6 +187,46 @@ class Search extends React.Component {
       </>
     );
 
+    let searchResults;
+
+    switch (type) {
+      case 'artists':
+        searchResults = <SearchResults type="artists" query={{ term, type: 'artists' }} />;
+        break;
+      case 'albums':
+        searchResults = <SearchResults type="albums" query={{ term, type: 'albums' }} />;
+        break;
+      case 'playlists':
+        searchResults = <SearchResults type="playlists" query={{ term, type: 'playlists' }} />;
+        break;
+      case 'tracks':
+        searchResults = <SearchResults type="tracks" query={{ term, type: 'tracks' }} />
+        break;
+      default:
+        searchResults = (
+          <>
+            <div className="search-result-sections cf">
+              <section className="search-result-sections__item">
+                <div className="inner">
+                  <SearchResults type="artists" query={{ term, type: 'artists' }} all />
+                </div>
+              </section>
+              <section className="search-result-sections__item">
+                <div className="inner">
+                  <SearchResults type="albums" query={{ term, type: 'albums' }} all />
+                </div>
+              </section>
+              <section className="search-result-sections__item">
+                <div className="inner">
+                  <SearchResults type="playlists" query={{ term, type: 'playlists' }} all />
+                </div>
+              </section>
+            </div>
+            <SearchResults type="tracks" query={{ term, type: 'tracks' }} all />
+          </>
+        );
+    }
+
     return (
       <div className="view search-view">
         <Header options={options} uiActions={uiActions}>
@@ -219,53 +235,13 @@ class Search extends React.Component {
 
         <SearchForm
           key={`search_form_${type}_${term}`}
-          history={history}
           term={term}
           onSubmit={this.onSubmit}
           onReset={this.onReset}
         />
 
         <div className="content-wrapper">
-          <Switch>
-
-            <Route path="/search/artists/:term">
-              <SearchResults type="artists" query={{ term, type }} />
-            </Route>
-
-            <Route path="/search/albums/:term">
-              <SearchResults type="albums" query={{ term, type }} />
-            </Route>
-
-            <Route path="/search/playlists/:term">
-              <SearchResults type="playlists" query={{ term, type }} />
-            </Route>
-
-            <Route path="/search/tracks/:term">
-              <SearchResults type="tracks" query={{ term, type }} />
-            </Route>
-
-            <Route path="/search">
-              <div className="search-result-sections cf">
-                <section className="search-result-sections__item">
-                  <div className="inner">
-                    <SearchResults type="artists" query={{ term, type }} all />
-                  </div>
-                </section>
-                <section className="search-result-sections__item">
-                  <div className="inner">
-                    <SearchResults type="albums" query={{ term, type }} all />
-                  </div>
-                </section>
-                <section className="search-result-sections__item">
-                  <div className="inner">
-                    <SearchResults type="playlists" query={{ term, type }} all />
-                  </div>
-                </section>
-              </div>
-              <SearchResults type="tracks" query={{ term, type }} all />
-            </Route>
-
-          </Switch>
+          {searchResults}
         </div>
       </div>
     );
@@ -274,13 +250,13 @@ class Search extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const {
-    match: {
-      params: {
-        type,
-        term,
-      },
+    params: {
+      type,
+      term,
     },
+    navigation,
   } = ownProps;
+
   const {
     mopidy: {
       uri_schemes = [],
@@ -298,8 +274,9 @@ const mapStateToProps = (state, ownProps) => {
   } = state;
 
   return {
-    type,
+    type: type || 'all',
     term,
+    navigation,
     uri_schemes,
     uri_schemes_search_enabled,
     sort,
@@ -315,4 +292,4 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Search);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Search));

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, useParams, useHistory } from 'react-router-dom';
+import { Route, Routes, useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Link from './Link';
 import Icon from './Icon';
@@ -116,7 +116,7 @@ const Server = () => {
 };
 
 const Menu = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const servers = indexToArray(useSelector((state) => state.mopidy.servers));
 
@@ -133,7 +133,7 @@ const Menu = () => {
   const addServer = () => {
     const action = mopidyActions.addServer();
     dispatch(action);
-    history.push(`/settings/servers/${action.server.id}`);
+    navigate(`/settings/servers/${action.server.id}`);
   };
 
   return (
@@ -168,7 +168,6 @@ const Menu = () => {
           }
           return (
             <Link
-              history={history}
               className="menu-item"
               activeClassName="menu-item--active"
               to={`/settings/servers/${server.id}`}
@@ -207,13 +206,12 @@ const Menu = () => {
 const Servers = () => (
   <div className="sub-tabs sub-tabs--servers">
     <Menu />
-    <Switch>
+    <Routes>
       <Route
-        exact
-        path="/settings/servers/:id"
-        component={Server}
+        path=":id"
+        component={<Server />}
       />
-    </Switch>
+    </Routes>
   </div>
 );
 

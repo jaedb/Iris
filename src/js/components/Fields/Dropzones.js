@@ -1,6 +1,6 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useDragLayer, useDrop } from 'react-dnd';
 import * as mopidyActions from '../../services/mopidy/actions';
 import Icon from '../Icon';
@@ -53,7 +53,7 @@ const Dropzone = ({
   accept,
 }) => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [{ handlerId, isOver, canDrop }, drop] = useDrop({
     accept,
     collect: (monitor) => {
@@ -73,10 +73,10 @@ const Dropzone = ({
           dispatch(mopidyActions.enqueueURIs({ uris, from: context, play_next: true }));
           break;
         case 'add_to_playlist':
-          history.push(`/modal/add-to-playlist/${encodeUri(uris.join(','))}`);
+          navigate(`/modal/add-to-playlist/${encodeUri(uris.join(','))}`);
           break;
         case 'create_playlist_and_add':
-          history.push(`/modal/create-playlist/${encodeUri(uris.join(','))}`);
+          navigate(`/modal/create-playlist/${encodeUri(uris.join(','))}`);
           break;
         default:
           break;

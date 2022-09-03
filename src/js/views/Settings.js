@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Route, Link } from 'react-router-dom';
-import localForage from 'localforage';
-import ConfirmationButton from '../components/Fields/ConfirmationButton';
+import { Routes, Route } from 'react-router-dom';
 import PusherConnectionList from '../components/PusherConnectionList';
 import SourcesPriority from '../components/Fields/SourcesPriority';
 import Commands from '../components/Fields/Commands';
@@ -205,14 +203,19 @@ class Settings extends React.Component {
             </div>
           </label>
 
-          <Route path="/settings/:server?/:id?" component={Servers} />
-
+          <Routes>
+            <Route path=":server/*" element={<Servers />} />
+          </Routes>
           <h4 className="underline">
             <I18n path="settings.services.title" />
             <a name="services" />
           </h4>
-
-          <Route path="/settings/:services?/:service?/:id?" component={Services} />
+          <Routes>
+            <Route path="" element={<Services />} />
+            <Route path=":services/" element={<Services />} />
+            <Route path=":services/:service/" element={<Services />} />
+            <Route path=":services/:service/:id" element={<Services />} />
+          </Routes>
 
           <h4 className="underline">
             <I18n path="settings.interface.title" />

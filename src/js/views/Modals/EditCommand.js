@@ -10,6 +10,7 @@ import * as uiActions from '../../services/ui/actions';
 import { scrollTo, generateGuid } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
+import { withRouter } from '../../util';
 
 class EditCommand extends React.Component {
   constructor(props) {
@@ -264,7 +265,7 @@ class EditCommand extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { id } = ownProps.match.params;
+  const { id } = ownProps.params;
   return {
     id,
     command: (id && state.pusher.commands && state.pusher.commands[id] !== undefined ? state.pusher.commands[id] : null),
@@ -276,4 +277,4 @@ const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditCommand);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditCommand));

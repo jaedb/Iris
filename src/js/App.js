@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Switch, useLocation, useHistory } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ReactGA from 'react-ga';
 import { DndProvider } from 'react-dnd';
@@ -42,12 +42,50 @@ import * as snapcastActions from './services/snapcast/actions';
 import MediaSession from './components/MediaSession';
 import ErrorBoundary from './components/ErrorBoundary';
 
+const Content = () => (
+  <>
+    <Sidebar tabIndex="3" />
+    <PlaybackControls tabIndex="2"/>
+    <main id="main" className="smooth-scroll" tabIndex="1">
+      <Routes>
+        <Route path="" element={<Queue />} />
+        <Route path="queue/" element={<Queue />} />
+        <Route path="queue/history" element={<QueueHistory />}/>
+        <Route path="settings/debug" element={<Debug />} />
+        <Route path="settings/*" element={<Settings />} />
+        <Route path="search/" element={<Search />} />
+        <Route path="search/:type/:term" element={<Search />} />
+        <Route path="artist/:uri/*" element={<Artist />} />
+        <Route path="album/:uri/" element={<Album />} />
+        <Route path="album/:uri/:name" element={<Album />} />
+        <Route path="playlist/:uri/" element={<Playlist />} />
+        <Route path="playlist/:uri/:name" element={<Playlist />} />
+        <Route path="user/:uri/" element={<User />} />
+        <Route path="user/:uri/:name" element={<User />} />
+        <Route path="track/:uri/" element={<Track />} />
+        <Route path="track/:uri/:name" element={<Track />} />
+        <Route path="uri/:uri/" element={<UriRedirect />} />
+        <Route path="uri/:uri/:name" element={<UriRedirect />} />
+        <Route path="discover/*" element={<Discover />} />
+        <Route path="library/*" element={<Library />} />
+        <Route element={
+          <ErrorMessage type="not-found" title="Not found">
+            <p>Oops, that link could not be found</p>
+          </ErrorMessage>
+        } />
+      </Routes>
+    </main>
+  </>
+);
+
 const App = () => {
   const [isReady, setIsReady] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const { pathname, state: { scroll_position } = {} } = useLocation();
+  const location = useLocation();
+  const { pathname, state } = location;
+  const scroll_position = state?.scroll_position;
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const language = useSelector((state) => state.ui.language);
   window.language = language;
@@ -165,7 +203,7 @@ const App = () => {
         dispatch(snapcastActions.connect());
       }
       if (!initial_setup_complete) {
-        history.push('/modal/initial-setup');
+        navigate('/modal/initial-setup');
       }
     }
   }, [isReady]);
@@ -253,65 +291,10 @@ const App = () => {
       >
         <div className="body">
           <ModalStateListener />
-          <Switch>
-            <Route
-              path="/modal"
-              component={Modals}
-            />
-            <Route>
-              <div>
-                <Sidebar tabIndex="3" />
-                <PlaybackControls tabIndex="2"/>
-
-                <main id="main" className="smooth-scroll" tabIndex="1">
-                  <Switch>
-                    <Route exact path="/" component={Queue} />
-
-                    <Route exact path="/queue" component={Queue} />
-                    <Route
-                      exact
-                      path="/queue/history"
-                      component={QueueHistory}
-                    />
-                    <Route exact path="/settings/debug" component={Debug} />
-                    <Route path="/settings" component={Settings} />
-
-                    <Route
-                      exact
-                      path="/search/:type?/:term?"
-                      component={Search}
-                    />
-                    <Route
-                      exact
-                      path="/artist/:uri/:sub_view?"
-                      component={Artist}
-                    />
-                    <Route exact path="/album/:uri/:name?" component={Album} />
-                    <Route exact path="/playlist/:uri/:name?" component={Playlist} />
-                    <Route exact path="/user/:uri/:name?" component={User} />
-                    <Route exact path="/track/:uri/:name?" component={Track} />
-                    <Route exact path="/uri/:uri/:name?" component={UriRedirect} />
-
-                    <Route
-                      path="/discover"
-                      component={Discover}
-                    />
-
-                    <Route
-                      path="/library"
-                      component={Library}
-                    />
-
-                    <Route>
-                      <ErrorMessage type="not-found" title="Not found">
-                        <p>Oops, that link could not be found</p>
-                      </ErrorMessage>
-                    </Route>
-                  </Switch>
-                </main>
-              </div>
-            </Route>
-          </Switch>
+          <Routes>
+            <Route path="modal/*" element={<Modals />} />
+            <Route path="*" element={<Content />} />
+          </Routes>
         </div>
 
         <ResizeListener />

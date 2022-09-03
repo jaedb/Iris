@@ -10,7 +10,6 @@ import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
 import Icon from '../../components/Icon';
 import ErrorBoundary from '../../components/ErrorBoundary';
-import LazyLoadListener from '../../components/LazyLoadListener';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
@@ -20,6 +19,7 @@ import Button from '../../components/Button';
 import { encodeUri, decodeUri } from '../../util/format';
 import { makeLoadingSelector } from '../../util/selectors';
 import ErrorMessage from '../../components/ErrorMessage';
+import { withRouter } from '../../util';
 
 const Breadcrumbs = ({ uri }) => {
   let parent_uri = uri || null;
@@ -258,7 +258,7 @@ const mapStateToProps = (state, ownProps) => {
       library_directory_view: view,
     },
   } = state;
-  const uri = decodeUri(ownProps.match.params.uri);
+  const uri = decodeUri(ownProps.params.uri);
   const uriMatcher = [uri, decodeURIComponent(uri)]; // Lenient matching due to encoding diffs
   const directory = _directory && uriMatcher.includes(_directory.uri)
     ? _directory
@@ -266,7 +266,7 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     uri,
-    name: decodeURIComponent(ownProps.match.params.name),
+    name: decodeURIComponent(ownProps.params.name),
     loading: loadingSelector(state),
     directory,
     view,
@@ -279,4 +279,4 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(BrowseDirectory);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(BrowseDirectory));

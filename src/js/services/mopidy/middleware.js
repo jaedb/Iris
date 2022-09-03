@@ -15,9 +15,7 @@ import {
   formatAlbum,
   formatTrack,
   formatTracks,
-  formatPlaylists,
   formatPlaylistGroup,
-  formatPlaylistGroups,
   getTrackIcon,
   formatArtists,
   formatArtist,
@@ -412,7 +410,17 @@ const MopidyMiddleware = (function () {
           break;
         }
 
-        socket.on((type, data) => handleMessage(socket, store, type, data));
+        socket.on('state:online', (data) => handleMessage(socket, store, 'state:online', data));
+        socket.on('state:offline', (data) => handleMessage(socket, store, 'state:offline', data));
+        socket.on('event:tracklistChanged', (data) => handleMessage(socket, store, 'event:tracklistChanged', data));
+        socket.on('event:playbackStateChanged', (data) => handleMessage(socket, store, 'event:playbackStateChanged', data));
+        socket.on('event:seeked', (data) => handleMessage(socket, store, 'event:seeked', data));
+        socket.on('event:trackPlaybackEnded', (data) => handleMessage(socket, store, 'event:trackPlaybackEnded', data));
+        socket.on('event:trackPlaybackStarted', (data) => handleMessage(socket, store, 'event:trackPlaybackStarted', data));
+        socket.on('event:volumeChanged', (data) => handleMessage(socket, store, 'event:volumeChanged', data));
+        socket.on('event:muteChanged', (data) => handleMessage(socket, store, 'event:muteChanged', data));
+        socket.on('event:optionsChanged', (data) => handleMessage(socket, store, 'event:optionsChanged', data));
+        socket.on('event:streamTitleChanged', (data) => handleMessage(socket, store, 'event:streamTitleChanged', data));
 
         break;
       }
@@ -1803,6 +1811,7 @@ const MopidyMiddleware = (function () {
           const subdirectories = [];
           const trackUrisToLoad = [];
           const subdirectoryImagesToLoad = [];
+          const playlistsToLoad = [];
 
           results.forEach((item) => {
             if (item.__model__ === 'Track') {
@@ -1829,8 +1838,10 @@ const MopidyMiddleware = (function () {
               } else {
                 subdirectories.push(formatPlaylist({ ...item, loading: true }));
                 subdirectoryImagesToLoad.push(item.uri);
+                playlistsToLoad.push(item.uri);
               }
             } else {
+              subdirectoryImagesToLoad.push(item.uri);
               subdirectories.push(item);
             }
           });
@@ -1862,30 +1873,75 @@ const MopidyMiddleware = (function () {
               });
           }
 
-          if (subdirectoryImagesToLoad.length) {
-            console.info(`Loading ${subdirectoryImagesToLoad.length} subdirectory URIs`);
-            request(store, 'library.getImages', { uris: subdirectoryImagesToLoad })
-              .then((response) => {
-                const subdirectoriesWithImages = subdirectories.map((subdir) => {
-                  let images = response[subdir.uri] || undefined;
-                  if (images) {
-                    images = formatImages(digestMopidyImages(store.getState().mopidy, images));
-                  }
-                  return {
-                    ...subdir,
-                    images,
-                  };
+          const imagesLoaded = new Promise((resolve) => {
+            if (subdirectoryImagesToLoad.length) {
+              console.info(`Loading ${subdirectoryImagesToLoad.length} subdirectory URIs`);
+              request(store, 'library.getImages', { uris: subdirectoryImagesToLoad })
+                .then((response) => {
+                  resolve(response);
                 });
+            } else {
+              resolve({});
+            }
+          });
 
-                store.dispatch({
-                  type: 'MOPIDY_DIRECTORY_LOADED',
-                  directory: {
-                    uri,
-                    subdirectories: subdirectoriesWithImages,
-                  },
-                });
+          const playlistsLoaded = new Promise((resolve) => {
+            const playlists = {};
+            if (playlistsToLoad.length) {
+              console.info(`Loading ${playlistsToLoad.length} playlist URIs`);
+              const toLoad = playlistsToLoad.length;
+              let loaded = 0;
+              playlistsToLoad.map((uri) => {
+                request(store, 'playlists.lookup', { uri })
+                  .then((playlist) => {
+                    playlists[uri] = formatPlaylist({
+                      name: playlist.name,
+                      uri: playlist.uri,
+                      tracks: formatTracks(playlist.tracks),
+                    });
+                    loaded += 1;
+                    if (loaded === toLoad) {
+                      resolve(playlists);
+                    }
+                  })
               });
-          }
+            } else {
+              resolve(playlists);
+            }
+          });
+
+          imagesLoaded.then((response) => {
+
+            const subdirectoriesWithImages = subdirectories.map((subdir) => {
+              let images = response[subdir.uri] || undefined;
+              if (images) {
+                images = formatImages(digestMopidyImages(store.getState().mopidy, images));
+              }
+              return {
+                ...subdir,
+                images,
+              };
+            });
+
+            playlistsLoaded.then((playlists) => {
+              const subdirectoriesWithPlaylists = subdirectoriesWithImages.map((subdir) => {
+                const playlist = playlists[subdir.uri] || {};
+                return {
+                  ...subdir,
+                  ...playlist,
+                };
+              });
+
+              store.dispatch({
+                type: 'MOPIDY_DIRECTORY_LOADED',
+                directory: {
+                  uri,
+                  subdirectories: subdirectoriesWithPlaylists,
+                },
+              });
+
+            });
+          });
         };
 
         const getBrowse = () => request(store, 'library.browse', { uri })

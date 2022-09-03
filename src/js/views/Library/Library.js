@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Artists from './Artists';
 import Albums from './Albums';
 import Tracks from './Tracks';
@@ -8,36 +8,30 @@ import Browse from './Browse';
 import BrowseDirectory from './BrowseDirectory';
 
 export default () => (
-  <Switch>
+  <Routes>
     <Route
-      exact
-      path="/library/artists"
-      component={Artists}
+      path="artists/"
+      element={<Artists />}
     />
     <Route
-      exact
-      path="/library/albums"
-      component={Albums}
+      path="albums/"
+      element={<Albums />}
     />
     <Route
-      exact
-      path="/library/tracks"
-      component={Tracks}
+      path="tracks/"
+      element={<Tracks />}
     />
     <Route
-      exact
-      path="/library/playlists"
-      component={Playlists}
+      path="playlists/"
+      element={<Playlists />}
     />
     <Route
-      exact
-      path="/library/browse"
-      component={Browse}
+      path="browse/"
+      element={<Browse />}
     />
     <Route
-      exact
-      path="/library/browse/:name/:uri"
-      component={BrowseDirectory}
+      path="browse/:name/:uri"
+      element={<BrowseDirectory />}
     />
-  </Switch>
+  </Routes>
 );

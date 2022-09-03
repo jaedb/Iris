@@ -16,7 +16,7 @@ import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../../util/selectors';
-import { formatSimpleObject, formatContext } from '../../util/format';
+import { formatContext } from '../../util/format';
 
 class NewReleases extends React.Component {
   componentDidMount() {

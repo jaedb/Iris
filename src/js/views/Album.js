@@ -23,7 +23,7 @@ import { uriSource } from '../util/helpers';
 import Button from '../components/Button';
 import { makeItemSelector, makeSortSelector } from '../util/selectors';
 import { applyFilter, sortItems } from '../util/arrays';
-import { decodeUri, formatSimpleObject, formatContext } from '../util/format';
+import { decodeUri, formatContext } from '../util/format';
 
 const SORT_KEY = 'album_tracks';
 
