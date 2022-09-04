@@ -86,11 +86,11 @@ class Browse extends React.Component {
           case 'SomaFM':
             subdirectory.icons = ['/iris/assets/backgrounds/browse-somafm.jpg'];
             break;
-			
-	  case 'Jellyfin':
+      
+          case 'Jellyfin':
             subdirectory.icons = ['/iris/assets/backgrounds/browse-jellyfin.jpg'];
             break;
-			
+      
           case 'Podcasts':
             subdirectory.icons = ['/iris/assets/backgrounds/browse-podcasts.jpg'];
             break;
@@ -109,13 +109,22 @@ class Browse extends React.Component {
             subdirectory.icons = ['/iris/assets/backgrounds/browse-youtube.jpg'];
             break;
 
-          default:
+          case 'bandcamp':
+          case 'Bandcamp':
             subdirectory.icons = ['/iris/assets/backgrounds/browse-default.jpg'];
+            break;
+
+          default:
+            if (subdirectory.images?.medium) {
+              subdirectory.icons = [subdirectory.images?.medium];
+            } else {
+              subdirectory.icons = ['/iris/assets/backgrounds/browse-default.jpg'];
+            }
         }
 
         grid_items.push({
           name: subdirectory.name,
-          link: `/library/browse/${encodeURIComponent(subdirectory.name)}/${encodeUri(subdirectory.uri)}`,
+          link: `/library/browse/${encodeUri(subdirectory.uri)}/${encodeURIComponent(subdirectory.name)}`,
           icons: formatImages(subdirectory.icons),
         });
       }

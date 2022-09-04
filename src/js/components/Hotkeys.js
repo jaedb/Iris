@@ -1,6 +1,6 @@
 import ReactGA from 'react-ga';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { indexToArray, sortItems } from '../util/arrays';
 import { collate } from '../util/format';
@@ -10,7 +10,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as snapcastActions from '../services/snapcast/actions';
 
 const Hotkeys = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const volume = useSelector((state) => state.mopidy.volume);
   const mute = useSelector((state) => state.mopidy.mute);
@@ -94,7 +94,7 @@ const Hotkeys = () => {
       e,
       label: 'Hotkey info',
       callback: () => {
-        history.push('/modal/hotkeys');
+        navigate('/modal/hotkeys');
       },
     });
   });

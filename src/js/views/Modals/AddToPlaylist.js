@@ -18,6 +18,7 @@ import {
   makeProvidersSelector,
   makeLibrarySelector,
 } from '../../util/selectors';
+import { withRouter } from '../../util';
 
 const processKeys = [
   'MOPIDY_GET_LIBRARY_PLAYLISTS',
@@ -136,7 +137,7 @@ const mapStateToProps = (state, ownProps) => {
     },
   } = state;
 
-  const unencodedUris = ownProps.match.params?.uris;
+  const unencodedUris = ownProps.params?.uris;
   const uris = unencodedUris ? decodeUri(unencodedUris).split(',') : [];
 
   return {
@@ -156,4 +157,4 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddToPlaylist);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AddToPlaylist));

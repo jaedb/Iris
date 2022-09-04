@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
 import URILink from './URILink';
 import { I18n, i18n } from '../locale';
 import {
@@ -16,7 +15,7 @@ export default ({
 }) => {
   if (!from) return null;
   const { uri, name } = from;
-  const type = uriType(uri);
+  const type = from?.type || uriType(uri);
   let link = null;
   switch (type) {
     case 'discover':
@@ -28,8 +27,12 @@ export default ({
       break;
 
     case 'browse':
+      let directory = '';
+      if (uri.indexOf('file://') > -1) {
+        directory = decodeURIComponent(uri.substr(uri.lastIndexOf('/'), uri.length));
+      }
       link = (
-        <URILink type={type} uri={uri}>
+        <URILink type={type} uri={uri} suffix={directory}>
           <I18n path="library.browse.title" />
         </URILink>
       );

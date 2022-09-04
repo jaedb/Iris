@@ -231,11 +231,6 @@ const Commands = () => {
 
 const OutputControl = ({ force_expanded }) => {
   const [expanded, setExpanded] = useState(false);
-  const handleClick = (e) => {
-    if (!force_expanded && $(e.target).closest('.output-control').length <= 0) {
-      setExpanded(false);
-    }
-  };
 
   useEffect(() => {
     if (force_expanded && !expanded) {
@@ -243,19 +238,12 @@ const OutputControl = ({ force_expanded }) => {
     }
   }, [force_expanded]);
 
-  useEffect(() => {
-    if (expanded) {
-      window.addEventListener('click', handleClick, false);
-    } else {
-      window.removeEventListener('click', handleClick, false);
-    }
-  }, [expanded]);
-
   if (expanded) {
     const outputs = <Outputs />;
     const commands = <Commands />;
     return (
       <span className="output-control">
+        {!force_expanded && <div className="click-outside" onClick={() => setExpanded(false)} />}
         <button
           className="control speakers active"
           onClick={() => setExpanded(false)}

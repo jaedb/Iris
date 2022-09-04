@@ -9,7 +9,7 @@ const config = {
   entry: ['@babel/polyfill', './src/js/index'],
   output: {
     path: path.resolve(__dirname, 'mopidy_iris/static'),
-    filename: 'app' + (isDev ? '' : '.min') + '.js'
+    filename: `app${isDev ? '' : '.min'}.js`,
   },
   module: {
     rules: [
@@ -50,20 +50,18 @@ const config = {
       {
         test: /\.ya?ml$/,
         type: 'json',
-        use: 'yaml-loader',
+        use: {
+          loader: 'yaml-loader',
+          options: { json: true, type: 'json' }
+        }
       },
       {
         // load external resources (ie Google fonts)
         test: /.(gif|png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              name: 'assets/fonts/[name].[ext]?[hash]',
-              limit: 100000,
-            },
-          },
-        ],
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/[name][ext]',
+        },
       },
       (isDev ? {} : {
         test: /\.(js|jsx)$/,
@@ -89,7 +87,7 @@ const config = {
       "window.jQuery": "jquery",
     }),
     new MiniCssExtractPlugin({
-      filename: 'app' + (isDev ? '' : '.min') + '.css',
+      filename: `app${isDev ? '' : '.min'}.css`,
     }),
   ],
   watchOptions: {

@@ -10,6 +10,7 @@ export default memo(({
   handleContextMenu,
   children,
   unencoded,
+  suffix,
 }) => {
   let to = null;
   const uriType = type || uriTypeHelper(rawUri);
@@ -37,7 +38,7 @@ export default memo(({
       break;
 
     case 'browse':
-      to = `/library/browse/${uri}`;
+      to = `/library/browse/${uri}${suffix ? `/${suffix}` : ''}`;
       break;
 
     case 'recommendations':

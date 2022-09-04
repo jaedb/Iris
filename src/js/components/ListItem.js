@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDrag } from 'react-dnd';
 import LinksSentence from './LinksSentence';
 import { dater } from './Dater';
@@ -98,7 +98,7 @@ const ListItem = ({
 
   const dispatch = useDispatch();
   const spotify_available = useSelector((state) => state.spotify.access_token);
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const [_, drag] = useDrag({
     type: item?.type?.toUpperCase() || 'UNKNOWN',
@@ -154,9 +154,9 @@ const ListItem = ({
     }
 
     if (e.target.tagName.toLowerCase() !== 'a') {
-      updateScrollPosition({ location, history });
+      updateScrollPosition({ location, navigate });
       e.preventDefault();
-      history.push(to);
+      navigate(to);
     }
   };
 

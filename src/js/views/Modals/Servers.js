@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Thumbnail from '../../components/Thumbnail';
 import LinksSentence from '../../components/LinksSentence';
@@ -10,7 +10,7 @@ import { i18n, I18n } from '../../locale';
 import { indexToArray } from '../../util/arrays';
 
 const Servers = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const servers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
   const current_server = useSelector((state) => state.mopidy.current_server);
@@ -24,7 +24,7 @@ const Servers = () => {
 
   const onClick = (server) => {
     dispatch(mopidyActions.setCurrentServer(server));
-    history.push('/queue');
+    navigate('/queue');
   }
 
   return (
