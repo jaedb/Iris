@@ -122,8 +122,9 @@ class BrowseDirectory extends React.Component {
     playURIs({
       uris: arrayOf('uri', sortItems(tracks, 'name')),
       from: {
-        name: 'Directory',
-        uri: `iris:browse:${uri}`,
+        name: 'Browse',
+        type: 'browse',
+        uri,
       },
     });
     hideContextMenu();
@@ -233,7 +234,7 @@ class BrowseDirectory extends React.Component {
 
             <TrackList
               context={{
-                uri: `iris:browse:${uri}`,
+                uri,
                 name: 'Browse',
                 type: 'browse',
               }}
@@ -250,6 +251,7 @@ class BrowseDirectory extends React.Component {
 
 const loadingSelector = makeLoadingSelector(['mopidy_library.(browse|lookup)']);
 const mapStateToProps = (state, ownProps) => {
+  console.debug('browser directory', ownProps)
   const {
     mopidy: {
       directory: _directory = {},
