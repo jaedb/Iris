@@ -9,7 +9,7 @@ const config = {
   entry: ['@babel/polyfill', './src/js/index'],
   output: {
     path: path.resolve(__dirname, 'mopidy_iris/static'),
-    filename: 'app' + (isDev ? '' : '.min') + '.js',
+    filename: `app${isDev ? '' : '.min'}.js`,
   },
   module: {
     rules: [
@@ -87,7 +87,7 @@ const config = {
       "window.jQuery": "jquery",
     }),
     new MiniCssExtractPlugin({
-      filename: 'app' + (isDev ? '' : '.min') + '.css',
+      filename: `app${isDev ? '' : '.min'}.css`,
     }),
   ],
   watchOptions: {
