@@ -40,7 +40,7 @@ const Subdirectories = ({ items, view }) => {
   // Only define the link for directories; allows URILink to intelligently route based on type
   const link = (item) => (
     item.type === 'directory'
-      ? `/library/browse/${encodeURIComponent(item.name)}/${encodeUri(item.uri)}`
+      ? `/library/browse/${encodeUri(item.uri)}/${encodeURIComponent(item.name)}`
       : null
   );
 

@@ -28,8 +28,12 @@ export default ({
       break;
 
     case 'browse':
+      let directory = '';
+      if (uri.indexOf('file://')) {
+        directory = uri.substr(uri.lastIndexOf('/'), uri.length);
+      }
       link = (
-        <URILink type={type} uri={uri}>
+        <URILink type={type} uri={uri} suffix={directory}>
           <I18n path="library.browse.title" />
         </URILink>
       );

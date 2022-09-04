@@ -30,7 +30,7 @@ export default () => (
       element={<Browse />}
     />
     <Route
-      path="browse/:name/:uri"
+      path="browse/:uri/:name"
       element={<BrowseDirectory />}
     />
   </Routes>
