@@ -15,13 +15,14 @@ import * as spotifyActions from '../services/spotify/actions';
 import {
   getFromUri,
 } from '../util/helpers';
-import { decodeUri, formatSimpleObject } from '../util/format';
+import { decodeUri } from '../util/format';
 import { i18n, I18n } from '../locale';
 import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../util/selectors';
 import ContextMenuTrigger from '../components/ContextMenu/ContextMenuTrigger';
+import { withRouter } from '../util';
 
 class User extends React.Component {
   componentDidMount() {
@@ -197,7 +198,7 @@ class User extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const uri = decodeUri(ownProps.match.params.uri);
+  const uri = decodeUri(ownProps.params.uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
   const userSelector = makeItemSelector(uri);
   const user = userSelector(state);
@@ -222,4 +223,4 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(User);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(User));
