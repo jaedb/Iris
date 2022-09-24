@@ -3,6 +3,7 @@
 /mopidy_iris/static/*
 public_html
 /dist/
+/build/
 /.sass-cache/
 *.orig
 Thumbs.db

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { uniqBy } from 'lodash';
+import { range, uniqBy } from 'lodash';
 import Track from './Track';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as uiActions from '../services/ui/actions';
@@ -174,14 +174,18 @@ const TrackList = ({
     const alreadySelected = selectionIndexByItemIndex(index);
 
     if (e.shiftKey) {
-      const { index: lastSelectedIndex } = selected[selected.length-1] || { index };
-      const next = [...prev, { index, item }];
+      const { index: lastSelectedIndex } = selected[selected.length - 1] || {
+        index,
+      };
       const from = lastSelectedIndex < index ? lastSelectedIndex : index;
       const to = lastSelectedIndex > index ? lastSelectedIndex : index;
-      for (let i = from; i < to; i++) {
-        next.push({ index: i, item: tracks[i] });
-      }
-      return uniqBy(next, 'index');
+
+      const newSelection = range(from, to + 1).map((index) => ({
+        index,
+        item: tracks[index],
+      }));
+
+      return uniqBy([...prev, ...newSelection], "index");
     }
     if (e.ctrlKey) {
       if (alreadySelected >= 0 && !sticky) {
