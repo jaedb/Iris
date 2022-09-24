@@ -76,7 +76,7 @@ const SnapcastClients = ({
                   <LatencyControl
                     max="500"
                     value={client.latency}
-                    onChange={(value) => actions.setClientLatency(client.id, parseInt(value))}
+                    onChange={(value) => actions.setClientLatency(client.id, Number(value))}
                   />
                 </div>
               </div>

@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Routes, Route } from 'react-router-dom';
 import PusherConnectionList from '../components/PusherConnectionList';
 import Commands from '../components/Fields/Commands';
 import TextField from '../components/Fields/TextField';
@@ -202,19 +201,14 @@ class Settings extends React.Component {
             </div>
           </label>
 
-          <Routes>
-            <Route path=":server/*" element={<Servers />} />
-          </Routes>
+          <Servers />
+
           <h4 className="underline">
             <I18n path="settings.services.title" />
             <a name="services" />
           </h4>
-          <Routes>
-            <Route path="" element={<Services />} />
-            <Route path=":services/" element={<Services />} />
-            <Route path=":services/:service/" element={<Services />} />
-            <Route path=":services/:service/:id" element={<Services />} />
-          </Routes>
+          
+          <Services />
 
           <h4 className="underline">
             <I18n path="settings.interface.title" />

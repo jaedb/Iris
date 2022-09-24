@@ -24,7 +24,7 @@ const SnapcastGroups = (props) => {
     clients,
   } = props;
 
-  const { id: groupId } = useParams();
+  const { groupId } = useParams();
   const streamsArray = Object.keys(streams).map((id) => streams[id]);
   const groupsArray = Object.keys(groups).map((id) => groups[id]);
 

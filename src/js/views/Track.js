@@ -24,6 +24,7 @@ import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 import { decodeUri, encodeUri, formatSimpleObject } from '../util/format';
 import URILink from '../components/URILink';
+import { withRouter } from '../util';
 
 const LyricsSelector = ({
   track: {
@@ -338,7 +339,7 @@ class Track extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const uri = decodeUri(ownProps.match.params.uri);
+  const uri = decodeUri(ownProps.params.uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!genius).)*$', '^((?!contains).)*$']);
   const loadingLyricsSelector = makeLoadingSelector([`^genius_(.*)lyrics_${uri}$`]);
   const trackSelector = makeItemSelector(uri);
@@ -366,4 +367,4 @@ const mapDispatchToProps = (dispatch) => ({
   geniusActions: bindActionCreators(geniusActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Track);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Track));

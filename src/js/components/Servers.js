@@ -207,10 +207,7 @@ const Servers = () => (
   <div className="sub-tabs sub-tabs--servers">
     <Menu />
     <Routes>
-      <Route
-        path=":id"
-        component={<Server />}
-      />
+      <Route path="servers/:id" element={<Server />} />
     </Routes>
   </div>
 );
