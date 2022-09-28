@@ -1,5 +1,5 @@
 import React from 'react';
-import ShallowRenderer from 'react-test-renderer/shallow'
+import { render } from './test-wrapper';
 import App from '../src/js/App';
 
 jest.mock('react-redux', () => ({
@@ -21,9 +21,7 @@ jest.mock('react-router-dom', () => ({
 
 describe('<App />', () => {
   it('should render', () => {
-    const renderer = new ShallowRenderer();
-    renderer.render(<App />);
-    const result = renderer.getRenderOutput();
-    expect(result.type).toEqual('div');
+    const result = render(<App />).toJSON();
+    expect(result).toMatchSnapshot();
   });
 });

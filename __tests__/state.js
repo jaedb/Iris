@@ -260,3 +260,4 @@ state.core.items['jest:track:three'] = {
 };
 
 export default state;
+export { state }

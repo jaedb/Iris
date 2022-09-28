@@ -10,7 +10,7 @@ exports[`<GridItem /> should handle album 1`] = `
     className=" "
     data-qa-file="Link"
     data-qa-node="RouterLink"
-    href="/album/bG9jYWw6YWxidW06bWQ1OjY2ZmJlYTM1OTNiYTk2YTE1YTlkNDE4OGJlYmFiNTBi/Sirens of the Sea"
+    href="/album/bG9jYWw6YWxidW06bWQ1OjY2ZmJlYTM1OTNiYTk2YTE1YTlkNDE4OGJlYmFiNTBi/Sirens%20of%20the%20Sea"
     onClick={[Function]}
     onContextMenu={[Function]}
   >
@@ -31,8 +31,8 @@ exports[`<GridItem /> should handle album 1`] = `
         data-qa-file="Thumbnail"
         data-qa-node="div"
         style={
-          Object {
-            "backgroundImage": "url(\\"/local/17338e740316f18dbb5e3331ac6be6c1-500x500.jpeg\\")",
+          {
+            "backgroundImage": "url("/local/17338e740316f18dbb5e3331ac6be6c1-500x500.jpeg")",
           }
         }
       />
@@ -47,7 +47,13 @@ exports[`<GridItem /> should handle album 1`] = `
       data-qa-file="GridItem"
       data-qa-node="div"
     >
-      Sirens of the Sea
+      <span
+        data-qa-file="GridItem"
+        data-qa-node="span"
+        title="Sirens of the Sea"
+      >
+        Sirens of the Sea
+      </span>
     </div>
     <div
       className="grid__item__secondary"
@@ -125,8 +131,8 @@ exports[`<GridItem /> should handle artist 1`] = `
         data-qa-file="Thumbnail"
         data-qa-node="div"
         style={
-          Object {
-            "backgroundImage": "url(\\"https://i.scdn.co/image/4dc7080ef509c36203a131a0eab8dd5e4800d7c2\\")",
+          {
+            "backgroundImage": "url("https://i.scdn.co/image/4dc7080ef509c36203a131a0eab8dd5e4800d7c2")",
           }
         }
       />
@@ -141,7 +147,13 @@ exports[`<GridItem /> should handle artist 1`] = `
       data-qa-file="GridItem"
       data-qa-node="div"
     >
-      Above & Beyond
+      <span
+        data-qa-file="GridItem"
+        data-qa-node="span"
+        title="Above & Beyond"
+      >
+        Above & Beyond
+      </span>
     </div>
     <div
       className="grid__item__secondary"
@@ -182,7 +194,7 @@ exports[`<GridItem /> should handle playlist 1`] = `
     className=" "
     data-qa-file="Link"
     data-qa-node="RouterLink"
-    href="/playlist/bTN1OkxvY2FsJTIwdGVzdGVyLm0zdTg=/Local tester"
+    href="/playlist/bTN1OkxvY2FsJTIwdGVzdGVyLm0zdTg=/Local%20tester"
     onClick={[Function]}
     onContextMenu={[Function]}
   >
@@ -203,8 +215,8 @@ exports[`<GridItem /> should handle playlist 1`] = `
         data-qa-file="Thumbnail"
         data-qa-node="div"
         style={
-          Object {
-            "backgroundImage": "url(\\"null\\")",
+          {
+            "backgroundImage": "url("null")",
           }
         }
       />
@@ -219,7 +231,13 @@ exports[`<GridItem /> should handle playlist 1`] = `
       data-qa-file="GridItem"
       data-qa-node="div"
     >
-      Local tester
+      <span
+        data-qa-file="GridItem"
+        data-qa-node="span"
+        title="Local tester"
+      >
+        Local tester
+      </span>
     </div>
     <div
       className="grid__item__secondary"
