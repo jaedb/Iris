@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import { i18n } from '../locale';
+import React, { memo } from 'react';
+import { I18n } from '../locale';
 
 /**
  * Format time duration
@@ -50,10 +50,10 @@ const durationSentence = (milliseconds = null) => {
   const totalMinutes = Math.floor(milliseconds / (1000 * 60));
   const totalHours = Math.floor(milliseconds / (1000 * 60 * 60));
 
-  if (totalHours > 1) return `${totalHours}+ ${i18n('time.hours.short')}`;
-  if (totalMinutes > 1) return `${totalMinutes} ${i18n('time.minutes.short')}`;
-  if (totalSeconds) return `${totalSeconds} ${i18n('time.seconds.short')}`;
-  return `0 ${i18n('time.minutes.short')}`;
+  if (totalHours > 1) return <>{totalHours} <I18n path="time.hours.short" /></>;
+  if (totalMinutes > 1) return <>{totalMinutes} <I18n path="time.minutes.short" /></>;
+  if (totalSeconds) return <>{totalSeconds} <I18n path="time.seconds.short" /></>;
+  return <>0 <I18n path="time.minutes.short" /></>;
 };
 
 const dater = (type, data) => {
@@ -97,17 +97,17 @@ const dater = (type, data) => {
       var years = Math.floor(diff / (1000 * 60 * 60 * 24 * 7 * 52));
 
       if (seconds < 60) {
-        return `${seconds} ${i18n(`time.seconds.${seconds > 1 ? 'plural' : 'singular'}`)}`;
+        return <>{seconds} <I18n path={`time.seconds.${seconds > 1 ? 'plural' : 'singular'}`} /></>
       } if (minutes < 60) {
-        return `${minutes} ${i18n(`time.minutes.${minutes > 1 ? 'plural' : 'singular'}`)}`;
+        return <>{minutes} <I18n path={`time.minutes.${minutes > 1 ? 'plural' : 'singular'}`} /></>
       } if (hours < 24) {
-        return `${hours} ${i18n(`time.hours.${hours > 1 ? 'plural' : 'singular'}`)}`;
+        return <>{hours} <I18n path={`time.hours.${hours > 1 ? 'plural' : 'singular'}`} /></>
       } if (days < 7) {
-        return `${days} ${i18n(`time.days.${days > 1 ? 'plural' : 'singular'}`)}`;
+        return <>{days} <I18n path={`time.days.${days > 1 ? 'plural' : 'singular'}`} /></>
       } if (weeks < 54) {
-        return `${weeks} ${i18n(`time.weeks.${weeks > 1 ? 'plural' : 'singular'}`)}`;
+        return <>{weeks} <I18n path={`time.weeks.${weeks > 1 ? 'plural' : 'singular'}`} /></>
       }
-      return `${years} ${i18n(`time.years.${years > 1 ? 'plural' : 'singular'}`)}`;
+      return <>{years} <I18n path={`time.years.${years > 1 ? 'plural' : 'singular'}`} /></>
     default:
       return null;
   }

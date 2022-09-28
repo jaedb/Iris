@@ -18,7 +18,7 @@ import * as spotifyActions from '../services/spotify/actions';
 import { isHosted } from '../util/helpers';
 import { i18n, I18n, languagesAvailable } from '../locale';
 import Button from '../components/Button';
-import { dater } from '../components/Dater';
+import Dater, { dater } from '../components/Dater';
 
 const CheckboxSetting = ({
   name,
@@ -446,7 +446,8 @@ class Settings extends React.Component {
                   {window.build}
                   {window.build && (
                     <span className="tooltip__content">
-                      {`${dater('ago', parseInt(window.build, 10) * 1000)} ago`}
+                      <Dater data={parseInt(window.build, 10) * 1000} type="ago" />
+                      {' ago'}
                     </span>
                   )}
                 </span>

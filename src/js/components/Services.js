@@ -13,7 +13,7 @@ import Snapcast from './Snapcast';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as geniusActions from '../services/genius/actions';
-import { I18n, i18n } from '../locale';
+import { I18n } from '../locale';
 import Button from './Button';
 import { useSelector } from 'react-redux';
 
@@ -242,7 +242,8 @@ const Spotify = () => {
                   {me.name || me.id}
                   {!authorization && (
                     <span className="mid_grey-text">
-                      {`  (${i18n('settings.services.limited_access')})`}
+                      {'  '}
+                      <I18n path="settings.services.limited_access" />
                     </span>
                   )}
                 </span>

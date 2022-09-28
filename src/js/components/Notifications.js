@@ -10,7 +10,7 @@ import * as snapcastActions from '../services/snapcast/actions';
 import Icon from './Icon';
 import Loader from './Loader';
 import { indexToArray } from '../util/arrays';
-import { i18n, I18n } from '../locale';
+import { I18n } from '../locale';
 import ErrorBoundary from './ErrorBoundary';
 import Button from './Button';
 
@@ -135,7 +135,7 @@ const NotificationItems = () => {
 
     dispatch(uiActions.removeNotification(notification_key, true));
     dispatch(uiActions.createNotification({
-      content: i18n('modal.shared_config.imported'),
+      content: <I18n path="modal.shared_config.imported" />
     }));
   }
 

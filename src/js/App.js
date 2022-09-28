@@ -87,8 +87,6 @@ const App = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const language = useSelector((state) => state.ui.language);
-  window.language = language;
   const theme = useSelector((state) => state.ui.theme);
   const wide_scrollbar_enabled = useSelector((state) => state.ui.wide_scrollbar_enabled);
   const hide_scrollbars = useSelector((state) => state.ui.hide_scrollbars);

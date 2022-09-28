@@ -7,7 +7,7 @@ import URILink from './URILink';
 import ContextMenuTrigger from './ContextMenu/ContextMenuTrigger';
 import ErrorBoundary from './ErrorBoundary';
 import { isTouchDevice } from '../util/helpers';
-import { I18n, i18n } from '../locale';
+import { I18n } from '../locale';
 import AddedFrom from './AddedFrom';
 
 const MiddleColumn = ({
@@ -181,8 +181,12 @@ const Track = ({
         {track_middle_column}
         <div className="list__item__column list__item__column--right">
           {drag_zone}
-          {item.is_explicit && <span className="flag flag--dark">{i18n('track.explicit').toUpperCase()}</span>}
-          {item.is_playable === false && <span className="flag flag--dark">{i18n('track.unplayable').toUpperCase()}</span>}
+          {item.is_explicit && (
+            <span className="flag flag--dark"><I18n path="track.explicit" /></span>
+          )}
+          {item.is_playable === false && (
+            <span className="flag flag--dark"><I18n path="track.unplayable" /></span>
+          )}
           {(context ?.type === 'album' || context ?.type === 'artist') && item.track_number && (
             <span className="mid_grey-text list__item__column__item list__item__column__item--track-number">
               <span>

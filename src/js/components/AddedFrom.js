@@ -1,6 +1,6 @@
 import React from 'react';
 import URILink from './URILink';
-import { I18n, i18n } from '../locale';
+import { I18n } from '../locale';
 import {
   getFromUri,
   titleCase,
@@ -61,7 +61,7 @@ export default ({
   if (inline) {
     return (
       <div className={className}>
-        {i18n('specs.added_from')}
+        <I18n path="specs.added_from" />
         {link}
       </div>
     );
@@ -71,7 +71,7 @@ export default ({
     <div className={`${className} tooltip`}>
       {link}
       <span className="tooltip__content">
-        {i18n('specs.added_by', { by })}
+      <I18n path="specs.added_by" params={{ by }} />
       </span>
     </div>
   );

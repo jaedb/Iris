@@ -60,7 +60,7 @@ let initialState = {
   mopidy: {
     connected: false,
     host: window.location.hostname,
-    port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
+    port: window.location.port || (window.location.protocol === 'https:' ? '443' : '80'),
     ssl: window.location.protocol === 'https:',
     current_server: 'default',
     servers: {
@@ -68,7 +68,7 @@ let initialState = {
         id: 'default',
         name: 'Default',
         host: window.location.hostname,
-        port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
+        port: window.location.port || (window.location.protocol === 'https:' ? '443' : '80'),
         ssl: window.location.protocol === 'https:',
       },
     },
@@ -248,4 +248,4 @@ const store = createStore(
 const persistor = persistStore(store);
 
 export default { store, persistor };
-export { store, persistor };
+export { store, persistor, initialState };
