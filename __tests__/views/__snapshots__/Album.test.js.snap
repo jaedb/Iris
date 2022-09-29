@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Album /> should render accurately 1`] = `
+<div
+  className="error-message error-message--not-found"
+  data-qa-file="ErrorMessage"
+  data-qa-node="div"
+>
+  <i
+    className="error-message__icon icon icon--material"
+    data-qa-file="ErrorMessage"
+    data-qa-node="i"
+  >
+    error
+  </i>
+  <h4
+    className="error-message__title"
+    data-qa-file="ErrorMessage"
+    data-qa-node="h4"
+  >
+    Not found
+  </h4>
+  <div
+    className="error-message__content"
+    data-qa-file="ErrorMessage"
+    data-qa-node="div"
+  >
+    <p
+      data-qa-file="Album"
+      data-qa-node="p"
+    >
+      Could not find anything with URI 
+    </p>
+  </div>
+</div>
+`;

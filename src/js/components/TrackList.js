@@ -1,33 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { range, uniqBy } from 'lodash';
 import Track from './Track';
-import * as mopidyActions from '../services/mopidy/actions';
-import * as uiActions from '../services/ui/actions';
+import { playURIs, changeTrack } from '../services/mopidy/actions';
+import { createNotification, showContextMenu } from '../services/ui/actions';
 import { isTouchDevice } from '../util/helpers';
 import { arrayOf } from '../util/arrays';
 import { SmartList } from './SmartList';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const TrackList = ({
   context,
   className = '',
   show_source_icon,
-  play_state,
-  slim_mode,
   tracks,
   playTracks,
   removeTracks,
   reorderTracks,
-  uiActions: {
-    createNotification,
-    showContextMenu,
-  },
-  mopidyActions: {
-    playURIs,
-    changeTrack,
-  },
 }) => {
+  const dispatch = useDispatch();
+  const play_state = useSelector((state) => state.mopidy.play_state);
+  const { slim_mode } = useSelector((state) => state.ui);
   const [selected, setSelected] = useState([]);
 
   useEffect(() => {
@@ -100,9 +93,9 @@ const TrackList = ({
     onDoubleClick: (item, index) => {
       setSelected([{ item, index }]);
       if (context?.type === 'queue') {
-        changeTrack(item.tlid);
+        dispatch(changeTrack(item.tlid));
       } else {
-        playURIs({ uris: [item.uri], from: context });
+        dispatch(playURIs({ uris: [item.uri], from: context }));
       }
     },
     onContextMenu: (item, index, e) => {
@@ -114,14 +107,14 @@ const TrackList = ({
         ({ index, item }) => ({ index, ...item }),
       );
 
-      showContextMenu({
+      dispatch(showContextMenu({
         e,
         context,
         ...(items.length === 1
           ? { type: 'track', item: items[0] }
           : { type: 'tracks', items }
         ),
-      });
+      }));
     },
   };
 
@@ -132,7 +125,7 @@ const TrackList = ({
     if (playTracks) {
       playTracks(selectedTracks);
     } else {
-      playURIs({ uris: arrayOf('uri', selectedTracks), from: context });
+      dispatch(playURIs({ uris: arrayOf('uri', selectedTracks), from: context }));
     }
   };
 
@@ -140,10 +133,10 @@ const TrackList = ({
     if (!selected || !selected.length) return;
 
     if (!removeTracks) {
-      createNotification({
+      dispatch(createNotification({
         content: `Cannot delete ${selected.length > 1 ? 'these tracks' : 'this track'}`,
         level: 'error',
-      });
+      }));
       return;
     }
     removeTracks(selected.map(({ index }) => index));
@@ -233,18 +226,4 @@ const TrackList = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  play_state: state.mopidy.play_state,
-  slim_mode: state.ui.slim_mode,
-  selected_tracks: state.ui.selected_tracks,
-  current_track: state.core.current_track,
-  context_menu: state.ui.context_menu,
-  stream_title: state.core.stream_title,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  uiActions: bindActionCreators(uiActions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(TrackList);
+export default TrackList;

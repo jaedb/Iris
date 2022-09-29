@@ -13,8 +13,8 @@ jest.mock('redux-persist', () => ({
   persistReducer: jest.fn().mockImplementation((config, reducers) => reducers),
 }));
 jest.mock('react-redux', () => ({
-  useSelector: jest.fn(() => mockState),
-  useDispatch: jest.fn(fn => fn()),
+  useSelector: jest.fn().mockImplementation(func => func(mockState)),
+  useDispatch: jest.fn(),
   connect: jest.fn(fn => fn()),
 }));
 jest.mock('react-router-dom', () => ({
@@ -30,7 +30,8 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('<Album />', () => {
-  const album = state.core.items['local:album:md5:66fbea3593ba96a15a9d4188bebab50b'];
+
+  const album = mockState.core.items['local:album:md5:66fbea3593ba96a15a9d4188bebab50b'];
 
   // Need to rebuild Album to functional component, at which point I'll copy previous
   // snapshot testing approach from other project
