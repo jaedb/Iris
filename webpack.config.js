@@ -2,6 +2,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const config = {
   mode: process.env.NODE_ENV,
@@ -89,11 +90,15 @@ const config = {
     new MiniCssExtractPlugin({
       filename: `app${isDev ? '' : '.min'}.css`,
     }),
+    new HtmlWebpackPlugin({ template: './mopidy_iris/static/index.html' }),
   ],
   watchOptions: {
     poll: true,
   },
   devtool: (isDev ? 'source-map' : false),
+  devServer: {
+    historyApiFallback: true,
+  },
 };
 
 // now export our collated config object
