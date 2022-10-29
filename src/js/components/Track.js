@@ -65,6 +65,7 @@ const Track = ({
   getDragItem,
   events,
 }) => {
+  return null;
   const index = getItemIndex();
   const [{ isDragging }, drag] = useDrag({
     type: 'TRACK',

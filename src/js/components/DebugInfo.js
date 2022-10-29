@@ -1,180 +1,139 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { useState, useEffect } from 'react';
 import localForage from 'localforage';
 import { get as getStorage } from '../util/storage';
 import { isTouchDevice } from '../util/helpers';
-import * as uiActions from '../services/ui/actions';
 import { indexToArray } from '../util/arrays';
-import { decodeUri } from '../util/format';
+import { useSelector } from 'react-redux';
 
-class DebugInfo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { localForageLength: 0 };
-  }
+const getLocalStorageUsage = () => {
+  let data = '';
 
-  componentDidMount() {
-    localForage.length().then((localForageLength) => this.setState({ localForageLength }));
-  }
-
-  localStorageSize() {
-    let data = '';
-
-    for (const key in window.localStorage) {
-      if (window.localStorage.hasOwnProperty(key)) {
-        data += window.localStorage[key];
-      }
+  for (const key in window.localStorage) {
+    if (window.localStorage.hasOwnProperty(key)) {
+      data += window.localStorage[key];
     }
-
-    let used = 0;
-    const total = 5000;
-    if (data !== '') {
-      used = ((data.length * 16) / (8 * 1024)).toFixed(2);
-    }
-
-    return {
-      used,
-      percent: (used / total * 100).toFixed(2),
-    };
   }
 
-  renderLoadQueue = () => {
-    const { load_queue } = this.props;
-    if (!load_queue) return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
-
-    const queue = indexToArray(load_queue);
-
-    if (queue.length > 0) {
-      return (
-        <div className="debug-info-item">
-          {queue.map((item, index) => (<div key={`${item}_${index}`}>{item}</div>))}
-        </div>
-      );
-    }
-    return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
+  let used = 0;
+  const total = 5000;
+  if (data !== '') {
+    used = ((data.length * 16) / (8 * 1024)).toFixed(2);
   }
-
-  render = () => {
-    const localStorageUsage = this.localStorageSize();
-    const {
-      items = {},
-      notifications = {},
-      processes = {},
-      slim_mode,
-      test_mode,
-      selected_tracks = [],
-      enqueue_uris_batches = [],
-    } = this.props;
-
-    return (
-      <div className="debug-info">
-        <div className="debug-info-section">
-          <div className="debug-info-item">
-            {`Version: ${version}`}
-          </div>
-          <div className="debug-info-item">
-            {`Build: ${build}`}
-          </div>
-          <div className="debug-info-item">
-            {'Dimensions: '}
-            {`${document.documentElement.clientWidth} (${window.innerWidth})w `}
-            {`${document.documentElement.clientHeight} (${window.innerHeight})h `}
-          </div>
-          <div className="debug-info-item">
-            {`Pixel ratio: ${window.devicePixelRatio}`}
-          </div>
-        </div>
-
-        <div className="debug-info-section">
-          <h5>State</h5>
-          <div className="debug-info-item">
-            {`Items: ${Object.keys(items).length}`}
-          </div>
-          <div className="debug-info-item">
-            {`Coldstore items: ${this.state.localForageLength}`}
-          </div>
-          <div className="debug-info-item">
-            {`Notifications: ${Object.keys(notifications).length}`}
-          </div>
-          <div className="debug-info-item">
-            {`Processes: ${Object.keys(processes).length}`}
-          </div>
-          <div className="debug-info-item">
-            {`Enqueue batches: ${enqueue_uris_batches.length}`}
-          </div>
-          <div className="debug-info-item">
-            {`Cached URLs: ${Object.keys(getStorage('cache')).length}`}
-          </div>
-        </div>
-
-        <div className="debug-info-section">
-          <h5>Config</h5>
-          <div className="debug-info-item">
-            {`Slim mode: ${slim_mode ? 'on' : 'off'}`}
-          </div>
-          <div className="debug-info-item">
-            {`Test mode: ${test_mode ? 'on' : 'off'}`}
-          </div>
-          <div className="debug-info-item">
-            {`Touch: ${isTouchDevice() ? 'on' : 'off'}`}
-          </div>
-          <div className="debug-info-item">
-            {`LocalStorage usage: ${localStorageUsage.used}kb (~${localStorageUsage.percent}%)`}
-          </div>
-          <div className="debug-info-item">
-            {`Selected tracks: ${selected_tracks.length}`}
-            <br />
-            {
-							selected_tracks.map((track_key, index) => (
-  <div key={`${track_key}_${index}`}>{track_key}</div>
-							))
-						}
-          </div>
-        </div>
-
-        <div className="debug-info-section">
-          <h5>Load queue</h5>
-          {this.renderLoadQueue()}
-        </div>
-
-      </div>
-    );
-  }
-}
-
-const mapStateToProps = (state) => {
-  const {
-    core: {
-      items,
-    },
-    ui: {
-      notifications,
-      processes,
-      slim_mode,
-      test_mode,
-      selected_tracks,
-      load_queue,
-    },
-    mopidy: {
-      enqueue_uris_batches,
-    },
-  } = state;
 
   return {
-    items,
-    notifications,
-    processes,
-    slim_mode,
-    test_mode,
-    selected_tracks,
-    enqueue_uris_batches,
-    load_queue,
+    used,
+    percent: (used / total * 100).toFixed(2),
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  uiActions: bindActionCreators(uiActions, dispatch),
-});
+const LoadQueue = () => {
+  const { load_queue } = useSelector((state) => state.ui);
+  
+  if (!load_queue) return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
 
-export default connect(mapStateToProps, mapDispatchToProps)(DebugInfo);
+  const queue = indexToArray(load_queue);
+
+  if (queue.length > 0) {
+    return (
+      <div className="debug-info-item">
+        {queue.map((item, index) => (<div key={`${item}_${index}`}>{item}</div>))}
+      </div>
+    );
+  }
+  return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
+}
+
+const DebugInfo = ({
+}) => {
+  const { 
+    notifications = {},
+    processes = {},
+    slim_mode,
+    test_mode,
+    selected_tracks = [],
+  } = useSelector((state) => state.ui);
+  const { items } = useSelector((state) => state.core);
+  const { enqueue_uris_batches = [] } = useSelector((state) => state.mopidy);
+  const [localForageLength, setLocalForageLength] = useState(0);
+  const localStorageUsage = getLocalStorageUsage();
+
+  useEffect(() => {
+    localForage.length().then(setLocalForageLength);
+  }, []);
+
+  return (
+    <div className="debug-info">
+      <div className="debug-info-section">
+        <div className="debug-info-item">
+          {`Version: ${version}`}
+        </div>
+        <div className="debug-info-item">
+          {`Build: ${build}`}
+        </div>
+        <div className="debug-info-item">
+          {'Dimensions: '}
+          {`${document.documentElement.clientWidth} (${window.innerWidth})w `}
+          {`${document.documentElement.clientHeight} (${window.innerHeight})h `}
+        </div>
+        <div className="debug-info-item">
+          {`Pixel ratio: ${window.devicePixelRatio}`}
+        </div>
+      </div>
+
+      <div className="debug-info-section">
+        <h5>State</h5>
+        <div className="debug-info-item">
+          {`Items: ${Object.keys(items).length}`}
+        </div>
+        <div className="debug-info-item">
+          {`Coldstore items: ${localForageLength}`}
+        </div>
+        <div className="debug-info-item">
+          {`Notifications: ${Object.keys(notifications).length}`}
+        </div>
+        <div className="debug-info-item">
+          {`Processes: ${Object.keys(processes).length}`}
+        </div>
+        <div className="debug-info-item">
+          {`Enqueue batches: ${enqueue_uris_batches.length}`}
+        </div>
+        <div className="debug-info-item">
+          {`Cached URLs: ${Object.keys(getStorage('cache')).length}`}
+        </div>
+      </div>
+
+      <div className="debug-info-section">
+        <h5>Config</h5>
+        <div className="debug-info-item">
+          {`Slim mode: ${slim_mode ? 'on' : 'off'}`}
+        </div>
+        <div className="debug-info-item">
+          {`Test mode: ${test_mode ? 'on' : 'off'}`}
+        </div>
+        <div className="debug-info-item">
+          {`Touch: ${isTouchDevice() ? 'on' : 'off'}`}
+        </div>
+        <div className="debug-info-item">
+          {`LocalStorage usage: ${localStorageUsage.used}kb (~${localStorageUsage.percent}%)`}
+        </div>
+        <div className="debug-info-item">
+          {`Selected tracks: ${selected_tracks.length}`}
+          <br />
+          {
+            selected_tracks.map((track_key, index) => (
+              <div key={`${track_key}_${index}`}>{track_key}</div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div className="debug-info-section">
+        <h5>Load queue</h5>
+        <LoadQueue />
+      </div>
+
+    </div>
+  );
+}
+
+export default DebugInfo;

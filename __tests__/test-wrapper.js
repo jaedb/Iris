@@ -4,7 +4,7 @@ import { Provider as ReduxProvider } from 'react-redux/src';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { store } from '../src/js/store';
+import { buildStore } from '../src/js/store';
 
 const customRender = (
   element,
@@ -16,7 +16,7 @@ const customRender = (
 ) => {
   return TestRenderer.create(
     (
-      <ReduxProvider store={store}>
+      <ReduxProvider store={buildStore({ initialState })}>
         <DndProvider backend={HTML5Backend}>
           <BrowserRouter basename="/">
             <Routes>
@@ -30,6 +30,6 @@ const customRender = (
       ...options,
     },
   );
-};
+}
 
 export { customRender as render };

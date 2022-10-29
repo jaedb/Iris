@@ -230,9 +230,16 @@ const rootReducer = (state, action) => {
   return appReducer(nextState, action);
 };
 
-const store = createStore(
+const buildStore = (
+  {
+    initialState: customInitialState = {},
+  } = {},
+) => createStore(
   rootReducer,
-  initialState,
+  {
+    ...initialState,
+    ...customInitialState,
+  },
   applyMiddleware(
     thunk,
     coreMiddleware,
@@ -245,7 +252,9 @@ const store = createStore(
     snapcastMiddleware,
   ),
 );
+
+const store = buildStore();
 const persistor = persistStore(store);
 
-export default { store, persistor };
-export { store, persistor, initialState };
+export default { buildStore, store, persistor };
+export { buildStore, store, persistor, initialState };
