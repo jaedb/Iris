@@ -10,6 +10,7 @@ include Dockerfile
 include pyproject.toml
 include screenshot.jpg
 include tox.ini
+include *.lock
 recursive-exclude src *
 exclude .jshintrc
 exclude .babelrc
