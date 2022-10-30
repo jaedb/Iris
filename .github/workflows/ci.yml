@@ -12,13 +12,13 @@ jobs:
 
     - uses: actions/setup-node@v2
       with:
-        node-version: '12'
+        node-version: '14'
 
     - name: Install modules
       run: npm ci
 
     - name: Run tests
-      run: npm run test --verbose --maxWorkers=2
+      run: npm run test
 
     - name: Submit to Codecov
       uses: codecov/codecov-action@v1
