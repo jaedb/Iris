@@ -78,7 +78,7 @@ const Album = () => {
     }
   }, [album]);
 
-  if (album?.loading) {
+  if (!album?.name && album?.loading) {
     return <Loader body loading />;
   }
 
@@ -135,7 +135,14 @@ const Album = () => {
   return (
     <div className="view album-view content-wrapper preserve-3d">
       <div className="thumbnail-wrapper">
-        <Thumbnail size="large" glow canZoom images={album.images} type="album" />
+        <Thumbnail
+          size="large"
+          images={album.images}
+          type="album"
+          loading={album.loading}
+          canZoom
+          glow
+        />
       </div>
 
       <div className="title">

@@ -19,9 +19,35 @@
 		z-index: 1;
 	}
 
+	.loader {
+		position: absolute;
+		top: calc(50% - 60px);
+		left: calc(50% - 60px);
+		z-index: 9;
+	}
+
+	&--loading {
+		.thumbnail__image:before {
+			content: '';
+			display: block;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			z-index: 8;
+			background-color: rgba(0, 0, 0, 0.50);
+
+			@include theme('light') {
+				background-color: rgba(255, 255, 255, 0.50);
+			}
+		}
+	}
+
 	&__image {
 		@include animate(0.1s);
 		position: relative;
+		overflow: hidden;
 		z-index: 2;
 		width: 100%;
 		padding-bottom: 100%;

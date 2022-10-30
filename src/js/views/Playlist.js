@@ -211,7 +211,7 @@ const Playlist = ({
     removeTracksFromPlaylist(uri, tracks_indexes);
   }
 
-  if (loading) {
+  if (loading && !playlist?.name) {
     return <Loader body loading />;
   }
   if (!playlist) {
@@ -254,7 +254,14 @@ const Playlist = ({
     <div className="view playlist-view content-wrapper preserve-3d">
 
       <div className="thumbnail-wrapper">
-        <Thumbnail size="large" glow canZoom images={playlist.images} type="playlist" />
+        <Thumbnail
+          size="large"
+          images={playlist.images}
+          type="playlist"
+          loading={playlist?.loading}
+          canZoom
+          glow
+        />
       </div>
 
       <div className="title">
@@ -310,7 +317,6 @@ const Playlist = ({
 
       <h4 className="no-bottom-margin">
         <I18n path="playlist.tracks.title" />
-        {loadingTracks && <Loader loading mini />}
         <div className="actions-wrapper">
           <FilterField
             initialValue={filter}

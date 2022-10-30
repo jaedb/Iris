@@ -1325,6 +1325,12 @@ const MopidyMiddleware = (function () {
                 });
                 playlist.tracks = injectSortId(formatTracks(tracks));
                 store.dispatch(coreActions.itemLoaded(playlist));
+              })
+              .catch(() => {
+                store.dispatch(coreActions.itemLoaded({
+                  uri: playlist.uri,
+                  loading: undefined,
+                }));
               });
           } else {
             store.dispatch(coreActions.itemLoaded(playlist));

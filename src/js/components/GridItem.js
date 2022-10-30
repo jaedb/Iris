@@ -141,6 +141,7 @@ const GridItem = ({
           className="grid__item__thumbnail"
           images={item.images || item.icons}
           type={item.type}
+          loading={item.loading}
         />
         <div className="grid__item__name">
           {item.name

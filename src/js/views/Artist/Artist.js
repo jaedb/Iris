@@ -90,7 +90,7 @@ const Artist = () => {
     }),
   );
 
-  if (loading) {
+  if (!artist?.name && loading) {
     return <Loader body loading />;
   }
   if (!artist) {
@@ -116,7 +116,14 @@ const Artist = () => {
         <div className="liner">
           <div className="heading">
             <div className="heading__thumbnail">
-              <Thumbnail size="medium" circle canZoom type="artist" image={image} />
+              <Thumbnail
+                size="medium"
+                type="artist"
+                image={image}
+                loading={loading}
+                circle
+                canZoom
+              />
             </div>
             <div className="heading__content">
               <h1>{artist && artist.name}</h1>
