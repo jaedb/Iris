@@ -84,7 +84,7 @@ export default memo((props) => {
           style={{ backgroundImage: `url("${image}")` }}
         />
       )}
-      <Loader loading={loading} />
+      {loading && <Loader loading />}
       <div className="thumbnail__actions">
         {props.canZoom && image && (
           <Link

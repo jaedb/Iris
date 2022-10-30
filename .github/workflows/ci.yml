@@ -99,7 +99,7 @@ jobs:
         run: npm install
 
       - name: Build JS
-        run: npm run build:prod
+        run: npm run prod
 
       - name: Setup Python
         uses: actions/setup-python@v2

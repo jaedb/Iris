@@ -13,7 +13,6 @@ var path = require('path');
 var rimraf = require('rimraf');
 var copydir = require('copy-dir');
 var copyfile = require('fs-copy-file');
-
 var version = fs.readFileSync("IRIS_VERSION", "utf8");
 version = version.replace(/\r?\n?/g, '').trim();
 var build = Math.floor(Date.now() / 1000);

@@ -95,14 +95,12 @@
   "scripts": {
     "test": "jest",
     "tox": "sudo docker exec -it -u root iris_mopidy_1 bash -c \"cd /iris && tox\"",
-    "start": "node build_tools/build.js && NODE_ENV=development webpack-dev-server",
+    "start": "NODE_ENV=development webpack-dev-server",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "watch:dev": "node build_tools/build.js && NODE_ENV=development webpack --watch",
-    "watch:prod": "node build_tools/build.js && NODE_ENV=production webpack --watch",
-    "build:tools": "node build_tools/build.js",
-    "build:dev": "node build_tools/build.js && NODE_ENV=development webpack",
-    "build:prod": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack",
+    "build": "node build_tools/build.js",
+    "dev": "node build_tools/build.js && NODE_ENV=development webpack",
+    "prod": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack",
     "release": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack && python setup.py sdist upload -r pypi && build_tools/release.sh"
   }
 }

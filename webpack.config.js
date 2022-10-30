@@ -90,7 +90,7 @@ const config = {
     new MiniCssExtractPlugin({
       filename: `app${isDev ? '' : '.min'}.css`,
     }),
-    new HtmlWebpackPlugin({ template: './mopidy_iris/static/index.html' }),
+    new HtmlWebpackPlugin({ template: './src/index.html' }),
   ],
   watchOptions: {
     poll: true,
