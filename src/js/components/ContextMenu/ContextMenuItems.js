@@ -157,10 +157,10 @@ const ContextMenuItems = ({
           {provider === 'spotify' && <Library uri={item.uri} />}
           <Love item={item} />
           <Divider />
+          <GoTo type="track" uri={item.uri} />
           {provider === 'spotify' && (
             <>
               <Discover uris={[item.uri]} context={context} />
-              <GoTo type="track" uri={item.uri} />
               <Divider />
             </>
           )}

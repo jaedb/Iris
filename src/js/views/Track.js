@@ -71,13 +71,11 @@ const LyricsSelector = ({
 
 const LyricsContent = ({
   authorized,
-  loading,
   track: {
     lyrics,
     lyrics_path,
   } = {},
 }) => {
-  if (loading) return <Loader mini />;
   if (!lyrics && !authorized) {
     return (
       <p className="no-results">
@@ -109,7 +107,6 @@ const LyricsContent = ({
 };
 
 const Lyrics = ({
-  loading,
   authorized,
   track,
   getTrackLyrics,
@@ -117,7 +114,6 @@ const Lyrics = ({
   <>
     <h4>
       <I18n path="track.lyrics" />
-      {loading && <Loader loading mini />}
     </h4>
 
     <LyricsSelector
@@ -263,7 +259,13 @@ class Track extends React.Component {
         )}
 
         <div className="thumbnail-wrapper">
-          <Thumbnail size="large" canZoom images={track.images} type="album" />
+          <Thumbnail
+            size="large"
+            images={track.images}
+            type="album"
+            loading={loading || loadingLyrics}
+            canZoom
+          />
         </div>
 
         <div className="title">
@@ -327,7 +329,6 @@ class Track extends React.Component {
         </div>
 
         <Lyrics
-          loading={loadingLyrics}
           authorized={genius_authorized}
           getTrackLyrics={getTrackLyrics}
           track={track}
