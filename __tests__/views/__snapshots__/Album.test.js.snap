@@ -130,14 +130,13 @@ exports[`<Album /> should render accurately 1`] = `
         data-qa-file="Album"
         data-qa-node="li"
       >
-        2 tracks
+        0 tracks
       </li>
       <li
         data-qa-file="Album"
         data-qa-node="li"
       >
-        9
-         
+        0 
         mins
       </li>
     </ul>
@@ -296,18 +295,6 @@ exports[`<Album /> should render accurately 1`] = `
         </div>
       </div>
     </h4>
-    <div
-      className="smart-list__batch list list--tracks album-track-list"
-      data-qa-file="SmartList"
-      data-qa-node="div"
-    >
-      <div
-        className="smart-list__batch__inner"
-        data-qa-file="SmartList"
-        data-qa-node="div"
-        style={{}}
-      />
-    </div>
   </section>
   <section
     className="wiki"
