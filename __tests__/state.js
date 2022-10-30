@@ -98,54 +98,54 @@ state.core.items['local:album:md5:66fbea3593ba96a15a9d4188bebab50b'] = {
 			name: "Above & Beyond"
 		}
 	],
-	tracks: [
-		{
-			type: "track",
-			uri: "local:track:Above%20%26%20Beyond/Sirens%20of%20the%20Sea%20%5B2008%5D/Above%20%26%20Beyond%20-%2001%20Just%20Listen.mp3",
-			name: "Just Listen",
-			last_modified: 1528571779393,
-			artists: [
-				{
-					uri: "local:artist:md5:171fb07b0aca1f116a998d72582f2caf",
-					name: "Above & Beyond presents OceanLab"
-				}
-			],
-			album: {
-				uri: "local:album:md5:66fbea3593ba96a15a9d4188bebab50b",
-				name: "Sirens of the Sea"
-			},
-			added_at: 1528571779393,
-			duration: 230086,
-			track_number: 1,
-			disc_number: 1,
-			release_date: "2008",
-			provider: "local",
-			disc_track: "001.001"
-		},
-		{
-			type: "track",
-			uri: "local:track:Above%20%26%20Beyond/Sirens%20of%20the%20Sea%20%5B2008%5D/Above%20%26%20Beyond%20-%2002%20Sirens%20of%20the%20Sea.mp3",
-			name: "Sirens of the Sea",
-			last_modified: 1528571780104,
-			artists: [
-				{
-					uri: "local:artist:md5:171fb07b0aca1f116a998d72582f2caf",
-					name: "Above & Beyond presents OceanLab"
-				}
-			],
-			album: {
-				uri: "local:album:md5:66fbea3593ba96a15a9d4188bebab50b",
-				name: "Sirens of the Sea"
-			},
-			added_at: 1528571780104,
-			duration: 356884,
-			track_number: 2,
-			disc_number: 1,
-			release_date: "2008",
-			provider: "local",
-			disc_track: "001.002"
-		},
-	],
+	tracks: [],
+	// 	{
+	// 		type: "track",
+	// 		uri: "local:track:Above%20%26%20Beyond/Sirens%20of%20the%20Sea%20%5B2008%5D/Above%20%26%20Beyond%20-%2001%20Just%20Listen.mp3",
+	// 		name: "Just Listen",
+	// 		last_modified: 1528571779393,
+	// 		artists: [
+	// 			{
+	// 				uri: "local:artist:md5:171fb07b0aca1f116a998d72582f2caf",
+	// 				name: "Above & Beyond presents OceanLab"
+	// 			}
+	// 		],
+	// 		album: {
+	// 			uri: "local:album:md5:66fbea3593ba96a15a9d4188bebab50b",
+	// 			name: "Sirens of the Sea"
+	// 		},
+	// 		added_at: 1528571779393,
+	// 		duration: 230086,
+	// 		track_number: 1,
+	// 		disc_number: 1,
+	// 		release_date: "2008",
+	// 		provider: "local",
+	// 		disc_track: "001.001"
+	// 	},
+	// 	{
+	// 		type: "track",
+	// 		uri: "local:track:Above%20%26%20Beyond/Sirens%20of%20the%20Sea%20%5B2008%5D/Above%20%26%20Beyond%20-%2002%20Sirens%20of%20the%20Sea.mp3",
+	// 		name: "Sirens of the Sea",
+	// 		last_modified: 1528571780104,
+	// 		artists: [
+	// 			{
+	// 				uri: "local:artist:md5:171fb07b0aca1f116a998d72582f2caf",
+	// 				name: "Above & Beyond presents OceanLab"
+	// 			}
+	// 		],
+	// 		album: {
+	// 			uri: "local:album:md5:66fbea3593ba96a15a9d4188bebab50b",
+	// 			name: "Sirens of the Sea"
+	// 		},
+	// 		added_at: 1528571780104,
+	// 		duration: 356884,
+	// 		track_number: 2,
+	// 		disc_number: 1,
+	// 		release_date: "2008",
+	// 		provider: "local",
+	// 		disc_track: "001.002"
+	// 	},
+	// ],
 	last_modified: 1528571779393,
 	type: "album",
 	uri: "local:album:md5:66fbea3593ba96a15a9d4188bebab50b",

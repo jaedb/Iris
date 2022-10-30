@@ -5,8 +5,8 @@ import { state as mockState } from '../state';
 
 jest.mock('react-dnd', () => ({
   ...jest.requireActual('react-dnd'),
-  useDrag: jest.fn(),
-  useDrop: jest.fn(),
+  useDrag: () => jest.fn(),
+  useDrop: () => jest.fn(),
 }));
 jest.mock('redux-persist', () => ({
   ...jest.requireActual('redux-persist'),
