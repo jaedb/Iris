@@ -98,6 +98,12 @@ const config = {
   devtool: (isDev ? 'source-map' : false),
   devServer: {
     historyApiFallback: true,
+    static: [
+      {
+        directory: path.join(__dirname, 'mopidy_iris', 'static', 'assets'),
+        publicPath: '/assets/',
+      },
+    ],
   },
 };
 

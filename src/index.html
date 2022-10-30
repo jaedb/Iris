@@ -7,7 +7,7 @@
 	<meta content="width=device-width, initial-scale=1" name="viewport" />
 	<meta name="viewport" content="width=device-width" />
 
-	<link rel="manifest" href="/iris/manifest.json" crossorigin="use-credentials" />
+	<link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
 
 	<!-- App setup -->
 	<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -18,24 +18,24 @@
 	<meta name="theme-color" content="#222222" />
 
 	<!-- Icons -->
-	<link rel="apple-touch-startup-image" href="/iris/assets/app-icon_512.png" />
-	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/app-icon_192.png" />
-	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/app-icon_512.png" />
-	<link rel="apple-touch-icon" sizes="57x57" href="/iris/assets/app-icon_57.png">
-	<link rel="apple-touch-icon" sizes="60x60" href="/iris/assets/app-icon_60.png">
-	<link rel="apple-touch-icon" sizes="72x72" href="/iris/assets/app-icon_72.png">
-	<link rel="apple-touch-icon" sizes="76x76" href="/iris/assets/app-icon_76.png">
-	<link rel="apple-touch-icon" sizes="114x114" href="/iris/assets/app-icon_114.png">
-	<link rel="apple-touch-icon" sizes="120x120" href="/iris/assets/app-icon_120.png">
-	<link rel="apple-touch-icon" sizes="144x144" href="/iris/assets/app-icon_144.png">
-	<link rel="apple-touch-icon" sizes="152x152" href="/iris/assets/app-icon_152.png">
-	<link rel="apple-touch-icon" sizes="180x180" href="/iris/assets/app-icon_180.png">
+	<link rel="apple-touch-startup-image" href="assets/app-icon_512.png" />
+	<link rel="apple-touch-icon" sizes="192x192" href="assets/app-icon_192.png" />
+	<link rel="apple-touch-icon" sizes="512x512" href="assets/app-icon_512.png" />
+	<link rel="apple-touch-icon" sizes="57x57" href="assets/app-icon_57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="assets/app-icon_60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="assets/app-icon_72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="assets/app-icon_76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="assets/app-icon_114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="assets/app-icon_120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="assets/app-icon_144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="assets/app-icon_152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="assets/app-icon_180.png">
 
-	<link class="favicon" rel="shortcut icon" type="image/ico" href="/iris/assets/favicon.png" />
-	<link class="favicon" rel="shortcut icon" type="image/x-icon" href="/iris/assets/favicon.png" />
-	<link class="favicon" rel="shortcut-icon" href="/iris/assets/favicon.png" />
+	<link class="favicon" rel="shortcut icon" type="image/ico" href="assets/favicon.png" />
+	<link class="favicon" rel="shortcut icon" type="image/x-icon" href="assets/favicon.png" />
+	<link class="favicon" rel="shortcut-icon" href="assets/favicon.png" />
 
-	<link rel="mask-icon" href="/iris/assets/app-icon.svg" color="#08d58f" />
+	<link rel="mask-icon" href="assets/app-icon.svg" color="#08d58f" />
 
 	<!-- Loading screen styles -->
 	<style>
@@ -101,7 +101,7 @@
 	<div id="app">
 		<!-- ReactJS app gets injected here, replacing the loader -->
 		<div id="app-loading">
-			<img src="/iris/assets/app-icon.svg" id="app-loading-logo" />
+			<img src="assets/app-icon.svg" id="app-loading-logo" />
 			<div id="app-loading-loader" class="loading"></div>
 			<div id="app-loading-message">
 				<div id="app-loading-message-base"></div>
@@ -115,7 +115,7 @@
 
 <script type="text/javascript">
 	if ('serviceWorker' in navigator){
-		navigator.serviceWorker.register('/iris/service-worker.js')
+		navigator.serviceWorker.register('/service-worker.js')
 			.then(function(registration){
 				console.log('Service worker registered');
 			}).catch(function(error){
@@ -167,11 +167,11 @@
 	}
 
 	if (window.test_mode){ // Test mode, use un-minified code
-		css.href = '/iris/app.css?v='+build;
-		js.src = '/iris/app.js?v='+build;
+		css.href = 'app.css?v='+build;
+		js.src = 'app.js?v='+build;
 	} else { // Production-grade, minified app
-		css.href = '/iris/app.min.css?v='+build;
-		js.src = '/iris/app.min.js?v='+build;
+		css.href = 'app.min.css?v='+build;
+		js.src = 'app.min.js?v='+build;
 	}
 
 	setMessage('js', 'Loading core... ');

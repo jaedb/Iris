@@ -13,7 +13,7 @@ const root = createRoot(document.getElementById('app'));
 root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <BrowserRouter basename="/iris">
+      <BrowserRouter basename={window.location.pathname.indexOf('/iris') > -1 ? '/iris' : '/'}>
         <Routes>
           <Route path="*" element={<App />} />
         </Routes>

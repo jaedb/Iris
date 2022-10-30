@@ -526,7 +526,7 @@ class Recommendations extends React.Component {
 
     return (
       <div className="view discover-view preserve-3d">
-        {theme === 'dark' && <Parallax image="/iris/assets/backgrounds/discover.jpg" />}
+        {theme === 'dark' && <Parallax image="/assets/backgrounds/discover.jpg" />}
         <div className="intro preserve-3d">
           <div className="intro__liner">
             <h1><I18n path="discover.recommendations.body_title" /></h1>

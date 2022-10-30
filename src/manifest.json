@@ -4,27 +4,27 @@
   "name": "Iris",
   "icons": [
     {
-      "src": "/iris/assets/app-icon_64.png",
+      "src": "/assets/app-icon_64.png",
       "type": "image/png",
       "sizes": "64x64"
     },
     {
-      "src": "/iris/assets/app-icon_192.png",
+      "src": "/assets/app-icon_192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/iris/assets/app-icon_256.png",
+      "src": "/assets/app-icon_256.png",
       "type": "image/png",
       "sizes": "256x256"
     },
     {
-      "src": "/iris/assets/app-icon_512.png",
+      "src": "/assets/app-icon_512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
-  "start_url": "/iris/",
+  "start_url": "/",
   "background_color": "#08d58f",
   "theme_color": "#181818",
   "display": "standalone",
