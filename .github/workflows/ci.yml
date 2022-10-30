@@ -18,7 +18,7 @@ jobs:
       run: npm ci
 
     - name: Run tests
-      run: npm run test
+      run: npm run test --verbose --maxWorkers=2
 
     - name: Submit to Codecov
       uses: codecov/codecov-action@v1
