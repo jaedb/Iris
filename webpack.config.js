@@ -1,4 +1,5 @@
 const isDev = process.env.NODE_ENV !== 'production';
+const isDevServer = process.env.WEBPACK_DEV_SERVER;
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -90,7 +91,7 @@ const config = {
     new MiniCssExtractPlugin({
       filename: `app${isDev ? '' : '.min'}.css`,
     }),
-    new HtmlWebpackPlugin({ template: './src/index.html' }),
+    ...isDevServer ? [new HtmlWebpackPlugin({ template: './src/index.html' })] : [],
   ],
   watchOptions: {
     poll: true,

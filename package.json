@@ -95,7 +95,7 @@
   "scripts": {
     "test": "jest",
     "tox": "sudo docker exec -it -u root iris_mopidy_1 bash -c \"cd /iris && tox\"",
-    "start": "NODE_ENV=development webpack-dev-server",
+    "start": "NODE_ENV=development WEBPACK_DEV_SERVER=1 webpack-dev-server",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "build": "node build_tools/build.js",
