@@ -4,22 +4,22 @@
   "name": "Iris",
   "icons": [
     {
-      "src": "/assets/app-icon_64.png",
+      "src": "assets/app-icon_64.png",
       "type": "image/png",
       "sizes": "64x64"
     },
     {
-      "src": "/assets/app-icon_192.png",
+      "src": "assets/app-icon_192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/assets/app-icon_256.png",
+      "src": "assets/app-icon_256.png",
       "type": "image/png",
       "sizes": "256x256"
     },
     {
-      "src": "/assets/app-icon_512.png",
+      "src": "assets/app-icon_512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
