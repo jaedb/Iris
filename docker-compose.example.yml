@@ -8,7 +8,9 @@ services:
       - 1780:1780
     volumes:
       - /tmp/snapserver:/tmp
-      - ./docker/snapserver.conf:/etc/snapserver.conf
+      - ./docker/snapserver.conf:/etc/snapserver.conf # Copy from snapserver-example.conf
+      - ./docker/snapserver.json:/root/.config/snapserver/server.json
+      - ./docker/meta_mopidy.py:/usr/share/snapserver/plug-ins/meta_mopidy.py
   mopidy:
     image: jaedb/iris
     environment:
@@ -21,9 +23,6 @@ services:
       - 6600:6600
       - 6680:6680
     volumes:
-      # Uncomment these lines to use a host-managed development build
-      #- ./mopidy_iris:/iris/mopidy_iris
-      #- ./IRIS_VERSION:/iris/IRIS_VERSION
       - ./docker/data:/var/lib/mopidy/iris
       - ./docker/mopidy.conf:/config/mopidy.conf
       - /mnt/Music:/var/lib/mopidy/media
