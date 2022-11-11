@@ -5,6 +5,11 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const fs = require('fs');
+let version = fs.readFileSync("IRIS_VERSION", "utf8");
+version = version.replace(/\r?\n?/g, '').trim();
+const build = Math.floor(Date.now() / 1000);
+
 const config = {
   mode: process.env.NODE_ENV,
   context: path.resolve(__dirname),
@@ -91,7 +96,16 @@ const config = {
     new MiniCssExtractPlugin({
       filename: `app${isDev ? '' : '.min'}.css`,
     }),
-    ...isDevServer ? [new HtmlWebpackPlugin({ template: './src/index.html' })] : [],
+    new HtmlWebpackPlugin({
+      inject: false,
+      template: './src/index.html',
+      templateParameters: {
+        isDevServer: isDevServer ? 1 : 0,
+        baseHref: isDevServer ? '/' : '/iris/',
+        version: `${version}-${isDevServer ? 'DEV_SERVER' : ''}`,
+        build,
+      },
+    }),
   ],
   watchOptions: {
     poll: true,
@@ -99,6 +113,10 @@ const config = {
   devtool: (isDev ? 'source-map' : false),
   devServer: {
     historyApiFallback: true,
+    port: 6681,
+    client: {
+      overlay: true,
+    },
     static: [
       {
         directory: path.join(__dirname, 'mopidy_iris', 'static', 'assets'),

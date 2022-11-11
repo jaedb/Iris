@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>Iris</title>
-		<base id="base_href" href="/iris/" />
+		<base id="base_href" href="<%= baseHref %>" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-title" content="Iris" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -68,11 +68,7 @@
 			}
 		</style>
 	</head>
-	<script type="text/javascript">
-		var base_href = document.location.pathname.indexOf('/iris/') > -1 ? '/iris/' : '/';
-		const baseObject = document.getElementById('base_href');
-		baseObject.href = base_href;
-	
+	<script type="text/javascript">	
 		var links = [
 			{ rel: 'manifest', href: 'manifest.json', crossorigin: 'use-credentials' },
 			{ rel: 'apple-touch-startup-image', href: 'assets/app-icon_512.png' },
@@ -96,7 +92,7 @@
 		for (const link of links) {
 			const linkObject = document.createElement('link');
 			linkObject.rel = link.rel;
-			linkObject.href = base_href + link.href;
+			linkObject.href = link.href;
 			if (link.type) linkObject.type = link.type;
 			if (link.sizes) linkObject.sizes = link.sizes;
 			if (link.color) linkObject.color = link.color;
@@ -142,10 +138,8 @@
 		}
 	}
 
-	// Release details
-	// These are automatically injected to built HTML
-	var build = "BUILD_HERE";
-	var version = "VERSION_HERE";
+	var build = "<%= build %>";
+	var version = "<%= version %>";
 
 	// Construct the script tag
 	var js = document.createElement("script");
@@ -157,7 +151,8 @@
 
 	// Check for test mode. This is toggled under Settings > Debug > Test mode or can
 	// be manually triggered with the URL var "?test_mode=1"
-	if (window.location.href.indexOf('test_mode=1') > -1) {
+	var test_mode = <%= isDevServer %> || window.location.href.indexOf('test_mode=1') > -1;
+	if (test_mode) {
 		window.test_mode = true;
 		localStorage.setItem('test_mode', true);
 	} else if (window.location.href.indexOf('test_mode=0') > -1) {
