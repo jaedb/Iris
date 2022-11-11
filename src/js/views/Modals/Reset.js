@@ -140,7 +140,7 @@ class Reset extends React.Component {
       console.log('Reset complete, refreshing...');
       resetState(stateKeysToReset);
       setTimeout(
-        () => closeModal(window.location = `/settings${test_mode ? '?test_mode=0' : ''}`),
+        () => closeModal(window.location = `settings${test_mode ? '?test_mode=0' : ''}`),
         1000,
       );
     });
