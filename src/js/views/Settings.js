@@ -1,11 +1,7 @@
 import React from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Route, Link } from 'react-router-dom';
-import localForage from 'localforage';
-import ConfirmationButton from '../components/Fields/ConfirmationButton';
 import PusherConnectionList from '../components/PusherConnectionList';
-import SourcesPriority from '../components/Fields/SourcesPriority';
 import Commands from '../components/Fields/Commands';
 import TextField from '../components/Fields/TextField';
 import SelectField from '../components/Fields/SelectField';
@@ -22,7 +18,7 @@ import * as spotifyActions from '../services/spotify/actions';
 import { isHosted } from '../util/helpers';
 import { i18n, I18n, languagesAvailable } from '../locale';
 import Button from '../components/Button';
-import { dater } from '../components/Dater';
+import Dater, { dater } from '../components/Dater';
 
 const CheckboxSetting = ({
   name,
@@ -205,14 +201,14 @@ class Settings extends React.Component {
             </div>
           </label>
 
-          <Route path="/settings/:server?/:id?" component={Servers} />
+          <Servers />
 
           <h4 className="underline">
             <I18n path="settings.services.title" />
             <a name="services" />
           </h4>
-
-          <Route path="/settings/:services?/:service?/:id?" component={Services} />
+          
+          <Services />
 
           <h4 className="underline">
             <I18n path="settings.interface.title" />
@@ -327,22 +323,6 @@ class Settings extends React.Component {
                 checked={ui.hide_scrollbars}
                 label={i18n('settings.interface.scrolling.hidden')}
               />
-            </div>
-          </div>
-
-          <div className="field sources-priority">
-            <div className="name">
-              <I18n path="settings.interface.sources_priority.label" />
-            </div>
-            <div className="input">
-              <SourcesPriority
-                uri_schemes={mopidy.uri_schemes ? mopidy.uri_schemes : []}
-                uri_schemes_priority={ui.uri_schemes_priority ? ui.uri_schemes_priority : []}
-                uiActions={uiActions}
-              />
-              <div className="description">
-                <I18n path="settings.interface.sources_priority.description" />
-              </div>
             </div>
           </div>
 
@@ -466,7 +446,8 @@ class Settings extends React.Component {
                   {window.build}
                   {window.build && (
                     <span className="tooltip__content">
-                      {`${dater('ago', parseInt(window.build, 10) * 1000)} ago`}
+                      <Dater data={parseInt(window.build, 10) * 1000} type="ago" />
+                      {' ago'}
                     </span>
                   )}
                 </span>

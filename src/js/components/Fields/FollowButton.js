@@ -1,33 +1,29 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as uiActions from '../../services/ui/actions';
-import * as spotifyActions from '../../services/spotify/actions';
-import { getFromUri } from '../../util/helpers';
+import { createNotification } from '../../services/ui/actions';
+import { following } from '../../services/spotify/actions';
 import { i18n } from '../../locale';
 import { Button } from '../Button';
 import { makeLoadingSelector } from '../../util/selectors';
+import { useSelector } from 'react-redux';
+
+const loadingSelector = makeLoadingSelector(['(.*)(follow)|(me\/albums)(.*)']);
 
 const FollowButton = ({
-  spotifyActions: {
-    following,
-  },
-  uiActions: {
-    createNotification,
-  },
   uri,
   addText,
   removeText,
-  spotify_authorized,
   is_following,
-  loading,
 }) => {
-  const remove = () => following(uri, 'DELETE');
-  const add = () => following(uri, 'PUT');
-  const unauthorized = () => createNotification({
-    content: i18n('errors.authorization_required', { provider: i18n('services.spotify.title') }),
-    level: 'warning',
-  });
+  const loading = useSelector(loadingSelector);
+  const spotify_authorized = useSelector((state) => state.spotify.authorization);
+  const remove = () => dispatch(following(uri, 'DELETE'));
+  const add = () => dispatch(following(uri, 'PUT'));
+  const unauthorized = () => dispatch(
+    createNotification({
+      content: i18n('errors.authorization_required', { provider: i18n('services.spotify.title') }),
+      level: 'warning',
+    }),
+  );
 
   if (!uri) return null;
 
@@ -65,18 +61,4 @@ const FollowButton = ({
   );
 }
 
-const mapStateToProps = (state) => {
-  const loadingSelector = makeLoadingSelector(['(.*)(follow)|(me\/albums)(.*)']);
-
-  return {
-    loading: loadingSelector(state),
-    spotify_authorized: state.spotify.authorization,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  uiActions: bindActionCreators(uiActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(FollowButton);
+export default FollowButton;

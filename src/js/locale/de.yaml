@@ -303,9 +303,6 @@ settings:
       touch_events: Aktivieren Berührungsereignissen zur Steuerungen
       touch_events_tooltip: Ermöglicht Links- und Rechts-Wischen zum Wechseln der Titeln
       wide_scrollbars: Breite Bildlaufleisten verwenden
-    sources_priority:
-      label: Quellen Priorität
-      description: Drag-and-Drop zur Priorisierung von Suchanbietern und Ergebnissen
     reporting:
       label: Berichterstattung
       sublabel: Erlaubt die Berichterstattung anonymer Nutzungsstatistiken

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { uriType } from '../../util/helpers';
 import Icon from '../Icon';
 import { i18n } from '../../locale';
@@ -12,7 +11,7 @@ const SearchForm = ({
   onReset: doReset,
   onSubmit: doSubmit,
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [term, setTerm] = useState(termProp);
   const [dirty, setDirty] = useState();
 
@@ -43,19 +42,19 @@ const SearchForm = ({
     // check for uri type matching
     switch (uriType(term)) {
       case 'album':
-        history.push(`/album/${encodeUri(term)}`);
+        navigate(`/album/${encodeUri(term)}`);
         break;
 
       case 'artist':
-        history.push(`/artist/${encodeUri(term)}`);
+        navigate(`/artist/${encodeUri(term)}`);
         break;
 
       case 'playlist':
-        history.push(`/playlist/${encodeUri(term)}`);
+        navigate(`/playlist/${encodeUri(term)}`);
         break;
 
       case 'track':
-        history.push(`/track/${encodeUri(term)}`);
+        navigate(`/track/${encodeUri(term)}`);
         break;
 
       default:

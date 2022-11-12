@@ -1,0 +1,339 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Album /> should render accurately 1`] = `
+<div
+  className="view album-view content-wrapper preserve-3d"
+  data-qa-file="Album"
+  data-qa-node="div"
+>
+  <div
+    className="thumbnail-wrapper"
+    data-qa-file="Album"
+    data-qa-node="div"
+  >
+    <div
+      className="thumbnail thumbnail--loaded thumbnail--large"
+      data-qa-file="Thumbnail"
+      data-qa-node="div"
+    >
+      <i
+        className="icon icon--material thumbnail__placeholder"
+        data-qa-file="Icon"
+        data-qa-node="i"
+      >
+        album
+      </i>
+      <div
+        className="thumbnail__image"
+        data-qa-file="Thumbnail"
+        data-qa-node="div"
+        style={
+          {
+            "backgroundImage": "url("/local/17338e740316f18dbb5e3331ac6be6c1-500x500.jpeg")",
+          }
+        }
+      />
+      <div
+        className="thumbnail__image thumbnail__image--glow"
+        data-qa-file="Thumbnail"
+        data-qa-node="div"
+        style={
+          {
+            "backgroundImage": "url("/local/17338e740316f18dbb5e3331ac6be6c1-500x500.jpeg")",
+          }
+        }
+      />
+      <div
+        className="thumbnail__actions"
+        data-qa-file="Thumbnail"
+        data-qa-node="div"
+      >
+        <a
+          className="thumbnail__actions__item thumbnail__actions__item--zoom "
+          data-qa-file="Link"
+          data-qa-node="RouterLink"
+          href="/modal/image-zoom?url=/local/17338e740316f18dbb5e3331ac6be6c1-500x500.jpeg"
+          onClick={[Function]}
+        >
+          <i
+            className="icon icon--material "
+            data-qa-file="Icon"
+            data-qa-node="i"
+          >
+            search
+          </i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div
+    className="title"
+    data-qa-file="Album"
+    data-qa-node="div"
+  >
+    <h1
+      data-qa-file="Album"
+      data-qa-node="h1"
+    >
+      Sirens of the Sea
+    </h1>
+    <ul
+      className="details details--one-line"
+      data-qa-file="Album"
+      data-qa-node="ul"
+    >
+      <li
+        className="source"
+        data-qa-file="Album"
+        data-qa-node="li"
+      >
+        <span
+          aria-hidden={true}
+          className="fa fa-folder icon icon--fontawesome source"
+          data-qa-file="Icon"
+          data-qa-node="FontAwesome"
+          type="fontawesome"
+        />
+      </li>
+      <li
+        data-qa-file="Album"
+        data-qa-node="li"
+      >
+        <span
+          className="undefined links-sentence"
+          data-qa-file="LinksSentence"
+          data-qa-node="span"
+        >
+          <span
+            data-qa-file="LinksSentence"
+            data-qa-node="span"
+          >
+            <a
+              className="links-sentence__item links-sentence__item--link "
+              data-qa-file="Link"
+              data-qa-node="RouterLink"
+              href="/artist/bG9jYWw6YXJ0aXN0Om1kNTo0ZjZlNGY5NzllMmM0MGM1ZTZhZDE3MzU4MDRjMjliYw=="
+              onClick={[Function]}
+            >
+              Above & Beyond
+            </a>
+          </span>
+        </span>
+      </li>
+      <li
+        data-qa-file="Album"
+        data-qa-node="li"
+      >
+        2008
+      </li>
+      <li
+        data-qa-file="Album"
+        data-qa-node="li"
+      >
+        0 tracks
+      </li>
+      <li
+        data-qa-file="Album"
+        data-qa-node="li"
+      >
+        0 
+        mins
+      </li>
+    </ul>
+  </div>
+  <div
+    className="actions"
+    data-qa-file="Album"
+    data-qa-node="div"
+  >
+    <button
+      className="button   button--primary"
+      data-qa-file="Button"
+      data-qa-node="Element"
+      onClick={[Function]}
+      type="button"
+    >
+      Play
+    </button>
+    <button
+      className="button context-menu-trigger mouse-contextable touch-contextable  button--default  button--icon"
+      data-qa-file="Button"
+      data-qa-node="Element"
+      onClick={[Function]}
+      type="button"
+    >
+      <i
+        className="icon icon--material "
+        data-qa-file="Icon"
+        data-qa-node="i"
+      >
+        more_horiz
+      </i>
+    </button>
+  </div>
+  <section
+    className="list-wrapper"
+    data-qa-file="Album"
+    data-qa-node="section"
+  >
+    <h4
+      className="no-bottom-margin"
+      data-qa-file="Album"
+      data-qa-node="h4"
+    >
+      Tracks
+      <div
+        className="actions-wrapper"
+        data-qa-file="Album"
+        data-qa-node="div"
+      >
+        <span
+          className="filter-field "
+          data-qa-file="FilterField"
+          data-qa-node="span"
+        >
+          <form
+            data-qa-file="FilterField"
+            data-qa-node="form"
+            onSubmit={[Function]}
+          >
+            <input
+              data-qa-file="FilterField"
+              data-qa-node="input"
+              onBlur={[Function]}
+              onChange={[Function]}
+              onFocus={[Function]}
+              placeholder="Filter"
+              type="text"
+              value=""
+            />
+            <i
+              className="icon icon--material "
+              data-qa-file="Icon"
+              data-qa-node="i"
+              onClick={null}
+            >
+              search
+            </i>
+          </form>
+        </span>
+        <div
+          className="dropdown-field "
+          data-qa-file="DropdownField"
+          data-qa-node="div"
+          data-uid="sort"
+        >
+          <div
+            className="dropdown-field__label"
+            data-qa-file="DropdownField"
+            data-qa-node="div"
+            onClick={[Function]}
+          >
+            <i
+              className="icon icon--material "
+              data-qa-file="Icon"
+              data-qa-node="i"
+            >
+              swap_vert
+            </i>
+            <span
+              className="text"
+              data-qa-file="DropdownField"
+              data-qa-node="span"
+            >
+              <span
+                className="dropdown-field__label__value"
+                data-qa-file="DropdownField"
+                data-qa-node="span"
+              >
+                Track number
+              </span>
+              <span
+                className="dropdown-field__label__name"
+                data-qa-file="DropdownField"
+                data-qa-node="span"
+              >
+                Sort
+              </span>
+            </span>
+          </div>
+          <div
+            className="dropdown-field__options"
+            data-qa-file="DropdownField"
+            data-qa-node="div"
+          >
+            <div
+              className="dropdown-field__options__liner"
+              data-qa-file="DropdownField"
+              data-qa-node="div"
+            >
+              <div
+                className="dropdown-field__options__item "
+                data-qa-file="DropdownField"
+                data-qa-node="div"
+                onClick={[Function]}
+              >
+                <i
+                  className="icon icon--material "
+                  data-qa-file="Icon"
+                  data-qa-node="i"
+                >
+                  keyboard_arrow_down
+                </i>
+                Track number
+              </div>
+              <div
+                className="dropdown-field__options__item "
+                data-qa-file="DropdownField"
+                data-qa-node="div"
+                onClick={[Function]}
+              >
+                Name
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </h4>
+  </section>
+  <section
+    className="wiki"
+    data-qa-file="Album"
+    data-qa-node="section"
+  >
+    <h4
+      className="wiki__title"
+      data-qa-file="Album"
+      data-qa-node="h4"
+    >
+      About
+    </h4>
+    <div
+      className="wiki__text"
+      data-qa-file="Album"
+      data-qa-node="div"
+    >
+      <p
+        dangerouslySetInnerHTML={
+          {
+            "__html": "Wiki text",
+          }
+        }
+        data-qa-file="Album"
+        data-qa-node="p"
+      />
+      <br
+        data-qa-file="Album"
+        data-qa-node="br"
+      />
+      <div
+        className="mid_grey-text"
+        data-qa-file="Album"
+        data-qa-node="div"
+      >
+        Published: 2021-01-01
+      </div>
+    </div>
+  </section>
+</div>
+`;

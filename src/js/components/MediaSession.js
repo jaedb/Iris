@@ -139,7 +139,7 @@ class MediaSession extends React.Component {
       // eslint-disable-next-line jsx-a11y/media-has-caption
       <audio
         id="media-session"
-        src="/iris/assets/silence.mp3"
+        src="assets/silence.mp3"
         autoPlay
         loop
         style={{ display: 'none' }}

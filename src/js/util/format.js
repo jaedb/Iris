@@ -538,8 +538,8 @@ const formatPlaylist = function (data) {
     playlist.followers = data.followers.total;
   }
 
-  if (data.tracks && data.tracks.total !== undefined) {
-    playlist.tracks_total = data.tracks.total;
+  if (data.tracks && data.tracks_total !== undefined) {
+    playlist.tracks_total = data.tracks_total;
   }
 
   if (playlist.last_modified && playlist.added_at === undefined) {

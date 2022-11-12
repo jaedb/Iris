@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import EditPlaylist from './EditPlaylist';
 import CreatePlaylist from './CreatePlaylist';
 import EditRadio from './EditRadio';
@@ -16,20 +16,23 @@ import Reset from './Reset';
 import Servers from './Servers';
 
 export default () => (
-  <Switch>
-    <Route path="/modal/initial-setup" component={InitialSetup} />
-    <Route path="/modal/kiosk-mode" component={KioskMode} />
-    <Route path="/modal/add-to-playlist/:uris" component={AddToPlaylist} />
-    <Route path="/modal/image-zoom" component={ImageZoom} />
-    <Route path="/modal/hotkeys" component={HotkeysInfo} />
-    <Route path="/modal/share-config" component={ShareConfig} />
-    <Route path="/modal/import-config/:source?" component={ImportConfig} />
-    <Route path="/modal/reset" component={Reset} />
-    <Route path="/modal/servers" component={Servers} />
-    <Route path="/modal/edit-command/:id?" component={EditCommand} />
-    <Route path="/modal/radio" component={EditRadio} />
-    <Route path="/modal/add-uri" component={AddToQueue} />
-    <Route path="/modal/create-playlist/:uris?" component={CreatePlaylist} />
-    <Route path="/modal/edit-playlist/:uri" component={EditPlaylist} />
-  </Switch>
+  <Routes>
+    <Route path="initial-setup" element={<InitialSetup />} />
+    <Route path="kiosk-mode" element={<KioskMode />} />
+    <Route path="add-to-playlist/:uris" element={<AddToPlaylist />} />
+    <Route path="image-zoom" element={<ImageZoom />} />
+    <Route path="hotkeys" element={<HotkeysInfo />} />
+    <Route path="share-config" element={<ShareConfig />} />
+    <Route path="import-config/" element={<ImportConfig />} />
+    <Route path="import-config/:source" element={<ImportConfig />} />
+    <Route path="reset" element={<Reset />} />
+    <Route path="servers" element={<Servers />} />
+    <Route path="edit-command/" element={<EditCommand />} />
+    <Route path="edit-command/:id" element={<EditCommand />} />
+    <Route path="radio" element={<EditRadio />} />
+    <Route path="add-uri" element={<AddToQueue />} />
+    <Route path="create-playlist/" element={<CreatePlaylist />} />
+    <Route path="create-playlist/:uris" element={<CreatePlaylist />} />
+    <Route path="edit-playlist/:uri" element={<EditPlaylist />} />
+  </Routes>
 );

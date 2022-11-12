@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Modal from './Modal';
 import * as uiActions from '../../services/ui/actions';
+import { withRouter } from '../../util';
 
 class ImageZoom extends React.Component {
   componentDidMount() {
@@ -24,4 +25,4 @@ const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ImageZoom);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ImageZoom));

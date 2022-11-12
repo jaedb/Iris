@@ -1,4 +1,5 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { collate } from '../util/format';
@@ -21,10 +22,9 @@ const SnapcastGroups = (props) => {
     streams,
     groups,
     clients,
-    history,
-    match: { params: { id: groupId } },
   } = props;
 
+  const { groupId } = useParams();
   const streamsArray = Object.keys(streams).map((id) => streams[id]);
   const groupsArray = Object.keys(groups).map((id) => groups[id]);
 
@@ -128,7 +128,6 @@ const SnapcastGroups = (props) => {
         className={`snapcast__groups__menu-item menu-item${noClients ? ' menu-item--no-clients' : ''}`}
         activeClassName="menu-item--active"
         key={group.id}
-        history={history}
         to={`/settings/services/snapcast/${group.id}`}
         scrollTo="#services-snapcast-groups"
       >

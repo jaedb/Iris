@@ -12,7 +12,7 @@ jobs:
 
     - uses: actions/setup-node@v2
       with:
-        node-version: '12'
+        node-version: '14'
 
     - name: Install modules
       run: npm ci
@@ -99,7 +99,7 @@ jobs:
         run: npm install
 
       - name: Build JS
-        run: npm run build:prod
+        run: npm run prod
 
       - name: Setup Python
         uses: actions/setup-python@v2

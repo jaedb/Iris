@@ -10,7 +10,6 @@ import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
 import Icon from '../../components/Icon';
 import ErrorBoundary from '../../components/ErrorBoundary';
-import LazyLoadListener from '../../components/LazyLoadListener';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
@@ -20,6 +19,7 @@ import Button from '../../components/Button';
 import { encodeUri, decodeUri } from '../../util/format';
 import { makeLoadingSelector } from '../../util/selectors';
 import ErrorMessage from '../../components/ErrorMessage';
+import { withRouter } from '../../util';
 
 const Breadcrumbs = ({ uri }) => {
   let parent_uri = uri || null;
@@ -40,7 +40,7 @@ const Subdirectories = ({ items, view }) => {
   // Only define the link for directories; allows URILink to intelligently route based on type
   const link = (item) => (
     item.type === 'directory'
-      ? `/library/browse/${encodeURIComponent(item.name)}/${encodeUri(item.uri)}`
+      ? `/library/browse/${encodeUri(item.uri)}/${encodeURIComponent(item.name)}`
       : null
   );
 
@@ -122,8 +122,9 @@ class BrowseDirectory extends React.Component {
     playURIs({
       uris: arrayOf('uri', sortItems(tracks, 'name')),
       from: {
-        name: 'Directory',
-        uri: `iris:browse:${uri}`,
+        name: 'Browse',
+        type: 'browse',
+        uri,
       },
     });
     hideContextMenu();
@@ -233,7 +234,7 @@ class BrowseDirectory extends React.Component {
 
             <TrackList
               context={{
-                uri: `iris:browse:${uri}`,
+                uri,
                 name: 'Browse',
                 type: 'browse',
               }}
@@ -250,6 +251,7 @@ class BrowseDirectory extends React.Component {
 
 const loadingSelector = makeLoadingSelector(['mopidy_library.(browse|lookup)']);
 const mapStateToProps = (state, ownProps) => {
+  console.debug('browser directory', ownProps)
   const {
     mopidy: {
       directory: _directory = {},
@@ -258,7 +260,7 @@ const mapStateToProps = (state, ownProps) => {
       library_directory_view: view,
     },
   } = state;
-  const uri = decodeUri(ownProps.match.params.uri);
+  const uri = decodeUri(ownProps.params.uri);
   const uriMatcher = [uri, decodeURIComponent(uri)]; // Lenient matching due to encoding diffs
   const directory = _directory && uriMatcher.includes(_directory.uri)
     ? _directory
@@ -266,7 +268,7 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     uri,
-    name: decodeURIComponent(ownProps.match.params.name),
+    name: decodeURIComponent(ownProps.params.name),
     loading: loadingSelector(state),
     directory,
     view,
@@ -279,4 +281,4 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(BrowseDirectory);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(BrowseDirectory));

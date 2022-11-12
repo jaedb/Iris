@@ -27,6 +27,7 @@ import { arrayOf, indexToArray } from '../../util/arrays';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
 import { decodeUri, encodeUri } from '../../util/format';
+import { withRouter } from '../../util';
 
 class Recommendations extends React.Component {
   constructor(props) {
@@ -158,10 +159,8 @@ class Recommendations extends React.Component {
       uiActions: {
         setWindowTitle,
       },
-      match: {
-        params: {
-          uri,
-        },
+      params: {
+        uri,
       },
     } = this.props;
 
@@ -173,17 +172,13 @@ class Recommendations extends React.Component {
   }
 
   componentDidUpdate = ({
-    match: {
-      params: {
-        uri: prevUri,
-      },
+    params: {
+      uri: prevUri,
     },
   }) => {
     const {
-      match: {
-        params: {
-          uri,
-        },
+      params: {
+        uri,
       },
     } = this.props;
     if (prevUri !== uri) this.handleURLSeeds();
@@ -220,10 +215,8 @@ class Recommendations extends React.Component {
       coreActions: {
         loadUris,
       },
-      match: {
-        params: {
-          uri: uriProp,
-        },
+      params: {
+        uri: uriProp,
       },
     } = this.props;
     const uri = decodeUri(uriProp);
@@ -533,7 +526,7 @@ class Recommendations extends React.Component {
 
     return (
       <div className="view discover-view preserve-3d">
-        {theme === 'dark' && <Parallax image="/iris/assets/backgrounds/discover.jpg" />}
+        {theme === 'dark' && <Parallax image="assets/backgrounds/discover.jpg" />}
         <div className="intro preserve-3d">
           <div className="intro__liner">
             <h1><I18n path="discover.recommendations.body_title" /></h1>
@@ -600,4 +593,4 @@ const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Recommendations);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Recommendations));

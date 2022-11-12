@@ -8,7 +8,9 @@ services:
       - 1780:1780
     volumes:
       - /tmp/snapserver:/tmp
-      - ./docker/snapserver.conf:/etc/snapserver.conf
+      - ./docker/snapserver/snapserver.conf:/etc/snapserver.conf
+      - ./docker/snapserver/snapserver.json:/root/.config/snapserver/server.json
+      - ./docker/snapserver/meta_mopidy.py:/usr/share/snapserver/plug-ins/meta_mopidy.py
   mopidy:
     image: jaedb/iris
     environment:
@@ -21,10 +23,8 @@ services:
       - 6600:6600
       - 6680:6680
     volumes:
-      # Uncomment these lines to use a host-managed development build
-      #- ./mopidy_iris:/iris/mopidy_iris
-      #- ./IRIS_VERSION:/iris/IRIS_VERSION
-      - ./docker/data:/var/lib/mopidy/iris
-      - ./docker/mopidy.conf:/config/mopidy.conf
+      - ./docker/mopidy/iris:/var/lib/mopidy/iris # Iris-specific storage
+      - ./docker/mopidy/m3u:/var/lib/mopidy/m3u # To persist local playlists
+      - ./docker/mopidy/mopidy.conf:/config/mopidy.conf
       - /mnt/Music:/var/lib/mopidy/media
       - /tmp/snapserver:/tmp
