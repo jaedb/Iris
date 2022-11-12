@@ -59,10 +59,10 @@ RUN python3 -m pip install --no-cache \
 COPY docker/entrypoint.sh /entrypoint.sh
 
 # Default configuration.
-COPY docker/mopidy.example.conf /config/mopidy.conf
+COPY docker/mopidy/mopidy.example.conf /config/mopidy.conf
 
 # Copy the pulse-client configuratrion.
-COPY docker/pulse-client.conf /etc/pulse/client.conf
+COPY docker/mopidy/pulse-client.conf /etc/pulse/client.conf
 
 # Add version info to image
 COPY VERSION /
