@@ -12,6 +12,7 @@ include screenshot.jpg
 include tox.ini
 include *.lock
 recursive-exclude src *
+recursive-exclude docker *
 exclude .jshintrc
 exclude .babelrc
 exclude jest.config.js
