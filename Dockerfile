@@ -52,8 +52,7 @@ RUN git clone --depth 1 -b master https://github.com/jaedb/Iris.git /iris \
 RUN python3 -m pip install --no-cache \
   tox \
   mopidy-mpd \
-  mopidy-local \
-  dbus-python
+  mopidy-local
 
 # Start helper script.
 COPY docker/entrypoint.sh /entrypoint.sh
