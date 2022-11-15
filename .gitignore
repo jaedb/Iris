@@ -19,6 +19,7 @@ docker/snapserver/snapserver.json
 docker/snapserver/meta_mopidy.py
 docker/mopidy/mopidy.conf
 docker/mopidy/iris/
+docker/mopidy/m3u/
 docker/mopidy/icecast2.xml
 docker/jellyfin/
 docker-compose.yml
