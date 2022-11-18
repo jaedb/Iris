@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [master,develop,deploy/release]
+    branches: [master,develop]
 
 jobs:
   jest:
@@ -85,7 +85,7 @@ jobs:
     name: 'Publish: PyPi'
     runs-on: ubuntu-latest
     needs: [jest, tox]
-    if: github.ref == 'refs/heads/deploy/release'
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -125,7 +125,7 @@ jobs:
     name: 'Publish: DockerHub'
     runs-on: ubuntu-latest
     needs: [jest, tox]
-    if: github.ref == 'refs/heads/deploy/release'
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -138,6 +138,10 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: jaedb/iris
+          tags: |
+            type=ref,event=push
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - name: Login to DockerHub
         uses: docker/login-action@v1 
