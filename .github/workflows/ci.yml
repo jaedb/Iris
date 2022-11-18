@@ -139,7 +139,7 @@ jobs:
         with:
           images: jaedb/iris
           tags: |
-            type=ref,event=push
+            type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
