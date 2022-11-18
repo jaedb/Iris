@@ -3,6 +3,7 @@ name: Release
 on:
   push:
     branches: [master,develop]
+    tags: '*'
 
 jobs:
   jest:
@@ -142,6 +143,7 @@ jobs:
             type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
 
       - name: Login to DockerHub
         uses: docker/login-action@v1 
