@@ -142,7 +142,7 @@ jobs:
           images: jaedb/iris
           tags: |
             type=raw,value=latest
-            type=ref
+            type=ref,event=workflow_dispatch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
