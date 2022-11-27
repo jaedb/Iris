@@ -1,8 +1,10 @@
 name: Release
 
 on:
+  release:
+    types: [published]
   push:
-    branches: [master,develop,deploy/release]
+    branches: [master,develop]
 
 jobs:
   jest:
@@ -85,7 +87,7 @@ jobs:
     name: 'Publish: PyPi'
     runs-on: ubuntu-latest
     needs: [jest, tox]
-    if: github.ref == 'refs/heads/deploy/release'
+    if: github.event_name == 'release'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -125,13 +127,23 @@ jobs:
     name: 'Publish: DockerHub'
     runs-on: ubuntu-latest
     needs: [jest, tox]
-    if: github.ref == 'refs/heads/deploy/release'
+    if: github.event_name == 'release'
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
+      - name: Generating tags and labels
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: jaedb/iris
+          tags: |
+            latest
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - name: Login to DockerHub
         uses: docker/login-action@v1 
@@ -143,4 +155,5 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: jaedb/iris:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
