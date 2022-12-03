@@ -860,7 +860,6 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_PLAY_PLAYLIST': {
-        console.debug(action)
         const playlist = store.getState().core.items[action.uri];
         const { sortField, sortReverse } = getSortSelector(store.getState(), 'playlist_tracks');
         if (playlist && playlist.tracks) {
@@ -2153,22 +2152,25 @@ const MopidyMiddleware = (function () {
       }
       case 'MOPIDY_GET_LIBRARY_PLAYLISTS': {
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
+        const scheme = action.uri.split(':')[0];
 
         request(store, 'playlists.asList').then((browseResponse) => {
-          const allUris = arrayOf('uri', browseResponse);
+          const allUris = arrayOf('uri', browseResponse).filter((uri) => uri.startsWith(scheme));
+          const unloadedUris = [...allUris];
+
           store.dispatch(
             uiActions.updateProcess(
               action.type,
               {
                 total: allUris.length,
-                remaining: allUris.length,
+                remaining: unloadedUris.length,
               },
             ),
           );
 
           const run = () => {
-            if (allUris.length) {
-              const uri = allUris.splice(0, 1)[0];
+            if (unloadedUris.length) {
+              const uri = unloadedUris.splice(0, 1)[0];
               const processor = store.getState().ui.processes[action.type];
 
               if (processor && processor.status === 'cancelling') {
@@ -2176,7 +2178,7 @@ const MopidyMiddleware = (function () {
                 store.dispatch(uiActions.stopLoading(action.uri));
                 return;
               }
-              store.dispatch(uiActions.updateProcess(action.type, { remaining: allUris.length }));
+              store.dispatch(uiActions.updateProcess(action.type, { remaining: unloadedUris.length }));
 
               request(store, 'playlists.lookup', { uri }).then((lookupResponse) => {
                 if (lookupResponse) {
@@ -2198,7 +2200,7 @@ const MopidyMiddleware = (function () {
               store.dispatch(coreActions.libraryLoaded({
                 uri: action.uri,
                 type: 'playlists',
-                items_uris: arrayOf('uri', browseResponse),
+                items_uris: allUris,
               }));
             }
           };

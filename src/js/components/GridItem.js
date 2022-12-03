@@ -101,7 +101,7 @@ const GridItem = ({
             dispatch(spotifyActions.getArtistImages(item));
           }
           break;
-        // case 'playlist':
+        case 'playlist':
         case 'album':
           dispatch(mopidyActions.getImages([item.uri]));
           break;
