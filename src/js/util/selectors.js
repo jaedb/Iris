@@ -121,6 +121,11 @@ const providers = {
       uri: 'jellyfin:playlists',
       title: i18n('services.jellyfin.title'),
     },
+    {
+      scheme: 'ytmusic:',
+      uri: 'ytmusic:playlists',
+      title: i18n('services.youtube.title'),
+    },
   ],
   albums: [
     {

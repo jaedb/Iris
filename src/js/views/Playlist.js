@@ -40,27 +40,6 @@ const Actions = ({
   handleContextMenu,
 }) => {
   switch (uriSource(uri)) {
-    case 'm3u':
-      return (
-        <div className="actions">
-          <Button
-            type="primary"
-            onClick={onPlay}
-            tracking={{ category: 'Playlist', action: 'Play' }}
-          >
-            <I18n path="actions.play" />
-          </Button>
-          <Button
-            to={`/modal/edit-playlist/${encodedUri}`}
-            tracking={{ category: 'Playlist', action: 'Edit' }}
-          >
-            <I18n path="actions.edit" />
-          </Button>
-          <PinButton item={{ uri, name }} />
-          <ContextMenuTrigger onTrigger={handleContextMenu} />
-        </div>
-      );
-
     case 'spotify':
       if (can_edit) {
         return (
@@ -110,6 +89,12 @@ const Actions = ({
             tracking={{ category: 'Playlist', action: 'Play' }}
           >
             <I18n path="actions.play" />
+          </Button>
+          <Button
+            to={`/modal/edit-playlist/${encodedUri}`}
+            tracking={{ category: 'Playlist', action: 'Edit' }}
+          >
+            <I18n path="actions.edit" />
           </Button>
           <PinButton item={{ uri, name }} />
           <ContextMenuTrigger onTrigger={handleContextMenu} />

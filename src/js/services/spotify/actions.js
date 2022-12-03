@@ -1237,14 +1237,8 @@ export function createPlaylist(playlist) {
   };
 }
 
-export function savePlaylist(uri, name, description, is_public, is_collaborative, image) {
+export function savePlaylist(uri, { image, ...data }) {
   return (dispatch, getState) => {
-    const data = {
-      name,
-      description,
-      public: is_public,
-      collaborative: is_collaborative,
-    };
     const {
       spotify: {
         me: {
