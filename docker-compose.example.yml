@@ -23,6 +23,7 @@ services:
       - 6600:6600
       - 6680:6680
     volumes:
+      # - ./mopidy/iris:/iris/mopidy/iris # To use a locally-built UI 
       - ./docker/mopidy/iris:/var/lib/mopidy/iris # Iris-specific storage
       - ./docker/mopidy/m3u:/var/lib/mopidy/m3u # To persist local playlists
       - ./docker/mopidy/mopidy.conf:/config/mopidy.conf
