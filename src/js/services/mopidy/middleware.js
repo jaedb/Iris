@@ -1,7 +1,7 @@
 import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
-import { sampleSize, compact, chunk, find } from 'lodash';
+import { sampleSize, compact, chunk, find, uniq } from 'lodash';
 import { i18n } from '../../locale';
 import {
   generateGuid,
@@ -2096,7 +2096,7 @@ const MopidyMiddleware = (function () {
               ...item,
               images: [], // Images is a playlist dependency, so this prevents triggering full load
             }));
-            const playlists_uris = arrayOf('uri', playlists);
+            const playlists_uris = uniq(arrayOf('uri', playlists));
             const allUris = [...playlists_uris];
             store.dispatch(coreActions.itemLoaded({
               ...playlistGroup,

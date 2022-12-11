@@ -1,4 +1,5 @@
 import React from 'react';
+import { uniq } from 'lodash';
 import { arrayOf } from '../../util/arrays';
 import {
   generateGuid,
@@ -506,13 +507,16 @@ export function getMood(uri, { forceRefetch } = {}) {
           getState,
           endpoint: plEndpoint,
         }).then((response) => {
-          playlists = [...playlists, ...formatPlaylists(response.playlists.items)];
+          playlists = [
+            ...playlists,
+            ...formatPlaylists(response.playlists.items.filter((item) => item)),
+          ];
           if (response.playlists.next) {
             fetchPlaylists(response.playlists.next);
           } else {
             dispatch(coreActions.itemLoaded({
               ...playlistGroup,
-              playlists_uris: arrayOf('uri', playlists),
+              playlists_uris: uniq(arrayOf('uri', playlists)),
             }));
             dispatch(coreActions.itemsLoaded(playlists));
             dispatch(uiActions.stopLoading(loaderId));
