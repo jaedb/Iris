@@ -137,7 +137,7 @@ jobs:
 
       - name: Generating release tags and labels
         if: github.event_name == 'release'
-        id: meta
+        id: release_meta
         uses: docker/metadata-action@v4
         with:
           images: jaedb/iris
@@ -146,9 +146,9 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
-      - name: Generating branch labels
+      - name: Generating edge branch labels
         if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
-        id: meta
+        id: edge_meta
         uses: docker/metadata-action@v4
         with:
           images: jaedb/iris
@@ -164,5 +164,5 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.release_meta.outputs.tags || steps.edge_meta.outputs.tags }}
+          labels: ${{ steps.release_meta.outputs.labels || steps.edge_meta.outputs.tags }}
