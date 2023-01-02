@@ -152,7 +152,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: jaedb/iris
-          tags: ${{GITHUB_REF_NAME}}
+          tags: ${{ github.ref }}
 
       - name: Login to DockerHub
         uses: docker/login-action@v1 
