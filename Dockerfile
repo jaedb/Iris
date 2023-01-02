@@ -109,6 +109,7 @@ RUN python3 -m pip install cffi
 ADD https://api.github.com/repos/jaedb/Iris/git/refs/heads/master version.json
 RUN git clone --depth 1 --single-branch -b master https://github.com/jaedb/Iris.git /iris \
  && cd /iris \
+ && npm install \
  && npm run prod \
  && python3 setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
@@ -135,7 +136,10 @@ COPY docker/requirements.txt .
 RUN python3 -m pip install -r requirements.txt
 
 # Cleanup
-RUN apt-get clean all && rm -rf /var/lib/apt/lists/* && rm -rf /root/.cache
+RUN apt-get clean all \
+ && rm -rf /var/lib/apt/lists/* \
+ && rm -rf /root/.cache \
+ && rm -rf /iris/node_modules
 
 COPY docker/entrypoint.sh /entrypoint.sh
 
