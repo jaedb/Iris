@@ -72,7 +72,9 @@ const StatusIcon = () => {
 
 const Sidebar = () => {
   const dispatch = useDispatch();
-  const spotify_available = useSelector((state) => state.spotify.access_token);
+  const spotify_enabled = useSelector((state) => state.spotify.enabled);
+  const spotify_has_token = useSelector((state) => state.spotify.access_token);
+  const spotify_available = spotify_enabled && spotify_has_token;
 
   const close = () => dispatch(toggleSidebar(false));
 
