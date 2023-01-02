@@ -16,3 +16,4 @@ recursive-exclude docker *
 exclude .jshintrc
 exclude .babelrc
 exclude jest.config.js
+exclude .nvmrc
