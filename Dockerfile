@@ -61,6 +61,10 @@ RUN apt-get update \
     libwebp-dev
     # libgtk-4-dev # Only in bookworm
 
+# Install Node, to build Iris JS application
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
+    apt-get install -y nodejs
+
 # Install gstreamer-spotify (EXPERIMENTAL)
 # Note: For spotify with upgraded version number of dependency librespot to 0.4.2
 #RUN cargo install cargo-c
@@ -105,6 +109,7 @@ RUN python3 -m pip install cffi
 ADD https://api.github.com/repos/jaedb/Iris/git/refs/heads/master version.json
 RUN git clone --depth 1 --single-branch -b master https://github.com/jaedb/Iris.git /iris \
  && cd /iris \
+ && npm run prod \
  && python3 setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
  && ln -s /config /var/lib/mopidy/.config/mopidy \
