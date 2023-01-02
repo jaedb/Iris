@@ -366,9 +366,6 @@ settings:
       wide_scrollbars: Usar barras de desplazamiento anchas
       grid_glow: Efecto resplandeciente en miniaturas
       grid_glow_tooltip: Deshabilitar el efecto para dispositivos lentos o navegadores antiguos
-    sources_priority:
-      label: Prioridad de fuentes
-      description: Arrastre y suelte para priorizar proveedores y resultados
     reporting:
       label: Reporte
       sublabel: Permitir reporte de estadísticas de uso anónimas

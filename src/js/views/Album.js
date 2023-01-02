@@ -23,7 +23,7 @@ import { uriSource } from '../util/helpers';
 import Button from '../components/Button';
 import { makeItemSelector, makeSortSelector } from '../util/selectors';
 import { applyFilter, sortItems } from '../util/arrays';
-import { decodeUri, formatSimpleObject, formatContext } from '../util/format';
+import { decodeUri, formatContext } from '../util/format';
 
 const SORT_KEY = 'album_tracks';
 
@@ -78,7 +78,7 @@ const Album = () => {
     }
   }, [album]);
 
-  if (album?.loading) {
+  if (!album?.name && album?.loading) {
     return <Loader body loading />;
   }
 
@@ -135,7 +135,14 @@ const Album = () => {
   return (
     <div className="view album-view content-wrapper preserve-3d">
       <div className="thumbnail-wrapper">
-        <Thumbnail size="large" glow canZoom images={album.images} type="album" />
+        <Thumbnail
+          size="large"
+          images={album.images}
+          type="album"
+          loading={album.loading}
+          canZoom
+          glow
+        />
       </div>
 
       <div className="title">

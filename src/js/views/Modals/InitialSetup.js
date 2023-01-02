@@ -8,6 +8,7 @@ import * as pusherActions from '../../services/pusher/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import { queryString, isHosted } from '../../util/helpers';
 import { I18n, i18n } from '../../locale';
+import { withRouter }  from '../../util';
 import Button from '../../components/Button';
 
 class InitialSetup extends React.Component {
@@ -69,14 +70,11 @@ class InitialSetup extends React.Component {
 
     // Wait a jiffy to allow changes to apply to store
     setTimeout(() => {
-      self.props.uiActions.closeModal();
       // We've changed a connection setting, so need to reload
       if (self.state.host !== self.props.host || self.state.port !== self.props.port) {
         window.location = '/';
-
-        // Safe to just close modal
       } else {
-        self.props.history.push('/');
+        self.props.navigate('/');
       }
     },
     200);
@@ -196,4 +194,4 @@ const mapDispatchToProps = (dispatch) => ({
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(InitialSetup);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(InitialSetup));

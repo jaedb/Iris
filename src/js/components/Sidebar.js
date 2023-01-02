@@ -4,7 +4,7 @@ import Link from './Link';
 import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
 import PinList from './Fields/PinList';
-import { I18n, i18n } from '../locale';
+import { I18n } from '../locale';
 import { toggleSidebar } from '../services/ui/actions';
 
 const StatusIcon = () => {
@@ -42,19 +42,25 @@ const StatusIcon = () => {
         <Icon name="warning" className="red-text" />
         <span className="tooltip__content">
           {!mopidy_connected && (
-            <I18n path="sidebar.not_connected" name={i18n('services.mopidy.title')} contentAfter>
+            <>
+              <I18n path="services.mopidy.title" />
+              <I18n path="sidebar.not_connected" />
               <br />
-            </I18n>
+            </>
           )}
           {!pusher_connected && (
-            <I18n path="sidebar.not_connected" name={i18n('services.pusher.title')} contentAfter>
+            <>
+              <I18n path="services.pusher.title" />
+              <I18n path="sidebar.not_connected" />
               <br />
-            </I18n>
+            </>
           )}
           {!snapcast_connected && snapcast_enabled && (
-            <I18n path="sidebar.not_connected" name={i18n('services.snapcast.title')} contentAfter>
+            <>
+              <I18n path="services.snapcast.title" />
+              <I18n path="sidebar.not_connected" />
               <br />
-            </I18n>
+            </>
           )}
         </span>
       </span>
@@ -68,6 +74,7 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const spotify_enabled = useSelector((state) => state.spotify.enabled);
   const spotify_has_token = useSelector((state) => state.spotify.access_token);
+  const spotify_available = spotify_enabled && spotify_has_token;
 
   const close = () => dispatch(toggleSidebar(false));
 
@@ -86,37 +93,35 @@ const Sidebar = () => {
             </Link>
           </section>
 
-          {spotify_enabled && (
-            <section className="sidebar__menu__section">
-              <title className="sidebar__menu__section__title">
+          <section className="sidebar__menu__section">
+            <title className="sidebar__menu__section__title">
+              <I18n path="sidebar.discover" />
+            </title>
+            {spotify_available && (
+              <Link
+                to="/discover/recommendations"
+                className="sidebar__menu__item"
+                activeClassName="sidebar__menu__item--active"
+              >
+                <Icon name="explore" type="material" />
                 <I18n path="sidebar.discover" />
-              </title>
-              {spotify_has_token && (
-                <Link
-                  to="/discover/recommendations"
-                  className="sidebar__menu__item"
-                  activeClassName="sidebar__menu__item--active"
-                >
-                  <Icon name="explore" type="material" />
-                  <I18n path="sidebar.discover" />
-                </Link>
-              )}
-              <Link to="/discover/moods" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
-                <Icon name="mood" type="material" />
-                <I18n path="sidebar.moods" />
               </Link>
-              {spotify_has_token && (
-                <Link to="/discover/featured-playlists" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
-                  <Icon name="star" type="material" />
-                  <I18n path="sidebar.featured_playlists" />
-                </Link>
-              )}
+            )}
+            <Link to="/discover/moods" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
+              <Icon name="mood" type="material" />
+              <I18n path="sidebar.moods" />
+            </Link>
+            <Link to="/discover/featured-playlists" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
+              <Icon name="star" type="material" />
+              <I18n path="sidebar.featured_playlists" />
+            </Link>
+            {spotify_available && (
               <Link to="/discover/new-releases" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="new_releases" type="material" />
                 <I18n path="sidebar.new_releases" />
               </Link>
-            </section>
-          )}
+            )}
+          </section>
 
           <section className="sidebar__menu__section">
             <title className="sidebar__menu__section__title">

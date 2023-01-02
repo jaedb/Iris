@@ -32,6 +32,7 @@ const SecondaryLine = ({
   const items = () => {
     switch (type) {
       case 'mood':
+      case 'directory':
       case 'playlist_group':
         return null;
       case 'playlist':
@@ -78,7 +79,7 @@ const GridItem = ({
     type: item?.type?.toUpperCase() || 'UNKNOWN',
     item: { item, context: item },
   });
-  const tile = ['playlist_group', 'mood', 'directory', 'category'].indexOf(item?.type) > -1
+  const tile = ['playlist_group', 'mood', 'category'].indexOf(item?.type) > -1
 
   const onContextMenu = (e) => {
     e.preventDefault();
@@ -100,7 +101,7 @@ const GridItem = ({
             dispatch(spotifyActions.getArtistImages(item));
           }
           break;
-        // case 'playlist':
+        case 'playlist':
         case 'album':
           dispatch(mopidyActions.getImages([item.uri]));
           break;
@@ -140,9 +141,13 @@ const GridItem = ({
           className="grid__item__thumbnail"
           images={item.images || item.icons}
           type={item.type}
+          loading={item.loading}
         />
         <div className="grid__item__name">
-          {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
+          {item.name
+            ? <span title={item.name}>{item.name}</span>
+            : <span className="opaque-text">{item.uri}</span>
+          }
         </div>
         <div className="grid__item__secondary">
           <SecondaryLine item={item} sourceIcon={sourceIcon} />

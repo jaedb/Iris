@@ -1,93 +1,43 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader';
-import * as coreActions from '../services/core/actions';
-import * as uiActions from '../services/ui/actions';
+import { loadUri } from '../services/core/actions';
+import { setWindowTitle } from '../services/ui/actions';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 import { decodeUri } from '../util/format';
 import { uriType } from '../util/helpers';
 
-class UriRedirect extends React.Component {
-  componentDidMount() {
-    const {
-      uri,
-      item,
-      coreActions: {
-        loadUri,
-      },
-    } = this.props;
+const UriRedirect = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { uri: rawUri } = useParams();
+  const uri = decodeUri(rawUri);
+  const loading = useSelector(makeLoadingSelector([`(.*)${uri}(.*)`]));
+  const item = useSelector(makeItemSelector(uri));
+  const redirect = () => navigate(`/${item.type || uriType(uri)}/${rawUri}`);
 
+  useEffect(() => {
     if (item) {
-      this.redirect();
+      redirect();
     } else {
-      loadUri(uri);
+      dispatch(loadUri(uri));
     }
 
-    this.setWindowTitle();
-  }
+    dispatch(setWindowTitle(uri));
+  }, []);
 
-  componentDidUpdate = ({
-    uri: prevUri,
-  }) => {
-    const {
-      uri,
-      item,
-      coreActions: {
-        loadUri,
-      },
-    } = this.props;
-
-    if (prevUri !== uri) {
-      loadUri(uri);
-      this.setWindowTitle();
-    }
-
+  useEffect(() => {
     if (item) {
-      this.redirect();
+      redirect();
+    } else if (!loading) {
+      dispatch(loadUri(uri));
+      dispatch(setWindowTitle(uri));
     }
-  }
+  }, [rawUri, loading]);
 
-  setWindowTitle = () => {
-    const {
-      uri,
-      uiActions: {
-        setWindowTitle,
-      },
-    } = this.props;
 
-    setWindowTitle(uri);
-  }
-
-  redirect = () => {
-    const {
-      uri,
-      item,
-      history,
-    } = this.props;
-
-    history.replace(`/${item.type || uriType(uri)}/${uri}`);
-  }
-
-  render = () => <Loader body loading />;
+  return <Loader loading={loading} body />;
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const { match: { params: { uri: rawUri } } } = ownProps;
-  const uri = decodeUri(rawUri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
-  const itemSelector = makeItemSelector(uri);
-
-  return {
-    uri,
-    loading: loadingSelector(state),
-    item: itemSelector(state),
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  uiActions: bindActionCreators(uiActions, dispatch),
-  coreActions: bindActionCreators(coreActions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(UriRedirect);
+export default UriRedirect;

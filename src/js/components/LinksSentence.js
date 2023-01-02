@@ -35,7 +35,7 @@ const LinksSentence = memo(({ items, itemType, className, nolinks }) => {
           }
 
           return (
-            <span key={`index_${uri}`}>
+            <span key={`index_${name || 'no-name'}_${uri || 'no-uri'}_index-${index}`}>
               {content}
               {separator}
             </span>

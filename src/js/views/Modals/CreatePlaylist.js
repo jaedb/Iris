@@ -158,6 +158,18 @@ const CreatePlaylist = () => {
               <input
                 type="radio"
                 name="scheme"
+                value="ytmusic"
+                checked={playlist.scheme === 'ytmusic'}
+                onChange={(e) => onChange({ scheme: e.target.value })}
+              />
+              <span className="label">
+                <I18n path="services.youtube.title" />
+              </span>
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="scheme"
                 value="spotify"
                 disabled={!spotifyAvailable}
                 checked={playlist.scheme === 'spotify'}

@@ -275,10 +275,8 @@ const CoreMiddleware = (function () {
           case 'spotify':
             store.dispatch(spotifyActions.getPlaylist(key, {}));
             break;
-          case 'm3u':
-            store.dispatch(mopidyActions.getPlaylist(key, {}));
-            break;
           default:
+            store.dispatch(mopidyActions.getPlaylist(key, {}));
             break;
         }
         next(action);

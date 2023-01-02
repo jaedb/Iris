@@ -121,6 +121,11 @@ const providers = {
       uri: 'jellyfin:playlists',
       title: i18n('services.jellyfin.title'),
     },
+    {
+      scheme: 'ytmusic:',
+      uri: 'ytmusic:playlists',
+      title: i18n('services.youtube.title'),
+    },
   ],
   albums: [
     {
@@ -196,6 +201,11 @@ const providers = {
       scheme: 'spotify:',
       uri: 'spotify:library:tracks',
       title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'tidal:',
+      uri: 'tidal:my_tracks',
+      title: i18n('services.tidal.title'),
     },
   ],
   moods: [

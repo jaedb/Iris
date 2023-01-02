@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { Route, Switch, useParams, useHistory } from 'react-router-dom';
+import { Route, Routes, useParams, useNavigate } from 'react-router-dom';
 import ErrorMessage from '../../components/ErrorMessage';
 import Link from '../../components/Link';
 import Thumbnail from '../../components/Thumbnail';
@@ -26,7 +25,6 @@ import Button from '../../components/Button';
 import { makeItemSelector } from '../../util/selectors';
 
 const Artist = () => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const { uri: encodedUri } = useParams();
   const uri = decodeUri(encodedUri);
@@ -92,7 +90,7 @@ const Artist = () => {
     }),
   );
 
-  if (loading) {
+  if (!artist?.name && loading) {
     return <Loader body loading />;
   }
   if (!artist) {
@@ -118,7 +116,14 @@ const Artist = () => {
         <div className="liner">
           <div className="heading">
             <div className="heading__thumbnail">
-              <Thumbnail size="medium" circle canZoom type="artist" image={image} />
+              <Thumbnail
+                size="medium"
+                type="artist"
+                image={image}
+                loading={loading}
+                circle
+                canZoom
+              />
             </div>
             <div className="heading__content">
               <h1>{artist && artist.name}</h1>
@@ -143,7 +148,6 @@ const Artist = () => {
           <div className="sub-views" id="sub-views-menu">
             <Link
               exact
-              history={history}
               activeClassName="sub-views__option--active"
               className="sub-views__option"
               to={`/artist/${encodeUri(uri)}`}
@@ -154,7 +158,6 @@ const Artist = () => {
             {artist.tracks && artist.tracks.length > 10 && (
               <Link
                 exact
-                history={history}
                 activeClassName="sub-views__option--active"
                 className="sub-views__option"
                 to={`/artist/${encodeUri(uri)}/tracks`}
@@ -166,7 +169,6 @@ const Artist = () => {
             {artist.related_artists && (
               <Link
                 exact
-                history={history}
                 activeClassName="sub-views__option--active"
                 className="sub-views__option"
                 to={`/artist/${encodeUri(uri)}/related-artists`}
@@ -177,7 +179,6 @@ const Artist = () => {
             )}
             <Link
               exact
-              history={history}
               activeClassName="sub-views__option--active"
               className="sub-views__option"
               to={`/artist/${encodeUri(uri)}/about`}
@@ -189,20 +190,20 @@ const Artist = () => {
         </div>
       </div>
       <div className="content-wrapper">
-        <Switch>
-          <Route exact path="/artist/:id/related-artists">
+        <Routes>
+          <Route path="related-artists" element={
             <Related artist={artist} />
-          </Route>
-          <Route exact path="/artist/:id/tracks">
+          }/>
+          <Route path="tracks" element={
             <Tracks artist={artist} />
-          </Route>
-          <Route exact path="/artist/:id/about">
+          }/>
+          <Route path="about" element={
             <About artist={artist} />
-          </Route>
-          <Route exact path="/artist/:id/:name?">
+          }/>
+          <Route path="" element={
             <Overview artist={artist} albums={albums} />
-          </Route>
-        </Switch>
+          }/>
+        </Routes>
       </div>
     </div>
   );

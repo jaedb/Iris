@@ -45,77 +45,86 @@ class Browse extends React.Component {
       for (const subdirectory of directory.subdirectories) {
         switch (subdirectory.name) {
           case 'Dirble':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-dirble.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-dirble.jpg'];
             break;
 
           case 'Files':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-folders.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-folders.jpg'];
             break;
 
           case 'Local media':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-folders.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-folders.jpg'];
             break;
 
           case 'Spotify':
           case 'Spotify Browse':
           case 'Spotify Web Browse':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-spotify.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-spotify.jpg'];
             break;
 
           case 'Spotify Tunigo':
           case 'Tunigo':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-tunigo.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-tunigo.jpg'];
             break;
 
           case 'TuneIn':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-tunein.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-tunein.jpg'];
             break;
 
           case 'SoundCloud':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-soundcloud.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-soundcloud.jpg'];
             break;
 
           case 'Mixcloud':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-mixcloud.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-mixcloud.jpg'];
             break;
 
           case 'iTunes Store: Podcasts':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-itunes.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-itunes.jpg'];
             break;
 
           case 'SomaFM':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-somafm.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-somafm.jpg'];
             break;
-			
-	  case 'Jellyfin':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-jellyfin.jpg'];
+      
+          case 'Jellyfin':
+            subdirectory.icons = ['assets/backgrounds/browse-jellyfin.jpg'];
             break;
-			
+      
           case 'Podcasts':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-podcasts.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-podcasts.jpg'];
             break;
 
           case 'Tidal':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-tidal.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-tidal.jpg'];
             break;
 
           case 'Google':
           case 'Google Play':
           case 'Google Play Music':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-google.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-google.jpg'];
             break;
 
           case 'YouTube Music':
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-youtube.jpg'];
+            subdirectory.icons = ['assets/backgrounds/browse-youtube.jpg'];
+            break;
+
+          case 'bandcamp':
+          case 'Bandcamp':
+            subdirectory.icons = ['assets/backgrounds/browse-default.jpg'];
             break;
 
           default:
-            subdirectory.icons = ['/iris/assets/backgrounds/browse-default.jpg'];
+            if (subdirectory.images?.medium) {
+              subdirectory.icons = [subdirectory.images?.medium];
+            } else {
+              subdirectory.icons = ['assets/backgrounds/browse-default.jpg'];
+            }
         }
 
         grid_items.push({
           name: subdirectory.name,
-          link: `/library/browse/${encodeURIComponent(subdirectory.name)}/${encodeUri(subdirectory.uri)}`,
+          link: `/library/browse/${encodeUri(subdirectory.uri)}/${encodeURIComponent(subdirectory.name)}`,
           icons: formatImages(subdirectory.icons),
         });
       }

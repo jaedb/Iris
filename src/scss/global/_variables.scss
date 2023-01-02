@@ -243,7 +243,7 @@ $bp_shallow: 650px;
  **/
 
 @mixin grid_item($cols, $gap: 2%, $bottom_margin: 3%) {
-  width: (0% + (100 / $cols) - ($gap * 2) + (($gap * 2) / $cols));
+  width: (0% + calc(100 / $cols) - ($gap * 2) + calc(calc($gap * 2) / $cols));
   box-sizing: border-box;
   margin: 0 $gap $bottom_margin;
 
@@ -265,9 +265,9 @@ $bp_shallow: 650px;
 @mixin resolution($pixel_ratio: 2) {
   @media only screen and (-webkit-min-device-pixel-ratio: $pixel_ratio),
 	only screen and (   min--moz-device-pixel-ratio: $pixel_ratio),
-	only screen and (     -o-min-device-pixel-ratio: $pixel_ratio/1),
+	only screen and (     -o-min-device-pixel-ratio: calc($pixel_ratio/1)),
 	only screen and (        min-device-pixel-ratio: $pixel_ratio),
-	only screen and (                min-resolution: #{$pixel_ratio * 96}dpi),
+	only screen and (                min-resolution: #{calc($pixel_ratio * 96)}dpi),
 	only screen and (                min-resolution: #{$pixel_ratio}dppx) {
     @content;
   }

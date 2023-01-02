@@ -24,6 +24,7 @@ import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 import { decodeUri, encodeUri, formatSimpleObject } from '../util/format';
 import URILink from '../components/URILink';
+import { withRouter } from '../util';
 
 const LyricsSelector = ({
   track: {
@@ -70,13 +71,11 @@ const LyricsSelector = ({
 
 const LyricsContent = ({
   authorized,
-  loading,
   track: {
     lyrics,
     lyrics_path,
   } = {},
 }) => {
-  if (loading) return <Loader mini />;
   if (!lyrics && !authorized) {
     return (
       <p className="no-results">
@@ -108,7 +107,6 @@ const LyricsContent = ({
 };
 
 const Lyrics = ({
-  loading,
   authorized,
   track,
   getTrackLyrics,
@@ -116,7 +114,6 @@ const Lyrics = ({
   <>
     <h4>
       <I18n path="track.lyrics" />
-      {loading && <Loader loading mini />}
     </h4>
 
     <LyricsSelector
@@ -262,7 +259,13 @@ class Track extends React.Component {
         )}
 
         <div className="thumbnail-wrapper">
-          <Thumbnail size="large" canZoom images={track.images} type="album" />
+          <Thumbnail
+            size="large"
+            images={track.images}
+            type="album"
+            loading={loading || loadingLyrics}
+            canZoom
+          />
         </div>
 
         <div className="title">
@@ -326,7 +329,6 @@ class Track extends React.Component {
         </div>
 
         <Lyrics
-          loading={loadingLyrics}
           authorized={genius_authorized}
           getTrackLyrics={getTrackLyrics}
           track={track}
@@ -338,7 +340,7 @@ class Track extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const uri = decodeUri(ownProps.match.params.uri);
+  const uri = decodeUri(ownProps.params.uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!genius).)*$', '^((?!contains).)*$']);
   const loadingLyricsSelector = makeLoadingSelector([`^genius_(.*)lyrics_${uri}$`]);
   const trackSelector = makeItemSelector(uri);
@@ -366,4 +368,4 @@ const mapDispatchToProps = (dispatch) => ({
   geniusActions: bindActionCreators(geniusActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Track);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Track));

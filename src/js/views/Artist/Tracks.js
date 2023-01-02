@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Grid } from '../../components/Grid';
 import { useDispatch, useSelector } from 'react-redux';
 import TrackList from '../../components/TrackList';
 import FilterField from '../../components/Fields/FilterField';
@@ -16,11 +15,7 @@ import { formatContext } from '../../util/format';
 const SORT_KEY = 'artist_tracks';
 
 export default ({ artist }) => {
-  const {
-    uri,
-    name,
-    tracks: tracksProp,
-  } = artist || {};
+  const { tracks: tracksProp } = artist || {};
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
   const [sortField, sortReverse] = useSelector(

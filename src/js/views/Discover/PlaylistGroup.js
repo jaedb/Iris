@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import Header from '../../components/Header';
 import DropdownField from '../../components/Fields/DropdownField';
@@ -10,9 +9,12 @@ import { Grid } from '../../components/Grid';
 import Loader from '../../components/Loader';
 import ErrorMessage from '../../components/ErrorMessage';
 import Button from '../../components/Button';
-import * as uiActions from '../../services/ui/actions';
-import * as coreActions from '../../services/core/actions';
-import * as spotifyActions from '../../services/spotify/actions';
+import {
+  setSort,
+  hideContextMenu,
+  setWindowTitle,
+} from '../../services/ui/actions';
+import { loadPlaylistGroup } from '../../services/core/actions';
 import { I18n, i18n } from '../../locale';
 import {
   makeItemSelector,
@@ -24,42 +26,35 @@ import { decodeUri } from '../../util/format';
 
 const SORT_KEY = 'playlist_group';
 
-const PlaylistGroup = ({
-  uri,
-  playlistGroup,
-  playlists: playlistsProp,
-  loading,
-  sortField,
-  sortReverse,
-  coreActions: {
-    loadPlaylistGroup,
-  },
-  uiActions: {
-    setSort,
-    hideContextMenu,
-    setWindowTitle,
-  },
-}) => {
+const PlaylistGroup = () => {
+  const dispatch = useDispatch();  
+  const { uri: unencodedUri } = useParams();
+  const uri = decodeUri(unencodedUri);
+  const [sortField, sortReverse] = useSelector((state) => getSortSelector(state, SORT_KEY, null));
+  const loading = useSelector(makeLoadingSelector([`playlist_group_${uri}`]));
+  const playlistGroup = useSelector(makeItemSelector(uri));
+  const playlistsProp = useSelector(makeItemSelector(playlistGroup?.playlists_uris || []));
+
   const [filter, setFilter] = useState('');
   const { name } = useParams();
   useEffect(() => {
     if (playlistGroup) {
-      setWindowTitle(playlistGroup.name);
+      dispatch(setWindowTitle(playlistGroup.name));
     } else {
-      setWindowTitle(i18n('discover.category.title'));
+      dispatch(setWindowTitle(i18n('discover.category.title')));
     }
   }, [playlistGroup]);
 
   useEffect(
     () => {
-      if (uri) loadPlaylistGroup(uri);
+      if (uri) dispatch(loadPlaylistGroup(uri));
     },
     [uri],
   );
 
   const refresh = () => {
-    hideContextMenu();
-    loadPlaylistGroup(uri, { forceRefetch: true });
+    dispatch(hideContextMenu());
+    dispatch(loadPlaylistGroup(uri, { forceRefetch: true }));
   }
 
   const onSortChange = (field) => {
@@ -68,8 +63,8 @@ const PlaylistGroup = ({
       reverse = !sortReverse;
     }
 
-    setSort(SORT_KEY, field, reverse);
-    hideContextMenu();
+    dispatch(setSort(SORT_KEY, field, reverse));
+    dispatch(hideContextMenu());
   }
 
   if (loading) {
@@ -110,7 +105,7 @@ const PlaylistGroup = ({
       <FilterField
         initialValue={filter}
         handleChange={setFilter}
-        onSubmit={() => uiActions.hideContextMenu()}
+        onSubmit={() => dispatch(hideContextMenu())}
       />
       <DropdownField
         icon="swap_vert"
@@ -134,7 +129,7 @@ const PlaylistGroup = ({
 
   return (
     <div className="view discover-categories-view">
-      <Header uiActions={uiActions} options={options}>
+      <Header options={options}>
         <Icon name="mood" type="material" />
         {playlistGroup.name || name}
       </Header>
@@ -158,32 +153,4 @@ const PlaylistGroup = ({
   );
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const [sortField, sortReverse] = getSortSelector(state, SORT_KEY, null);
-  const uri = decodeUri(ownProps.match.params.uri);
-  const loadingSelector = makeLoadingSelector([`playlist_group_${uri}`]);
-  const playlistGroupSelector = makeItemSelector(uri);
-  const playlistGroup = playlistGroupSelector(state);
-  let playlists = null;
-  if (playlistGroup && playlistGroup.playlists_uris) {
-    const playlistsSelector = makeItemSelector(playlistGroup.playlists_uris);
-    playlists = playlistsSelector(state);
-  }
-
-  return {
-    uri,
-    loading: loadingSelector(state),
-    playlistGroup,
-    playlists,
-    sortField,
-    sortReverse,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  uiActions: bindActionCreators(uiActions, dispatch),
-  coreActions: bindActionCreators(coreActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(PlaylistGroup);
+export default PlaylistGroup;

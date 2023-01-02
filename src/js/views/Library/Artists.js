@@ -163,7 +163,7 @@ class Artists extends React.Component {
     const view_options = [
       {
         value: 'thumbnails',
-        label: i18n('fields.filters.thumbnails'),
+        label: <I18n path="fields.filters.thumbnails" />,
       },
       {
         value: 'list',

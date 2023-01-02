@@ -394,9 +394,6 @@ settings:
       wide: Wide scrollbars
       hidden: Hidden scrollbars
       smooth_scrolling: Smooth scroll
-    sources_priority:
-      label: Sources priority
-      description: Drag-and-drop to prioritize search providers and results
     reporting:
       label: Reporting
       sublabel: Allow reporting of anonymous usage statistics
@@ -635,6 +632,9 @@ modal:
     title: Hotkeys
     keys:
       info: Hotkeys info (this dialog)
+      now_playing: Now playing
+      search: Search
+      kiosk_mode: Kiosk mode
       exit: Cancel the current interaction
       play_pause: Play/pause
       stop: Stop

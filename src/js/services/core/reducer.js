@@ -55,25 +55,6 @@ export default function reducer(core = {}, action) {
       var radio = { ...core.radio, resolved_seeds: action.resolved_seeds };
       return { ...core, radio };
 
-      /**
-         * Index updates
-         * These actions are only ever called by middleware after we've digested one more many assets
-         * and appended to their relevant index.
-         * */
-    case 'LOAD_ITEMS': {
-      const items = { ...core.items };
-      action.uris.forEach((uri) => {
-        items[uri] = {
-          ...core.items[uri] || { uri },
-          loading: true,
-        };
-      });
-      return {
-        ...core,
-        items,
-      };
-    }
-
     case 'SET_LOADING': {
       return {
         ...core,

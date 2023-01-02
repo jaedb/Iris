@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { connect, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ErrorMessage from '../components/ErrorMessage';
@@ -40,27 +40,6 @@ const Actions = ({
   handleContextMenu,
 }) => {
   switch (uriSource(uri)) {
-    case 'm3u':
-      return (
-        <div className="actions">
-          <Button
-            type="primary"
-            onClick={onPlay}
-            tracking={{ category: 'Playlist', action: 'Play' }}
-          >
-            <I18n path="actions.play" />
-          </Button>
-          <Button
-            to={`/modal/edit-playlist/${encodedUri}`}
-            tracking={{ category: 'Playlist', action: 'Edit' }}
-          >
-            <I18n path="actions.edit" />
-          </Button>
-          <PinButton item={{ uri, name }} />
-          <ContextMenuTrigger onTrigger={handleContextMenu} />
-        </div>
-      );
-
     case 'spotify':
       if (can_edit) {
         return (
@@ -111,6 +90,12 @@ const Actions = ({
           >
             <I18n path="actions.play" />
           </Button>
+          <Button
+            to={`/modal/edit-playlist/${encodedUri}`}
+            tracking={{ category: 'Playlist', action: 'Edit' }}
+          >
+            <I18n path="actions.edit" />
+          </Button>
           <PinButton item={{ uri, name }} />
           <ContextMenuTrigger onTrigger={handleContextMenu} />
         </div>
@@ -136,7 +121,7 @@ const Playlist = ({
     playPlaylist,
   },
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { uri: encodedUri, name } = useParams();
   const uri = decodeUri(encodedUri);
   const [filter, setFilter] = useState('');
@@ -156,7 +141,7 @@ const Playlist = ({
 
   useEffect(() => {
     if (playlist && playlist.moved_to) {
-      history.push(`/playlist/${encodeUri(playlist.moved_to)}/${encodeURIComponent(playlist.name.replace('%', ''))}`);
+      navigate(`/playlist/${encodeUri(playlist.moved_to)}/${encodeURIComponent(playlist.name.replace('%', ''))}`);
     }
   }, [playlist]);
 
@@ -211,7 +196,7 @@ const Playlist = ({
     removeTracksFromPlaylist(uri, tracks_indexes);
   }
 
-  if (loading) {
+  if (loading && !playlist?.name) {
     return <Loader body loading />;
   }
   if (!playlist) {
@@ -254,7 +239,14 @@ const Playlist = ({
     <div className="view playlist-view content-wrapper preserve-3d">
 
       <div className="thumbnail-wrapper">
-        <Thumbnail size="large" glow canZoom images={playlist.images} type="playlist" />
+        <Thumbnail
+          size="large"
+          images={playlist.images}
+          type="playlist"
+          loading={playlist?.loading}
+          canZoom
+          glow
+        />
       </div>
 
       <div className="title">
@@ -310,7 +302,6 @@ const Playlist = ({
 
       <h4 className="no-bottom-margin">
         <I18n path="playlist.tracks.title" />
-        {loadingTracks && <Loader loading mini />}
         <div className="actions-wrapper">
           <FilterField
             initialValue={filter}

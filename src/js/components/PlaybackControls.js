@@ -69,6 +69,7 @@ const PlaybackControls = () => {
   return (
     <div className={`playback-controls${expanded ? ' playback-controls--expanded' : ''}${touch_enabled ? ' playback-controls--touch-enabled' : ''}`}>
 
+      {expanded && <div className="click-outside" onClick={() => setExpanded(false)} /> }
       <div className="playback-controls__background" />
 
       {nextTrack && nextTrack.images ? <Thumbnail className="hide" size="large" images={nextTrack.images} /> : null}

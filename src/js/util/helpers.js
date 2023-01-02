@@ -55,7 +55,7 @@ const setFavicon = function (filename) {
     const new_link = document.createElement('link');
     new_link.className = link.className;
     new_link.rel = link.rel;
-    new_link.href = `/iris/assets/${filename}`;
+    new_link.href = `assets/${filename}`;
     if (link.type) {
       new_link.type = link.type;
     }

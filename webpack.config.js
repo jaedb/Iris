@@ -1,7 +1,14 @@
 const isDev = process.env.NODE_ENV !== 'production';
+const isDevServer = process.env.WEBPACK_DEV_SERVER;
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const fs = require('fs');
+let version = fs.readFileSync("IRIS_VERSION", "utf8");
+version = version.replace(/\r?\n?/g, '').trim();
+const build = Math.floor(Date.now() / 1000);
 
 const config = {
   mode: process.env.NODE_ENV,
@@ -9,7 +16,7 @@ const config = {
   entry: ['@babel/polyfill', './src/js/index'],
   output: {
     path: path.resolve(__dirname, 'mopidy_iris/static'),
-    filename: 'app' + (isDev ? '' : '.min') + '.js'
+    filename: `app${isDev ? '' : '.min'}.js`,
   },
   module: {
     rules: [
@@ -50,20 +57,18 @@ const config = {
       {
         test: /\.ya?ml$/,
         type: 'json',
-        use: 'yaml-loader',
+        use: {
+          loader: 'yaml-loader',
+          options: { json: true, type: 'json' }
+        }
       },
       {
         // load external resources (ie Google fonts)
         test: /.(gif|png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              name: 'assets/fonts/[name].[ext]?[hash]',
-              limit: 100000,
-            },
-          },
-        ],
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/[name][ext]',
+        },
       },
       (isDev ? {} : {
         test: /\.(js|jsx)$/,
@@ -89,13 +94,36 @@ const config = {
       "window.jQuery": "jquery",
     }),
     new MiniCssExtractPlugin({
-      filename: 'app' + (isDev ? '' : '.min') + '.css',
+      filename: `app${isDev ? '' : '.min'}.css`,
+    }),
+    new HtmlWebpackPlugin({
+      inject: false,
+      template: './src/index.html',
+      templateParameters: {
+        isDevServer: isDevServer ? 1 : 0,
+        baseHref: isDevServer ? '/' : '/iris/',
+        version: `${version}-${isDevServer ? 'DEV_SERVER' : ''}`,
+        build,
+      },
     }),
   ],
   watchOptions: {
     poll: true,
   },
   devtool: (isDev ? 'source-map' : false),
+  devServer: {
+    historyApiFallback: true,
+    port: 6681,
+    client: {
+      overlay: true,
+    },
+    static: [
+      {
+        directory: path.join(__dirname, 'mopidy_iris', 'static', 'assets'),
+        publicPath: '/assets/',
+      },
+    ],
+  },
 };
 
 // now export our collated config object
