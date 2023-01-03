@@ -1,294 +1,192 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import Modal from './Modal';
-import * as coreActions from '../../services/core/actions';
-import * as uiActions from '../../services/ui/actions';
-import * as mopidyActions from '../../services/mopidy/actions';
-import * as spotifyActions from '../../services/spotify/actions';
+import { loadPlaylist, savePlaylist } from '../../services/core/actions';
+import { closeModal, setWindowTitle } from '../../services/ui/actions';
 import { uriSource } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
 import { decodeUri } from '../../util/format';
-import { makeItemSelector, makeLoadingSelector } from '../../util/selectors';
+import { makeItemSelector } from '../../util/selectors';
 
-class EditPlaylist extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loaded: false,
-      error: null,
-      name: '',
-      description: '',
-      image: null,
-      public: false,
-      collaborative: false,
-    };
-  }
-
-  componentDidMount() {
-    const {
-      uri,
-      playlist,
-      coreActions: {
-        loadPlaylist,
-      },
-      uiActions: {
-        setWindowTitle,
-      },
-    } = this.props;
-
-    setWindowTitle(i18n('modal.edit_playlist.title'));
-
-    if (playlist) {
-      this.setState({
-        loaded: true,
-        name: playlist.name,
-        description: playlist.description,
-        public: (playlist.public === true),
-        collaborative: (playlist.collaborative === true),
-      });
-    } else {
-      loadPlaylist(uri);
-    }
-  }
-
-  componentDidUpdate = ({
-    playlist: prevPlaylist,
-  }) => {
-    const {
-      uri,
-      playlist,
-      mopidyActions: {
-        getPlaylist,
-      },
-    } = this.props;
-
-    if (playlist !== prevPlaylist) {
-      getPlaylist(uri);
-    }
-  }
-
-  static getDerivedStateFromProps({ playlist }, state) {
-    if (playlist && !state.loaded) {
-      return {
-        loaded: true,
-        name: playlist.name,
-        description: playlist.description,
-        public: (playlist.public === true),
-        collaborative: (playlist.collaborative === true),
-      };
-    }
-    return null;
-  }
-
-  setImage = (e) => {
-    const self = this;
-
-    // Create a file-reader to import the selected image as a base64 string
-    const file_reader = new FileReader();
-
-    // Once the image is loaded, convert the result
-    file_reader.addEventListener('load', (e) => {
-      const image_base64 = e.target.result.replace('data:image/jpeg;base64,', '');
-      self.setState({ image: image_base64 });
-    });
-
-    // This calls the filereader to load the file
-    file_reader.readAsDataURL(e.target.files[0]);
-  }
-
-  savePlaylist = (e) => {
-    const {
-      name,
-      description,
-      public: isPublic,
-      collaborative,
-      image,
-    } = this.state;
-    const {
-      uri,
-      coreActions: {
-        savePlaylist,
-      },
-      uiActions: {
-        closeModal,
-      },
-    } = this.props;
-
-    e.preventDefault();
-
-    if (!name || name == '') {
-      this.setState({ error: i18n('modal.edit_playlist.name_required') });
-      return false;
-    }
-    savePlaylist(
-      uri,
-      name,
-      description,
-      isPublic,
-      collaborative,
-      image,
-    );
-    closeModal();
-    return false;
-  }
-
-  renderFields = () => {
-    const {
-      uri,
-    } = this.props;
-    const {
-      name,
-      description,
-      public: isPublic,
-      collaborative,
-      image,
-    } = this.state;
-
-    switch (uriSource(uri)) {
-      case 'spotify':
-        return (
-          <div>
-            <div className="field text">
-              <div className="name">
-                <I18n path="modal.edit_playlist.name" />
-              </div>
-              <div className="input">
-                <input
-                  type="text"
-                  onChange={(e) => this.setState({ name: e.target.value })}
-                  value={name}
-                />
-              </div>
-            </div>
-            <div className="field text">
-              <div className="name">
-                <I18n path="modal.edit_playlist.description" />
-              </div>
-              <div className="input">
-                <input
-                  type="text"
-                  onChange={(e) => this.setState({ description: e.target.value })}
-                  value={description}
-                />
-              </div>
-            </div>
-            <div className="field file">
-              <div className="name">
-                <I18n path="modal.edit_playlist.image.label" />
-              </div>
-              <div className="input">
-                <input
-                  type="file"
-                  placeholder="Leave empty to keep existing image"
-                  onChange={(e) => this.setImage(e)}
-                />
-                <div className="description">
-                  <I18n path="modal.edit_playlist.image.description" />
-                </div>
-              </div>
-            </div>
-            <div className="field checkbox white">
-              <div className="name">
-                <I18n path="modal.edit_playlist.options.label" />
-              </div>
-              <div className="input">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="playlist_private"
-                    checked={isPublic}
-                    onChange={() => this.setState({ public: !isPublic })}
-                  />
-                  <span className="label">
-                    <I18n path="modal.edit_playlist.options.public" />
-                  </span>
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    name="collaborative"
-                    checked={collaborative}
-                    onChange={() => this.setState({ collaborative: !collaborative })}
-                  />
-                  <span className="label">
-                    <I18n path="modal.edit_playlist.options.collaborative" />
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
-        );
-
-      default:
-        return (
-          <div>
-            <div className="field text">
-              <div className="name">
-                <I18n path="modal.edit_playlist.name" />
-              </div>
-              <div className="input">
-                <input
-                  type="text"
-                  onChange={(e) => this.setState({ name: e.target.value })}
-                  value={name}
-                />
-              </div>
-            </div>
-          </div>
-        );
-    }
-  }
-
-  render = () => {
-    const {
-      error,
-    } = this.state;
-
-    return (
-      <Modal className="modal--edit-playlist">
-        <h1>
-          <I18n path="modal.edit_playlist.title" />
-        </h1>
-        {error ? <h3 className="red-text">{error}</h3> : null}
-        <form onSubmit={(e) => this.savePlaylist(e)}>
-
-          {this.renderFields()}
-
-          <div className="actions centered-text">
-            <Button
-              type="primary"
-              size="large"
-              tracking={{ category: 'EditPlaylist', action: 'Submit' }}
-              submit
-            >
-              <I18n path="actions.save" />
-            </Button>
-          </div>
-        </form>
-      </Modal>
-    );
-  }
-}
-
-const mapStateToProps = (state, ownProps) => {
-  const uri = decodeUri(ownProps.match.params.uri);
-  const itemSelector = makeItemSelector(uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!tracks).)*$']);
-
-  return {
-    uri,
-    playlist: itemSelector(state),
-    loading: loadingSelector(state),
-  };
+const EMPTY_FORM = {
+  loaded: false,
+  error: null,
+  name: '',
+  description: '',
+  image: null,
+  public: false,
+  collaborative: false,
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  coreActions: bindActionCreators(coreActions, dispatch),
-  uiActions: bindActionCreators(uiActions, dispatch),
-  mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
-});
+const Fields = ({
+  uri,
+  form,
+  onChange,
+  onChangeImage,
+}) => (
+  <div>
+    <div>
+      <div className="field text">
+        <div className="name">
+          <I18n path="modal.edit_playlist.name" />
+        </div>
+        <div className="input">
+          <input
+            type="text"
+            name="name"
+            onChange={onChange}
+            value={form.name}
+          />
+        </div>
+      </div>
+      {uriSource(uri) === 'spotify' && (
+        <div>
+          <div className="field text">
+            <div className="name">
+              <I18n path="modal.edit_playlist.description" />
+            </div>
+            <div className="input">
+              <input
+                type="text"
+                name="description"
+                onChange={onChange}
+                value={form.description}
+              />
+            </div>
+          </div>
+          <div className="field file">
+            <div className="name">
+              <I18n path="modal.edit_playlist.image.label" />
+            </div>
+            <div className="input">
+              <input
+                type="file"
+                placeholder="Leave empty to keep existing image"
+                onChange={onChangeImage}
+              />
+              <div className="description">
+                <I18n path="modal.edit_playlist.image.description" />
+              </div>
+            </div>
+          </div>
+          <div className="field checkbox white">
+            <div className="name">
+              <I18n path="modal.edit_playlist.options.label" />
+            </div>
+            <div className="input">
+              <label>
+                <input
+                  type="checkbox"
+                  name="public"
+                  checked={form.isPublic}
+                  onChange={onChange}
+                />
+                <span className="label">
+                  <I18n path="modal.edit_playlist.options.public" />
+                </span>
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="collaborative"
+                  checked={form.collaborative}
+                  onChange={onChange}
+                />
+                <span className="label">
+                  <I18n path="modal.edit_playlist.options.collaborative" />
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditPlaylist);
+const EditPlaylist = () => {
+  const { uri: encodedUri } = useParams();
+  const uri = decodeUri(encodedUri);
+  const itemSelector = makeItemSelector(uri);
+  const playlist = useSelector(itemSelector);
+  const dispatch = useDispatch();
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    dispatch(setWindowTitle(i18n('modal.edit_playlist.title')));
+
+    if (uri && !playlist) dispatch(loadPlaylist(uri));
+  }, []);
+
+  useEffect(() => {    
+    setForm({
+      loaded: true,
+      name: playlist?.name || '',
+      description: playlist?.description || '',
+      public: (playlist?.public === true),
+      collaborative: (playlist?.collaborative === true),
+    });
+  }, [playlist]);
+
+  const onChange = ({ target: { name, type, value, checked }}) =>
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  
+  const onChangeImage = (e) => {
+    const file_reader = new FileReader();
+    file_reader.addEventListener('load', (e) => {
+      const image_base64 = e.target.result.replace('form:image/jpeg;base64,', '');
+      setForm({ image: image_base64 });
+    });
+    file_reader.readAsDataURL(e.target.files[0]);
+  }
+  
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    if (form.name == '') {
+      setError(i18n('modal.edit_playlist.name_required'));
+      return;
+    }
+    const data = uriSource(uri) === 'spotify'
+      ? form
+      : { name: form.name };
+    dispatch(savePlaylist(uri, data));
+    dispatch(closeModal());
+  }
+
+  return (
+    <Modal className="modal--edit-playlist">
+      <h1>
+        <I18n path="modal.edit_playlist.title" />
+      </h1>
+      {error && <h3 className="red-text">{error}</h3>}
+      <form onSubmit={onSubmit}>
+        <Fields
+          uri={uri}
+          form={form}
+          onChange={onChange}
+          onChangeImage={onChangeImage}
+        />
+
+        <div className="actions centered-text">
+          <Button
+            type="primary"
+            size="large"
+            tracking={{ category: 'EditPlaylist', action: 'Submit' }}
+            submit
+          >
+            <I18n path="actions.save" />
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+export default EditPlaylist;
