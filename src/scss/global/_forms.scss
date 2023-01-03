@@ -278,7 +278,7 @@ select {
   &--primary {
     background: colour('turquoise');
     border-color: colour('turquoise');
-    color: colour('white');
+    color: colour('black');
 
     &:active {
       background: darken(colour('turquoise'), 10%);
