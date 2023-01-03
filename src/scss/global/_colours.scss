@@ -6,10 +6,10 @@
 $colours: (
   "turquoise": $mauve,
   "off_white": $rosewater,
-  "faint_grey": $subtext2,
+  "faint_grey": $subtext0,
   "light_grey": $subtext1,
   "mid_grey": $overlay2,
-  "middle_grey": rgba(128, 128, 128, 0.5),
+  "middle_grey": opacify($overlay0, 0.5),
   "soft_grey": $surface1,
   "grey": $surface2,
   "dark_grey": $mantle,
@@ -23,8 +23,8 @@ $colours: (
   "light_blue": $blue,
   "yellow": $yellow,
   "orange": $peach,
-  "overlay_dark": rgba(0, 0, 0, 0.88),
-  "overlay_light": rgba(255, 255, 255, 0.7),
+  "overlay_dark": opacify($base, 0.22),
+  "overlay_light": opacify($subtext0, 0.3),
 );
 
 /**
