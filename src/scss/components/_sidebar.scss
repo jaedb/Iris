@@ -29,7 +29,7 @@
     line-height: 1em;
 
     &__item {
-      font-family: "Overpass";
+      font-family: $font-family-alt;
       font-weight: 600;
       font-size: 1.05rem;
       color: colour('white');

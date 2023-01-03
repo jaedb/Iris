@@ -17,7 +17,7 @@ select {
   padding: 10px 14px;
   background: rgba(128, 128, 128, 0.05);
   color: colour('white');
-  font-family: "Overpass", Helvetica, Arial, sans-serif;
+  font-family: $font-family-alt;
   font-size: 14px;
   border-radius: 3px;
   letter-spacing: -0.01rem;
