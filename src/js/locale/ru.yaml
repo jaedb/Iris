@@ -19,10 +19,10 @@ errors:
     title: Невозможно изменить порядок элементов
     description: Удалить сортировку/фильтры и повторить попытку
 actions:
-  play: Играть
+  play: Воспроизвести
   play_all: Воспроизвести все
-  play_next: Играть дальше
-  shuffle_play: Играть в случайном порядке
+  play_next: Воспроизвести следующим
+  shuffle_play: Воспроизвести в случайном порядке
   pause: Пауза
   stop: Стоп
   add_to_playlist: Добавить в плейлист
@@ -31,7 +31,7 @@ actions:
   remove_from_library: Удалить из библиотеки
   add_to_queue: Добавить в очередь
   reset: Сброс
-  back: Отменить
+  back: Назад
   refresh: Oбновить
   enable: Включить
   disable: Выключить
@@ -59,7 +59,7 @@ common:
   by: 'после'
   loading_library: 'Загружается %{provider} %{type}'
   play_state:
-    playing: Играет
+    playing: Воспроизведение
     paused: Приостановлено
     stopped: Остановлено
     idle: Бездействие
@@ -78,7 +78,7 @@ fields:
     all: Все
     thumbnails: Миниатюры
     list: Список
-    as_loaded: Как загружено
+    as_loaded: Время добавления
     name: Имя
     artist: Исполнитель
     album: Альбом
@@ -132,7 +132,7 @@ services:
   restore_defaults: Восстановить значения по умолчанию
   mopidy:
     title: Mopidy
-    local: Local
+    local: Локальные
     adding_uris: 'Добавление %{count} URI(s)'
     adding_uris_broadcast: '%{username} добавил %{count} URI(s)'
     searching: 'Поиск %{provider} %{type}'
@@ -165,8 +165,8 @@ services:
 sidebar:
   now_playing: Сейчас играет
   search: Поиск
-  discover: Обнаружить
-  genre: Жанр / Настроение
+  discover: Найти новое
+  moods: Жанр / Настроение
   featured_playlists: Избранные плейлисты.
   new_releases: Новые релизы
   my_music: Моя музыка
@@ -174,7 +174,7 @@ sidebar:
   artists: Исполнитель
   albums: Альбомы
   tracks: Треки
-  browse: Смотреть
+  browse: Сервисы
   settings: Настройки
   servers: Серверы
   not_connected: '%{name} не подключен'
@@ -185,7 +185,7 @@ context_menu:
     title: Добавить в плейлист
     new_playlist: Создать плейлист
     no_playlists: Нет доступных для записи плейлистов
-  play_next: Играть дальше
+  play_next: Воспроизвести следующим
   play_top_tracks: Воспроизвести лучшие треки
   play_all_tracks: Воспроизвести все треки
   love_track: Любимые треки
@@ -213,7 +213,7 @@ snapcast:
   show_disconnected_clients: Показать отключенные клиенты
   no_connected_clients: Нет подключенных клиентов
   host: Host
-  port: Port
+  port: Порт
   name: Имя
   name_disconnected: Имя (Отключен)
   group: Группа
@@ -229,9 +229,9 @@ snapcast:
     incompatible: ' (требуется при подключении из сеанса браузера HTTPS)'
 authentication:
   popup_blocked: Всплывающее окно заблокировано. Разрешите всплывающие окна и повторите попытку.
-  failed: Авторизация не удалась. %{origin} is not the configured authorization_url.
-  log_out: Log out
-  log_in: Log in
+  failed: Авторизация не удалась. %{origin}, не настроен authorization_url.
+  log_out: Выйти
+  log_in: Войти
 
 
 ##
@@ -255,7 +255,7 @@ album:
     title: О
     published: 'Опубликовано: %{date}'
   tracks:
-    title: Треке
+    title: Треки
     sort:
       disc_track: Номер трека
       name: Имя
@@ -418,14 +418,17 @@ settings:
       upgrade_available: 'Доступно обновление (%{version})'
       upgrade: 'Обновить до %{version}'
       up_to_date: Актуально
-    share_configuration: Поделиться конфигурацией
+    shared_configuration:
+      label: Конфигурация
+      share: Поделиться
+      import: Импортировать
     restart: Перезапустить сервер
     reset: Сброс настроек
   about:
     title: О
     blurb_1: ' это проект с открытым исходным кодом от '
     blurb_2: '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
-    donate: Donate
+    donate: Поддержать
     github: GitHub
   pusher_connection_list:
     not_connected: Не подключен
@@ -454,7 +457,7 @@ settings:
     unknown: Неизвестно
     current_user: Текущий пользователь
     authorization: Авторизация
-    refresh_token: RОбновить токен
+    refresh_token: Обновить токен
     authorized: Авторизованный
     read_only: Только для чтения
     unauthorized: Неавторизованный
@@ -563,9 +566,45 @@ modal:
     title: Добро пожаловать в Ирис
     username: Пользователь
   kiosk:
-    title: Сейчас играет
+    title: Воспроизведение
     title_window: '%{name} by %{artist} (сейчас воспроизводится)'
     lyrics: Текст песни
+  shared_config:
+    no_peers: Нет соединений
+    recipients: Получатели
+    configurations: Настройки
+    import_now: Импортировать
+    imported: Импортирование завершено
+    share: Поделиться
+    shared: Настройки предоставлены
+    push:
+      title: Поделиться настройками
+      subtitle: Поделиться авторизациями и настройками интерфейса с другими подключенными пользователями
+    pushed:
+      title: Настройки получены
+      subtitle: Другой пользователь поделилился настройками с вами
+    server:
+      title: Импортировать настройки
+      subtitle: Импортировать авторизации сторонних серверов и настройки интерфейса
+      label: Сервер
+      description: Сохранить на сервер чтобы другие пользователи могли импортировать
+    config:
+      label: Настройки
+      ui:
+        label: Пользовательский интерфейс
+        description: Тема, сортировка, фильтры и т.д.
+      spotify:
+        label: Авторизация Spotify
+        description: 'Вы вошли в систему как %{name}'
+      lastfm:
+        label: Авторизация LastFM
+        description: 'Вы вошли в систему как %{name}'
+      genius:
+        label: Авторизация Genius
+        description: 'Вы вошли в систему как %{name}'
+      snapcast:
+        label: Сервер Snapcast
+        description: Настройки подключения
   share_configuration:
     title: Поделиться конфигурацией
     subtitle: Передайте свои авторизации и настройки интерфейса другому подключенному пользователю
