@@ -57,16 +57,6 @@ select {
   }
 }
 
-select option {
-  background: rgba(128, 128, 128, 0.05);
-  color: colour("white");
-
-  @include theme("light") {
-    color: colour("darkest_grey");
-    background: rgba(255, 255, 255, 0.75);
-  }
-}
-
 input[type="number"] {
   -moz-appearance: textfield;
 
@@ -165,6 +155,11 @@ select {
     color: colour("darkest_grey");
     max-width: 100%;
     box-sizing: border-box;
+
+    @include theme("dark") {
+      background: rgba(128, 128, 128, 0.05);
+      color: colour("white");
+    }
   }
 }
 
