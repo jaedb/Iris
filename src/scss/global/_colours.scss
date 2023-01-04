@@ -87,7 +87,7 @@ $colours-static: (
  */
 @function colour($key) {
   @if map-has-key($colours-static, $key) {
-    @return "var(--color-#{$key})"; // map-get($colours, $key);
+    @return var(--color-#{$key}); // map-get($colours, $key);
   }
 
   @warn "Unknown `#{$key}` in $colours.";
