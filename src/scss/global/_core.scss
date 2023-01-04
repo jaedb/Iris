@@ -671,7 +671,7 @@ footer {
 
   &--dark {
     background: colour("grey300");
-    color: colour("mid_grey");
+    color: colour("off_white");
 
     @include theme("light") {
       background: colour("grey400");
