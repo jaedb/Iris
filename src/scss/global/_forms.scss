@@ -157,7 +157,7 @@ select {
     box-sizing: border-box;
 
     @include theme("dark") {
-      background: rgba(128, 128, 128, 0.05);
+      background: colour("darkest_grey");
       color: colour("white");
     }
   }
