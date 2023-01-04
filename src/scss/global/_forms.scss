@@ -16,7 +16,7 @@ input[type="file"],
 select {
   padding: 10px 14px;
   background: rgba(128, 128, 128, 0.05);
-  color: colour('white');
+  color: colour("white");
   font-family: $font-family-alt;
   font-size: 14px;
   border-radius: 3px;
@@ -25,7 +25,7 @@ select {
 
   &:focus,
   &:active {
-    border-color: colour('blue');
+    border-color: colour("blue");
   }
 
   &:disabled {
@@ -39,8 +39,8 @@ select {
     text-align: center;
   }
 
-  @include theme('light') {
-    color: colour('darkest_grey');
+  @include theme("light") {
+    color: colour("darkest_grey");
     background: rgba(255, 255, 255, 0.75);
   }
 
@@ -80,8 +80,8 @@ input[type="radio"] {
     box-sizing: border-box;
     background: rgba(128, 128, 128, 0.05);
 
-    @include theme('light') {
-      background: colour('white');
+    @include theme("light") {
+      background: colour("white");
     }
   }
 
@@ -93,7 +93,7 @@ input[type="radio"] {
     border-radius: 50%;
     position: absolute;
     left: 0.55rem;
-    background: colour('white');
+    background: colour("white");
   }
 
   &:focus + .label:before,
@@ -101,9 +101,9 @@ input[type="radio"] {
     background: rgba(128, 128, 128, 1);
   }
 
-  @include theme('light') {
+  @include theme("light") {
     &:checked + .label:after {
-      background: colour('darkest_grey');
+      background: colour("darkest_grey");
     }
   }
 }
@@ -114,7 +114,7 @@ input[type="checkbox"] {
     font-size: 1.2rem;
     line-height: 1.6rem;
     content: "";
-    color: colour('white');
+    color: colour("white");
     display: inline-flex;
     padding: 0 0.2rem;
     height: calc(1.6rem - 2px);
@@ -125,8 +125,8 @@ input[type="checkbox"] {
     margin-right: 0.5rem;
     background: rgba(128, 128, 128, 0.05);
 
-    @include theme('light') {
-      background: colour('white');
+    @include theme("light") {
+      background: colour("white");
     }
   }
 
@@ -136,12 +136,12 @@ input[type="checkbox"] {
 
   &:focus + .label:before,
   &:active + .label:before {
-    background: colour('mid_grey');
+    background: colour("mid_grey");
   }
 
-  @include theme('light') {
+  @include theme("light") {
     & + .label:before {
-      color: colour('darkest_grey');
+      color: colour("darkest_grey");
     }
   }
 }
@@ -151,8 +151,8 @@ select {
   -webkit-appearance: none;
 
   option {
-    background: colour('white');
-    color: colour('darkest_grey');
+    background: colour("white");
+    color: colour("darkest_grey");
     max-width: 100%;
     box-sizing: border-box;
   }
@@ -171,7 +171,7 @@ select {
   cursor: pointer;
 
   &.destructive {
-    color: colour('red');
+    color: colour("red");
   }
 }
 
@@ -200,8 +200,8 @@ select {
   text-decoration: none;
   border: 2px solid transparent;
 
-  @include theme('dark') {
-    color: colour('white');
+  @include theme("dark") {
+    color: colour("white");
   }
 
   .icon {
@@ -214,30 +214,30 @@ select {
     transform: translate(1px, 1px);
   }
 
-  @include theme('light') {
+  @include theme("light") {
     &--default {
-      border-color: colour('darkest_grey');
+      border-color: colour("darkest_grey");
 
       &:active {
         background: rgba(128, 128, 128, 0.2);
       }
 
       &:hover {
-        box-shadow: 0 0 10px rgba(colour('darkest_grey'), 0.3);
+        box-shadow: 0 0 10px colour("darkest_grey-alt");
       }
     }
   }
 
-  @include theme('dark') {
+  @include theme("dark") {
     &--default {
-      border-color: colour('white');
+      border-color: colour("white");
 
       &:active {
         background: rgba(128, 128, 128, 0.2);
       }
 
       &:hover {
-        box-shadow: 0 0 10px rgba(colour('white'), 0.5);
+        box-shadow: 0 0 10px colour("white-alt");
       }
     }
   }
@@ -262,7 +262,7 @@ select {
     box-shadow: none !important;
 
     &:hover {
-      color: colour('blue');
+      color: colour("blue");
     }
 
     .icon {
@@ -276,17 +276,17 @@ select {
   }
 
   &--primary {
-    background: colour('turquoise');
-    border-color: colour('turquoise');
-    color: colour('black');
+    background: colour("turquoise");
+    border-color: colour("turquoise");
+    color: colour("black");
 
     &:active {
-      background: darken(colour('turquoise'), 10%);
-      border-color: darken(colour('turquoise'), 10%);
+      background: colour("turquoise200");
+      border-color: colour("turquoise200");
     }
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour('turquoise'), 0.5);
+      box-shadow: 0 0 10px colour("turquoise-alt");
     }
   }
 
@@ -294,7 +294,7 @@ select {
     border-color: rgba(0, 0, 0, 0.8);
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour('black'), 0.3);
+      box-shadow: 0 0 10px colour("black-alt");
     }
   }
 
@@ -302,56 +302,56 @@ select {
     border-color: rgba(255, 255, 255, 0.8);
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour('white'), 0.3);
+      box-shadow: 0 0 10px colour("white-alt2");
     }
   }
 
   &--secondary {
-    background: colour('blue');
-    color: colour('white');
+    background: colour("blue");
+    color: colour("white");
 
     &:active {
-      background: darken(colour('blue'), 10%);
+      background: colour("blue200");
     }
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour('blue'), 0.5);
+      box-shadow: 0 0 10px colour("blue-alt");
     }
   }
 
   &--white {
-    background: colour('white');
-    color: colour('black');
+    background: colour("white");
+    color: colour("black");
 
     &:active {
       background: rgba(128, 128, 128, 0.2);
     }
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour('white'), 0.5);
+      box-shadow: 0 0 10px colour("white-alt");
     }
   }
 
   &--grey {
-    border-color: colour('grey');
+    border-color: colour("grey");
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour('grey'), 0.5);
+      box-shadow: 0 0 10px colour("grey-alt");
     }
   }
 
   &--black {
-    border-color: colour('darkest_grey');
+    border-color: colour("darkest_grey");
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour('darkest_grey'), 0.3);
+      box-shadow: 0 0 10px colour("darkest_grey-alt");
     }
   }
 
   &--confirming,
   &--destructive {
-    border-color: colour('red');
-    color: colour('red');
+    border-color: colour("red");
+    color: colour("red");
 
     &:active {
       background: rgba(128, 128, 128, 0.2);
@@ -359,8 +359,8 @@ select {
 
     &:hover,
     &-hover:hover {
-      color: colour('red');
-      box-shadow: 0 0 10px rgba(colour('red'), 0.5);
+      color: colour("red");
+      box-shadow: 0 0 10px colour("red-alt");
     }
   }
 
@@ -376,7 +376,7 @@ select {
       left: 0;
       bottom: 0;
       width: 0;
-      background: colour('middle_grey');
+      background: colour("middle_grey");
       opacity: 0.25;
     }
   }
@@ -393,7 +393,7 @@ select {
   &--working {
     position: relative;
     cursor: wait !important;
-    color: rgba(0,0,0,0) !important;
+    color: rgba(0, 0, 0, 0) !important;
 
     &:before {
       pointer-events: none;
@@ -407,8 +407,8 @@ select {
       left: 50%;
       margin-left: -0.6em;
       border: 2px solid transparent;
-      border-top-color: colour('middle_grey');
-      border-right-color: colour('middle_grey');
+      border-top-color: colour("middle_grey");
+      border-right-color: colour("middle_grey");
       z-index: 1;
       box-sizing: border-box;
     }
@@ -419,8 +419,8 @@ select {
   &[disabled="disabled"] {
     opacity: 0.5;
     cursor: not-allowed !important;
-    color: colour('mid_grey');
-    border-color: colour('mid_grey');
+    color: colour("mid_grey");
+    border-color: colour("mid_grey");
     background: transparent;
   }
 
@@ -520,7 +520,7 @@ select {
     color: rgba(255, 255, 255, 0.6);
 
     &.error {
-      color: colour('red');
+      color: colour("red");
       display: inline-block;
       opacity: 1;
     }
@@ -596,13 +596,13 @@ select {
     }
 
     .input-range__track--active {
-      background: colour('blue');
+      background: colour("blue");
     }
 
     .input-range__slider-container {
       .input-range__slider {
         cursor: col-resize;
-        background: colour('blue');
+        background: colour("blue");
         border: none;
         top: 0;
         height: 6px;
@@ -620,7 +620,7 @@ select {
     }
   }
 
-  @include theme('light') {
+  @include theme("light") {
     .description {
       color: rgba(0, 0, 0, 0.6);
     }
@@ -641,7 +641,7 @@ select {
     font-size: 0.8rem;
     text-transform: uppercase;
     font-weight: bold;
-    color: colour('green');
+    color: colour("green");
   }
 }
 

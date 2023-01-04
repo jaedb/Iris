@@ -1,31 +1,101 @@
+@use "sass:map";
 @import "mocha";
+
+$black: $crust;
+$white: $rosewater;
+$orange: $peach;
+$blue: $sapphire;
+$grey: $surface2;
+$turquoise: $mauve;
 
 /**
  * Our colour map
  **/
-$colours: (
-  "turquoise": $mauve,
+$colours-static: (
+  "turquoise": $turquoise,
   "off_white": $rosewater,
   "faint_grey": $subtext0,
   "light_grey": $subtext1,
   "mid_grey": $base,
   "middle_grey": opacify($overlay0, 0.5),
   "soft_grey": $surface1,
-  "grey": $surface2,
+  "grey": $grey,
   "dark_grey": $mantle,
   "darkest_grey": $crust,
   "secondary_grey": $overlay0,
   "white": $text,
-  "black": $crust,
+  "black": $black,
   "red": $red,
   "green": $green,
-  "blue": $sapphire,
-  "light_blue": $blue,
+  "blue": $blue,
+  "light_blue": lighten($blue, 10%),
   "yellow": $yellow,
-  "orange": $peach,
+  "orange": $orange,
   "overlay_dark": opacify($base, 0.22),
   "overlay_light": opacify($subtext0, 0.3),
+  "grey00": lighten($crust, 20%),
+  "grey50": lighten($grey, 4%),
+  "grey100": lighten($surface2, 10%),
+  "grey200": lighten($mantle, 10%),
+  "grey300": darken($subtext1, 10%),
+  "grey400": lighten($base, 25%),
+  "turquoise100": lighten($turquoise, 10%),
+  "turquoise200": darken($turquoise, 10%),
+  "turquoise-alt": rgba($turquoise, 0.5),
+  "blue200": darken($blue, 10%),
+  "black-alt": rgba($black, 0.3),
+  "white-alt": rgba($white, 0.5),
+  "white-alt2": rgba($white, 0.3),
+  "blue-alt": rgba($blue, 0.5),
+  "grey-alt": rgba($grey, 0.5),
+  "darkest_grey-alt": rgba($crust, 0.3),
+  "red-alt": rgba($red, 0.5),
 );
+
+$colours: ();
+:root {
+  @each $class, $colour in $colours-static {
+    --color-#{$class}: $colour;
+
+    $colours: map.merge(
+      $colours,
+      (
+        $class: "var(--color-#{$class})",
+      )
+    );
+  }
+}
+
+/*$colours: map.merge(
+  $colours,
+  (
+    "turquoise": var(--color-turquoise),
+    "off_white": var(--color-off_white),
+    "faint_grey": var(--color-faint_grey),
+    "light_grey": var(--color-light_grey),
+    "mid_grey": var(--color-mid_grey),
+    "middle_grey": var(--color-middle_grey),
+    "soft_grey": var(--color-soft_grey),
+    "grey": var(--color-grey),
+    "dark_grey": var(--color-dark_grey),
+    "darkest_grey": var(--color-darkest_grey),
+    "secondary_grey": var(--color-secondary_grey),
+    "white": var(--color-white),
+    "black": var(--color-black),
+    "red": var(--color-red),
+    "green": var(--color-green),
+    "blue": var(--color-blue),
+    "light_blue": var(--color-light_blue),
+    "yellow": var(--color-yellow),
+    "orange": var(--color-orange),
+    "overlay_dark": var(--color-overlay_dark),
+    "overlay_light": var(--color-overlay_light),
+    "grey100": var(--color-grey100),
+    "grey200": var(--color-grey200),
+    "grey300": var(--color-grey300),
+    "grey400": var(--color-grey400),
+  )
+);*/
 
 /**
  * Create the variation classes

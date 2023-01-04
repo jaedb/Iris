@@ -1,246 +1,244 @@
-
 .snapcast {
-	button {
-		margin-bottom: 0px;
-		margin-top: 0px;
-	}
+  button {
+    margin-bottom: 0px;
+    margin-top: 0px;
+  }
 
-	&__mute-control {
-		display: inline-block;
-		float: left;
-		padding: 8px 5px 0;
-		border: 0;
-		color: colour('white');
-		background: transparent;
+  &__mute-control {
+    display: inline-block;
+    float: left;
+    padding: 8px 5px 0;
+    border: 0;
+    color: colour("white");
+    background: transparent;
 
-		@include theme('light') {
-			color: colour('darkest_grey');
-		}
-	}
+    @include theme("light") {
+      color: colour("darkest_grey");
+    }
+  }
 
-	&__group,
-	&__client {
-		display: block;
-	}
+  &__group,
+  &__client {
+    display: block;
+  }
 
-	&__groups {
-		padding-top: 20px;
-		margin-bottom: -10px;
+  &__groups {
+    padding-top: 20px;
+    margin-bottom: -10px;
 
-		.menu {
-			.menu-item {
-				width: 12.5%;
-				min-width: 110px;
-				max-width: 140px;
+    .menu {
+      .menu-item {
+        width: 12.5%;
+        min-width: 110px;
+        max-width: 140px;
 
-				&--no-clients {
-					.menu-item__inner > * {
-						opacity: 0.5 !important;
-					}
-				}
+        &--no-clients {
+          .menu-item__inner > * {
+            opacity: 0.5 !important;
+          }
+        }
 
-				&__inner {
-					padding: 20px 10px;
-				}
+        &__inner {
+          padding: 20px 10px;
+        }
 
-				&__icon {
-					font-size: 30px;
-					height: 30px;
-					margin-top: 5px;
-					margin-bottom: 10px;
-				}
+        &__icon {
+          font-size: 30px;
+          height: 30px;
+          margin-top: 5px;
+          margin-bottom: 10px;
+        }
 
-				&__title {
-					font-size: 14px;
+        &__title {
+          font-size: 14px;
 
-					.icon {
-						font-size: 0.9em;
-						padding-left: 5px;
-						vertical-align: middle;
-					}
-				}
+          .icon {
+            font-size: 0.9em;
+            padding-left: 5px;
+            vertical-align: middle;
+          }
+        }
 
-				&:hover {
-					.menu-item__inner {
-						background: lighten(colour('dark_grey'), 8%);
-					}
-				}
+        &:hover {
+          .menu-item__inner {
+            background: colour("dark_grey");
+          }
+        }
 
-				&--active {
-					.menu-item__inner {
-						background: lighten(colour('dark_grey'), 8%);
-						padding-bottom: 30px;
-					}
-				}
+        &--active {
+          .menu-item__inner {
+            background: colour("dark_grey");
+            padding-bottom: 30px;
+          }
+        }
 
-				@include theme('light') {
-					&:hover{
-						.menu-item__inner {
-							background: darken(colour('faint_grey'), 8%);
-						}
+        @include theme("light") {
+          &:hover {
+            .menu-item__inner {
+              background: colour("faint_grey");
+            }
 
-						&:after {
-							background: darken(colour('faint_grey'), 8%);
-						}
-					}
+            &:after {
+              background: colour("faint_grey");
+            }
+          }
 
-					&--active {
-						.menu-item__inner {
-							background: darken(colour('faint_grey'), 8%);
-						}
-					}
-				}
-			}
-		}
-	}
+          &--active {
+            .menu-item__inner {
+              background: colour("faint_grey");
+            }
+          }
+        }
+      }
+    }
+  }
 
-	&__group {
-		padding: 20px 20px 0 20px;
-		margin: 0 -20px -20px -20px;
-		border-radius: 0 0 3px 3px;
-		background: lighten(colour('dark_grey'), 8%);
+  &__group {
+    padding: 20px 20px 0 20px;
+    margin: 0 -20px -20px -20px;
+    border-radius: 0 0 3px 3px;
+    background: colour("dark_grey");
 
-		.field:last-child {
-			padding-bottom: 0;
-		}
+    .field:last-child {
+      padding-bottom: 0;
+    }
 
-		.no-results {
-			padding: 20px 20px 30px 20px;
-			font-size: 1rem;
-		}
+    .no-results {
+      padding: 20px 20px 30px 20px;
+      font-size: 1rem;
+    }
 
-		@include theme('light') {
-			background: darken(colour('faint_grey'), 8%);
-		}
+    @include theme("light") {
+      background: colour("faint_grey");
+    }
 
-		&__volume-control {
-			margin-left: 40px;
-			margin-top: 10px;
-		}
-	}
+    &__volume-control {
+      margin-left: 40px;
+      margin-top: 10px;
+    }
+  }
 
-	&__clients {
-		padding: 0 10px;
-		margin: 10px -20px 0;
-		display: flex;
-		flex-flow: row wrap;
-		background: rgba(128,128,128,0.05);
-	}
+  &__clients {
+    padding: 0 10px;
+    margin: 10px -20px 0;
+    display: flex;
+    flex-flow: row wrap;
+    background: rgba(128, 128, 128, 0.05);
+  }
 
-	&__client {
-		@include clearfix();
-		padding: 10px 10px 30px 60px;
-		position: relative;
-		margin: 0;
-		width: 25%;
-		border-top: none !important;
-		box-sizing: border-box;
+  &__client {
+    @include clearfix();
+    padding: 10px 10px 30px 60px;
+    position: relative;
+    margin: 0;
+    width: 25%;
+    border-top: none !important;
+    box-sizing: border-box;
 
-		&--disconnected {
-			opacity: 0.3;
-		}
+    &--disconnected {
+      opacity: 0.3;
+    }
 
-		&__details {
-			position: relative;
-			padding: 0 14px 14px 14px;
-		}
+    &__details {
+      position: relative;
+      padding: 0 14px 14px 14px;
+    }
 
-		&__group-field {
-			position: absolute;
-			top: -2px;
-			right: -2px;
+    &__group-field {
+      position: absolute;
+      top: -2px;
+      right: -2px;
 
-			.icon {
-				padding-right: 0;
-			}
-		}
+      .icon {
+        padding-right: 0;
+      }
+    }
 
-		&__volume {
-			position: absolute;
-			top: 20px;
-			bottom: 30px;
-			left: 20px;
-		}
+    &__volume {
+      position: absolute;
+      top: 20px;
+      bottom: 30px;
+      left: 20px;
+    }
 
-		&__mute-control {
-			position: absolute;
-			bottom: 0;
-			left: -5px;
-		}
+    &__mute-control {
+      position: absolute;
+      bottom: 0;
+      left: -5px;
+    }
 
-		&__volume-control {
-			position: absolute;
-			top: 0;
-			left: 0;
-			bottom: 30px;
-			height: auto;
-		}
+    &__volume-control {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 30px;
+      height: auto;
+    }
 
-		&__latency {
-			input[type="number"] {
-				max-width: 70px;
-			}
+    &__latency {
+      input[type="number"] {
+        max-width: 70px;
+      }
 
-			.latency-control {
-				display: flex;
-				flex-flow: row;
-				align-items: center;
-				gap: 10px;
+      .latency-control {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        gap: 10px;
 
-				.zero {
-					position: absolute;
-					top: -4px;
-					left: 50%;
-					bottom: 0;
-					width: 1px;
-					background: colour('grey');
-					z-index: 0;
-				}
+        .zero {
+          position: absolute;
+          top: -4px;
+          left: 50%;
+          bottom: 0;
+          width: 1px;
+          background: colour("grey");
+          z-index: 0;
+        }
 
-				.slider__track {
-					&__progress {
-						&--positive {
-							border-top-left-radius: 0;
-							border-bottom-left-radius: 0;
-						}
+        .slider__track {
+          &__progress {
+            &--positive {
+              border-top-left-radius: 0;
+              border-bottom-left-radius: 0;
+            }
 
-						&--negative {
-							border-top-right-radius: 0;
-							border-bottom-right-radius: 0;
+            &--negative {
+              border-top-right-radius: 0;
+              border-bottom-right-radius: 0;
 
-							&:after {
-								right: auto;
-								left: -1px;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+              &:after {
+                right: auto;
+                left: -1px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
-	@include responsive(900px){
-		&__client {
-			width: 50%;
-		}
-	}
+  @include responsive(900px) {
+    &__client {
+      width: 50%;
+    }
+  }
 
-	@include responsive($bp_medium){
-		&__groups,
-		&__client {
-			margin-left: 0;
-			margin-right: 0;
-		}
+  @include responsive($bp_medium) {
+    &__groups,
+    &__client {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
 
-	}
+  @include responsive($bp_small) {
+    &__client {
+      width: auto;
+    }
 
-	@include responsive($bp_small){
-		&__client {
-			width: auto;
-		}
-
-		&__clients {
-			display: block;
-		}
-	}
+    &__clients {
+      display: block;
+    }
+  }
 }

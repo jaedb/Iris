@@ -7,7 +7,7 @@ main .album-view {
       padding-top: 10px;
 
       a:hover {
-        color: darken(colour('mid_grey'), 20%);
+        color: colour("grey300");
       }
     }
 
@@ -39,8 +39,8 @@ main .album-view {
   }
 
   .wiki__text {
-      overflow-wrap: break-word;
-      white-space: pre-wrap;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
   }
 
   @include responsive($bp_medium) {

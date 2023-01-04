@@ -1,60 +1,60 @@
 .dropzones {
-	@include animate(0.1s);
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	transform: translateX(-100%);
-	z-index: 98;
-	background: darken(colour('dark_grey'), 1%);
+  @include animate(0.1s);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-100%);
+  z-index: 98;
+  background: colour("dark_grey");
 
-	@include theme('light') {
-		background: colour('faint_grey');
-	}
+  @include theme("light") {
+    background: colour("faint_grey");
+  }
 
-	&--dragging {
-		transform: translateX(0);
-	}
+  &--dragging {
+    transform: translateX(0);
+  }
 
-	&__item {
-		@include animate();
-		@include gradient_overlay(3px,0);
-		margin: 15px;
-		padding: 40px 20px;
-		background: colour('grey');
-		border: 5px solid transparent;
-		border-radius: 3px;
-		color: colour('white');
-		font-size: 18px;
-		text-align: center;
+  &__item {
+    @include animate();
+    @include gradient_overlay(3px, 0);
+    margin: 15px;
+    padding: 40px 20px;
+    background: colour("grey");
+    border: 5px solid transparent;
+    border-radius: 3px;
+    color: colour("white");
+    font-size: 18px;
+    text-align: center;
 
-		@include theme('light') {
-			background: colour('light_grey');
-			color: colour('darkest_grey');
-		}
+    @include theme("light") {
+      background: colour("light_grey");
+      color: colour("darkest_grey");
+    }
 
-		& * {
-			pointer-events: none;
-		}
+    & * {
+      pointer-events: none;
+    }
 
-		.icon {
-			display: block;
-			margin: 0 auto 10px;
-			width: 32px;
-		}
+    .icon {
+      display: block;
+      margin: 0 auto 10px;
+      width: 32px;
+    }
 
-		&--drag-over {
-			border-color: colour('blue');
+    &--drag-over {
+      border-color: colour("blue");
 
-			&:before {
-				opacity: 0.15;
-			}
-		}
+      &:before {
+        opacity: 0.15;
+      }
+    }
 
-		&--disabled {
-			cursor: not-allowed;
-			opacity: 0.5;
-		}
-	}
+    &--disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
 }
