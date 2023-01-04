@@ -57,6 +57,16 @@ select {
   }
 }
 
+select option {
+  background: rgba(128, 128, 128, 0.05);
+  color: colour("white");
+
+  @include theme("light") {
+    color: colour("darkest_grey");
+    background: rgba(255, 255, 255, 0.75);
+  }
+}
+
 input[type="number"] {
   -moz-appearance: textfield;
 
@@ -200,10 +210,6 @@ select {
   text-decoration: none;
   border: 2px solid transparent;
 
-  @include theme("dark") {
-    color: colour("white");
-  }
-
   .icon {
     padding-right: 8px;
     margin: 0;
@@ -212,6 +218,11 @@ select {
   &:active {
     @include noanimate();
     transform: translate(1px, 1px);
+  }
+
+  &:focus,
+  &:hover {
+    opacity: 0.8;
   }
 
   @include theme("light") {
@@ -223,7 +234,7 @@ select {
       }
 
       &:hover {
-        box-shadow: 0 0 10px colour("darkest_grey-alt");
+        box-shadow: 0 0 0.5em colour("darkest_grey-alt");
       }
     }
   }
@@ -237,7 +248,7 @@ select {
       }
 
       &:hover {
-        box-shadow: 0 0 10px colour("white-alt");
+        box-shadow: 0 0 0.5em colour("white-alt");
       }
     }
   }
@@ -286,7 +297,7 @@ select {
     }
 
     &:hover {
-      box-shadow: 0 0 10px colour("turquoise-alt");
+      box-shadow: 0 0 0.5em colour("turquoise-alt");
     }
   }
 
@@ -294,7 +305,7 @@ select {
     border-color: rgba(0, 0, 0, 0.8);
 
     &:hover {
-      box-shadow: 0 0 10px colour("black-alt");
+      box-shadow: 0 0 0.5em colour("black-alt");
     }
   }
 
@@ -302,7 +313,7 @@ select {
     border-color: rgba(255, 255, 255, 0.8);
 
     &:hover {
-      box-shadow: 0 0 10px colour("white-alt2");
+      box-shadow: 0 0 0.5em colour("white-alt2");
     }
   }
 
@@ -315,7 +326,7 @@ select {
     }
 
     &:hover {
-      box-shadow: 0 0 10px colour("blue-alt");
+      box-shadow: 0 0 0.5em colour("blue-alt");
     }
   }
 
@@ -328,7 +339,7 @@ select {
     }
 
     &:hover {
-      box-shadow: 0 0 10px colour("white-alt");
+      box-shadow: 0 0 0.5em colour("white-alt");
     }
   }
 
@@ -336,7 +347,7 @@ select {
     border-color: colour("grey");
 
     &:hover {
-      box-shadow: 0 0 10px colour("grey-alt");
+      box-shadow: 0 0 0.5em colour("grey-alt");
     }
   }
 
@@ -344,7 +355,7 @@ select {
     border-color: colour("darkest_grey");
 
     &:hover {
-      box-shadow: 0 0 10px colour("darkest_grey-alt");
+      box-shadow: 0 0 0.5em colour("darkest_grey-alt");
     }
   }
 
@@ -360,7 +371,7 @@ select {
     &:hover,
     &-hover:hover {
       color: colour("red");
-      box-shadow: 0 0 10px colour("red-alt");
+      box-shadow: 0 0 0.5em colour("red-alt");
     }
   }
 

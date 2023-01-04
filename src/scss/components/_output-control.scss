@@ -20,10 +20,10 @@
 
     @include theme("dark") {
       color: colour("white");
-      background: colour("grey50");
+      background: colour("overlay_dark");
 
       &:after {
-        background: colour("grey50");
+        background: colour("overlay_dark");
       }
     }
 
