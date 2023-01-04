@@ -1,5 +1,7 @@
+$red-light-bg: darken($red, 20%);
+
 .light-theme {
-  --color-red: darken($red, 20%);
+  --color-red: #{$red-light-bg};
 }
 
 .dark-theme {
