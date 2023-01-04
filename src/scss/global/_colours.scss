@@ -52,66 +52,27 @@ $colours-static: (
   "red-alt": rgba($red, 0.5),
 );
 
-$colours: ();
 :root {
   @each $class, $colour in $colours-static {
-    --color-#{$class}: $colour;
-
-    $colours: map.merge(
-      $colours,
-      (
-        $class: "var(--color-#{$class})",
-      )
-    );
+    --color-#{$class}: #{$colour};
   }
 }
-
-/*$colours: map.merge(
-  $colours,
-  (
-    "turquoise": var(--color-turquoise),
-    "off_white": var(--color-off_white),
-    "faint_grey": var(--color-faint_grey),
-    "light_grey": var(--color-light_grey),
-    "mid_grey": var(--color-mid_grey),
-    "middle_grey": var(--color-middle_grey),
-    "soft_grey": var(--color-soft_grey),
-    "grey": var(--color-grey),
-    "dark_grey": var(--color-dark_grey),
-    "darkest_grey": var(--color-darkest_grey),
-    "secondary_grey": var(--color-secondary_grey),
-    "white": var(--color-white),
-    "black": var(--color-black),
-    "red": var(--color-red),
-    "green": var(--color-green),
-    "blue": var(--color-blue),
-    "light_blue": var(--color-light_blue),
-    "yellow": var(--color-yellow),
-    "orange": var(--color-orange),
-    "overlay_dark": var(--color-overlay_dark),
-    "overlay_light": var(--color-overlay_light),
-    "grey100": var(--color-grey100),
-    "grey200": var(--color-grey200),
-    "grey300": var(--color-grey300),
-    "grey400": var(--color-grey400),
-  )
-);*/
 
 /**
  * Create the variation classes
  * This includes -text, -border and -background
  **/
-@each $class, $colour in $colours {
+@each $class, $colour in $colours-static {
   .#{$class}-text {
-    color: $colour !important;
+    color: var(--color-#{$class}) !important;
   }
 
   .#{$class}-border {
-    border-color: $colour !important;
+    border-color: var(--color-#{$class}) !important;
   }
 
   .#{$class}-background {
-    background-color: $colour !important;
+    background-color: var(--color-#{$class}) !important;
   }
 }
 
@@ -125,8 +86,8 @@ $colours: ();
  * @return hex colour
  */
 @function colour($key) {
-  @if map-has-key($colours, $key) {
-    @return map-get($colours, $key);
+  @if map-has-key($colours-static, $key) {
+    @return "var(--color-#{$key})"; // map-get($colours, $key);
   }
 
   @warn "Unknown `#{$key}` in $colours.";
