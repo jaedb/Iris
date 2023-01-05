@@ -140,7 +140,7 @@ RUN git clone --depth 1 -b gstspotifysrc-hack https://github.com/kingosticks/mop
  && rm -rf mopidy-spotify
 
 # Install additional mopidy extensions and Python dependencies via pip
-COPY requirements.txt .
+COPY docker/requirements.txt .
 RUN python3 -m pip install -r requirements.txt
 
 # Cleanup
