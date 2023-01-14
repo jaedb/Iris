@@ -101,7 +101,7 @@ const GridItem = ({
             dispatch(spotifyActions.getArtistImages(item));
           }
           break;
-        // case 'playlist':
+        case 'playlist':
         case 'album':
           dispatch(mopidyActions.getImages([item.uri]));
           break;
@@ -122,7 +122,7 @@ const GridItem = ({
     to = `/${item.type}/${encodeUri(item.uri)}`;
     if (item.name && item.type !== 'artist') {
       // Strip out "%"; this causes conflicts with our uri decoder
-      to += `/${encodeURIComponent(item.name.replace('%', ''))}`;
+      to += `/${encodeURIComponent(item.name.replace('%', '').replace('/', ''))}`;
     }
   }
 

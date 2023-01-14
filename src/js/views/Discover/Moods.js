@@ -140,7 +140,7 @@ class Mood extends React.Component {
             items={moods}
             details={['playlists']}
             right_column={['source']}
-            getLink={(item) => `/discover/moods/${encodeUri(item.uri)}/${item.name}`}
+            getLink={(item) => `/discover/moods/${encodeUri(item.uri)}/${encodeURIComponent(item.name.replace('%', '').replace('/', ''))}`}
             thumbnail
           />
         </section>
@@ -150,7 +150,7 @@ class Mood extends React.Component {
       <section className="content-wrapper">
         <Grid
           items={moods}
-          getLink={(item) => `/discover/moods/${encodeUri(item.uri)}/${item.name}`}
+          getLink={(item) => `/discover/moods/${encodeUri(item.uri)}/${encodeURIComponent(item.name.replace('%', '').replace('/', ''))}`}
           tile
         />
       </section>
