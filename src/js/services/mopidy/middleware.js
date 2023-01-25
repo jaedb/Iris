@@ -1899,11 +1899,15 @@ const MopidyMiddleware = (function () {
               playlistsToLoad.map((uri) => {
                 request(store, 'playlists.lookup', { uri })
                   .then((playlist) => {
-                    playlists[uri] = formatPlaylist({
-                      name: playlist.name,
-                      uri: playlist.uri,
-                      tracks: formatTracks(playlist.tracks),
-                    });
+                    playlists[uri] = {
+                      uri,
+                      loading: false,
+                      ...playlist ? formatPlaylist({
+                        name: playlist.name,
+                        uri: playlist.uri,
+                        tracks: formatTracks(playlist.tracks),
+                      }) : {},
+                    };
                     loaded += 1;
                     if (loaded === toLoad) {
                       resolve(playlists);
