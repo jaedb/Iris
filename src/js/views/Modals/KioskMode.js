@@ -106,7 +106,7 @@ const KioskMode = () => {
     if (current_track.lyrics) return;
 
     // We got results, but failed to load the lyrics, so re-try
-    if (current_track.lyrics_results && current_track.lyrics === null) {
+    if (current_track?.lyrics_results && current_track.lyrics === null) {
       dispatch(geniusActions.getTrackLyrics(current_track.uri, current_track.path));
       return;
     }

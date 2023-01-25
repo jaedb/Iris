@@ -258,7 +258,9 @@ export function findTrackLyrics(uri) {
 
             // Immediately go and get the first result's lyrics
             const lyrics_result = lyrics_results[0];
-            dispatch(getTrackLyrics(track.uri, lyrics_result.path));
+            if (lyrics_result) {
+              dispatch(getTrackLyrics(track.uri, lyrics_result.path));
+            }
           }
           dispatch(uiActions.stopLoading(loader_key));
         },
