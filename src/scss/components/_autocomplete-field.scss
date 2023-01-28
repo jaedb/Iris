@@ -1,75 +1,73 @@
-
 .autocomplete-field {
-	position: relative;
+  position: relative;
 
-	.input {
-		width: 100%;
-	}
+  .input {
+    width: 100%;
+  }
 
-	&.loading {
-		.input {
-			position: relative;
+  &.loading {
+    .input {
+      position: relative;
 
-			&:after {
-				position: absolute;
-				display: block;
-				content: '';
-				background: rgba(255,255,255,0.2);
-				opacity: 1;
-			    animation: slideloader 1s infinite;
-				bottom: 0;
-				left: 0;
-				right: 0;
-				height: 4px;
-				z-index: 1;
-			}
-		}
-	}
+      &:after {
+        position: absolute;
+        display: block;
+        content: "";
+        background: rgba(255, 255, 255, 0.2);
+        opacity: 1;
+        animation: slideloader 1s infinite;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        z-index: 1;
+      }
+    }
+  }
 
-	.results {
-		position: absolute;
-		top: 37px;
-		left: 0;
-		right: 0;
-		z-index: 97;
-		background: colour('dark_grey');
-		color: colour('white');
+  .results {
+    position: absolute;
+    top: 37px;
+    left: 0;
+    right: 0;
+    z-index: 97;
+    background: colour("dark_grey");
+    color: colour("white");
 
-		.type {
-			&:not(:first-child) {
-				padding-top: 5px;
-			}
+    .type {
+      &:not(:first-child) {
+        padding-top: 5px;
+      }
 
-			h4 {
-				padding: 10px 14px 4px;
-				margin: 0;
-				font-size: 12px;
-				text-transform: uppercase;
-			}
+      h4 {
+        padding: 10px 14px 4px;
+        margin: 0;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
 
-			.result {
-				display: block;
-				padding: 10px 14px;
-				border-top: 1px solid lighten(colour('dark_grey'), 10%);
-				cursor: pointer;
+      .result {
+        display: block;
+        padding: 10px 14px;
+        border-top: 1px solid colour("dark_grey");
+        cursor: pointer;
 
-				&:hover {
-					background: lighten(colour('dark_grey'), 10%);
-				}
-			}
-		}
+        &:hover {
+          background: colour("dark_grey");
+        }
+      }
+    }
 
-		.all-results {
-			display: block;
-			padding: 10px 14px;
-			border-top: 1px solid lighten(colour('dark_grey'), 10%);
-			cursor: pointer;
-			font-weight: bold;
+    .all-results {
+      display: block;
+      padding: 10px 14px;
+      border-top: 1px solid colour("dark_grey");
+      cursor: pointer;
+      font-weight: bold;
 
-			&:hover {
-				background: lighten(colour('dark_grey'), 10%);
-			}
-		}
-	}
+      &:hover {
+        background: colour("dark_grey");
+      }
+    }
+  }
 }
-

@@ -1,0 +1,11 @@
+$red-light-bg: darken($red, 20%);
+$turquoise-light-bg: darken($turquoise, 20%);
+
+.light-theme {
+  --color-red: #{$red-light-bg};
+  --color-turquoise: #{$turquoise-light-bg};
+}
+
+.dark-theme {
+  --color-mid_grey: #{$subtext1};
+}

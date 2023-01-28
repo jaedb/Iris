@@ -1,131 +1,129 @@
 .settings-view {
+  .field.current-user {
+    .text {
+      .user {
+        border: 0;
+        position: relative;
 
-	.field.current-user {
-		.text {
-			.user {
-				border: 0;
-				position: relative;
+        .thumbnail {
+          @include animate();
+          position: absolute;
+          display: block;
+          top: -14px;
+          left: 0;
+          max-width: 40px;
+          border: 2px solid transparent;
+          border-radius: 50%;
+        }
 
-				.thumbnail {
-					@include animate();
-					position: absolute;
-					display: block;
-					top: -14px;
-					left: 0;
-					max-width: 40px;
-					border: 2px solid transparent;
-					border-radius: 50%;
-				}
+        .user-name {
+          padding: 2px 14px 2px 55px;
+        }
 
-				.user-name {
-					padding: 2px 14px 2px 55px;
-				}
+        &[href]:hover {
+          .thumbnail {
+            cursor: pointer;
+            border-color: colour("turquoise");
+          }
+        }
+      }
+    }
+  }
 
-				&[href]:hover {
-					.thumbnail {
-						cursor: pointer;
-						border-color: colour('turquoise');
-					}
-				}
-			}
-		}
-	}
+  .commands-setup {
+    padding-bottom: 20px;
 
-	.commands-setup {
-		padding-bottom: 20px;
-		
-		&__item {
-			position: relative;
-			padding-top: 15px;
-			padding-bottom: 15px;
-			vertical-align: top;
-			justify-items: auto;
+    &__item {
+      position: relative;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      vertical-align: top;
+      justify-items: auto;
 
-			.commands__item {
-				display: inline-block;
-				margin: 0;
-			}
+      .commands__item {
+        display: inline-block;
+        margin: 0;
+      }
 
-			&__drag-handle {
-				cursor: move;
-				padding-right: 0.5em;
-			}
+      &__drag-handle {
+        cursor: move;
+        padding-right: 0.5em;
+      }
 
-			&__details {
-				display: flex;
-			}
+      &__details {
+        display: flex;
+      }
 
-			&__url {
-				@include one_line_text();
-				max-width: 100%;
-				padding-left: 10px;
-				display: inline-block;
-				margin-bottom: -5px;
-			}
+      &__url {
+        @include one_line_text();
+        max-width: 100%;
+        padding-left: 10px;
+        display: inline-block;
+        margin-bottom: -5px;
+      }
 
-			&__actions {
-				text-align: right;
-				justify-self: right;
-				margin-left: auto;
+      &__actions {
+        text-align: right;
+        justify-self: right;
+        margin-left: auto;
 
-				.action {
-					padding: 12px 8px;
-					margin: -12px 0;
-				}
-			} 
-		}
-	}
+        .action {
+          padding: 12px 8px;
+          margin: -12px 0;
+        }
+      }
+    }
+  }
 
-	.field.pusher-connections {
-		.connection.me {
-			color: colour('turquoise');
-		}
-	}
+  .field.pusher-connections {
+    .connection.me {
+      color: colour("green");
+    }
+  }
 
-	@include responsive($bp_medium) {
-		.content-wrapper {
-			padding-bottom: 60px;
-		}
+  @include responsive($bp_medium) {
+    .content-wrapper {
+      padding-bottom: 60px;
+    }
 
-		.field.pusher-connections {
-			.connection {
-				.col {
-					width: auto;
-					display: inline-block;
-					padding-right: 10px;
-				}
-			}
-		}
+    .field.pusher-connections {
+      .connection {
+        .col {
+          width: auto;
+          display: inline-block;
+          padding-right: 10px;
+        }
+      }
+    }
 
-		.field.current-user {
-			.text {
-				padding-top: 10px;
-				padding-bottom: 10px;
-			}
-		}
+    .field.current-user {
+      .text {
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+    }
 
-		.commands-setup {
-			&__item {
-				&__url {
-				}
-			}
-		}
+    .commands-setup {
+      &__item {
+        &__url {
+        }
+      }
+    }
 
-		section {
-			padding: 20px;
-		}
-	}
+    section {
+      padding: 20px;
+    }
+  }
 }
 
-
 .debugger-view {
-	section {
-		padding: 40px;
-	}
+  section {
+    padding: 40px;
+  }
 
-	@include responsive($bp_medium){
-		section {
-			padding: 20px;
-		}
-	}
+  @include responsive($bp_medium) {
+    section {
+      padding: 20px;
+    }
+  }
 }

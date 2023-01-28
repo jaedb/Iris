@@ -12,7 +12,7 @@
 	z-index: 99;
 	font-size: 13px;
 	font-weight: 500;
-	font-family: "Overpass";
+	font-family: $font-family-alt;
 
 	&__section {
 		@include animate();

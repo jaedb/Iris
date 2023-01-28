@@ -4,12 +4,12 @@ name: Русский
 # Common and reusable phrases
 ##
 errors:
-  uri_not_found: 'URI% {uri} не распознан'
-  could_not_load: 'Не удалось загрузить %{name}'
-  could_not_load_library: 'Не удалось загрузить %{name} из %{provider}'
+  uri_not_found: "URI% {uri} не распознан"
+  could_not_load: "Не удалось загрузить %{name}"
+  could_not_load_library: "Не удалось загрузить %{name} из %{provider}"
   no_results: Ничего не найдено
-  authorization_required: 'Сначала вам нужно авторизовать %{provider}'
-  enable_first: 'Сначала включите %{provider}'
+  authorization_required: "Сначала вам нужно авторизовать %{provider}"
+  enable_first: "Сначала включите %{provider}"
   no_service_worker: Неподдерживаемый сервис
   required: Требуется
   unknown_error: Неизвестная ошибка
@@ -19,19 +19,19 @@ errors:
     title: Невозможно изменить порядок элементов
     description: Удалить сортировку/фильтры и повторить попытку
 actions:
-  play: Играть
+  play: Воспроизвести
   play_all: Воспроизвести все
-  play_next: Играть дальше
-  shuffle_play: Играть в случайном порядке
+  play_next: Воспроизвести следующим
+  shuffle_play: Воспроизвести в случайном порядке
   pause: Пауза
   stop: Стоп
   add_to_playlist: Добавить в плейлист
   add_to_library: Добавить в библиотеку
-  add_tracks_to: 'Добавлено %{count} треков в '
+  add_tracks_to: "Добавлено %{count} треков в "
   remove_from_library: Удалить из библиотеки
   add_to_queue: Добавить в очередь
   reset: Сброс
-  back: Отменить
+  back: Назад
   refresh: Oбновить
   enable: Включить
   disable: Выключить
@@ -56,16 +56,16 @@ common:
   sources: Источники
   sort: Сортировать
   filter: Фильтр
-  by: 'после'
-  loading_library: 'Загружается %{provider} %{type}'
+  by: "после"
+  loading_library: "Загружается %{provider} %{type}"
   play_state:
-    playing: Играет
+    playing: Воспроизведение
     paused: Приостановлено
     stopped: Остановлено
     idle: Бездействие
 fields:
-  start_typing: 'Начните печатать...'
-  search: 'Искать...'
+  start_typing: "Начните печатать..."
+  search: "Искать..."
   sort: Сортировать
   view: Просмотр
   source: Источник
@@ -78,7 +78,7 @@ fields:
     all: Все
     thumbnails: Миниатюры
     list: Список
-    as_loaded: Как загружено
+    as_loaded: Время добавления
     name: Имя
     artist: Исполнитель
     album: Альбом
@@ -115,29 +115,29 @@ time:
     singular: год
     plural: лет
 specs:
-  tracks: '%{count} треков'
-  albums: '%{count} альбомов'
-  followers: '%{count} последователей'
-  listeners: '%{count} слушателей'
-  playlists: '%{count} плейлистов'
-  plays: '%{count} играет'
-  popularity: '%{percent}% популярности'
-  added_from: 'Добавлено из'
-  added_by: 'Добавлен пользователем %{by}'
-  added_ago: 'Добавлено %{time} назад'
-  edited: 'Отредактировано '
-  edited_ago: 'Отредактировано %{time} назад'
-  played_ago: 'Играло %{time} назад'
+  tracks: "%{count} треков"
+  albums: "%{count} альбомов"
+  followers: "%{count} последователей"
+  listeners: "%{count} слушателей"
+  playlists: "%{count} плейлистов"
+  plays: "%{count} играет"
+  popularity: "%{percent}% популярности"
+  added_from: "Добавлено из"
+  added_by: "Добавлен пользователем %{by}"
+  added_ago: "Добавлено %{time} назад"
+  edited: "Отредактировано "
+  edited_ago: "Отредактировано %{time} назад"
+  played_ago: "Играло %{time} назад"
 services:
   restore_defaults: Восстановить значения по умолчанию
   mopidy:
     title: Mopidy
-    local: Local
-    adding_uris: 'Добавление %{count} URI(s)'
-    adding_uris_broadcast: '%{username} добавил %{count} URI(s)'
-    searching: 'Поиск %{provider} %{type}'
-    searching_providers: 'Поиск %{count} провайдеров Mopidy'
-    loading_albums: 'Загружается %{count} локальных альбомов'
+    local: Локальные
+    adding_uris: "Добавление %{count} URI(s)"
+    adding_uris_broadcast: "%{username} добавил %{count} URI(s)"
+    searching: "Поиск %{provider} %{type}"
+    searching_providers: "Поиск %{count} провайдеров Mopidy"
+    loading_albums: "Загружается %{count} локальных альбомов"
   spotify:
     title: Spotify
   pusher:
@@ -147,7 +147,7 @@ services:
   genius:
     title: Genius
     switch_lyrics_result: Переключиться на другой результат поиска
-    want_lyrics: 'Хотите текст песни? Авторизовать Genius в '
+    want_lyrics: "Хотите текст песни? Авторизовать Genius в "
   google:
     title: Google
   lastfm:
@@ -165,8 +165,8 @@ services:
 sidebar:
   now_playing: Сейчас играет
   search: Поиск
-  discover: Обнаружить
-  genre: Жанр / Настроение
+  discover: Найти новое
+  moods: Жанр / Настроение
   featured_playlists: Избранные плейлисты.
   new_releases: Новые релизы
   my_music: Моя музыка
@@ -174,10 +174,10 @@ sidebar:
   artists: Исполнитель
   albums: Альбомы
   tracks: Треки
-  browse: Смотреть
+  browse: Сервисы
   settings: Настройки
   servers: Серверы
-  not_connected: '%{name} не подключен'
+  not_connected: "%{name} не подключен"
   browser_offline: Браузер отключен
   update_available: Доступно обновление
 context_menu:
@@ -185,7 +185,7 @@ context_menu:
     title: Добавить в плейлист
     new_playlist: Создать плейлист
     no_playlists: Нет доступных для записи плейлистов
-  play_next: Играть дальше
+  play_next: Воспроизвести следующим
   play_top_tracks: Воспроизвести лучшие треки
   play_all_tracks: Воспроизвести все треки
   love_track: Любимые треки
@@ -213,11 +213,11 @@ snapcast:
   show_disconnected_clients: Показать отключенные клиенты
   no_connected_clients: Нет подключенных клиентов
   host: Host
-  port: Port
+  port: Порт
   name: Имя
   name_disconnected: Имя (Отключен)
   group: Группа
-  new_group: '+ Новая группа'
+  new_group: "+ Новая группа"
   latency: Задержка
   stream: Поток
   volume: Громкость
@@ -226,13 +226,12 @@ snapcast:
     label: Шифрование
     sublabel: Использовать SSL
     description: Требуется SSL-прокси
-    incompatible: ' (требуется при подключении из сеанса браузера HTTPS)'
+    incompatible: " (требуется при подключении из сеанса браузера HTTPS)"
 authentication:
   popup_blocked: Всплывающее окно заблокировано. Разрешите всплывающие окна и повторите попытку.
-  failed: Авторизация не удалась. %{origin} is not the configured authorization_url.
-  log_out: Log out
-  log_in: Log in
-
+  failed: Авторизация не удалась. %{origin}, не настроен authorization_url.
+  log_out: Выйти
+  log_in: Войти
 
 ##
 # Views
@@ -250,22 +249,22 @@ now_playing:
     radio: Радио
 album:
   title: Альбом
-  title_window: '%{name} by %{artist} (album)'
+  title_window: "%{name} by %{artist} (album)"
   wiki:
     title: О
-    published: 'Опубликовано: %{date}'
+    published: "Опубликовано: %{date}"
   tracks:
-    title: Треке
+    title: Треки
     sort:
       disc_track: Номер трека
       name: Имя
 artist:
   title: Исполнитель
-  title_window: '%{name} (исполнитель)'
+  title_window: "%{name} (исполнитель)"
   overview:
     title: Обзор
     top_tracks: Лучшие треки
-    albums: 'Альбомы (%{count})'
+    albums: "Альбомы (%{count})"
     related_artists:
       title: Похожие исполнители
       more: Все связанные исполнители
@@ -279,10 +278,10 @@ artist:
     title: Похожие исполнители
   about:
     title: О
-    source: '%{source} исполнителе'
+    source: "%{source} исполнителе"
     wiki:
-      published: 'Опубликовано: %{date}'
-      origin: 'Оригинал: '
+      published: "Опубликовано: %{date}"
+      origin: "Оригинал: "
   albums:
     sort:
       default: По умолчанию
@@ -315,7 +314,7 @@ debug:
   examples: Examples
 playlist:
   title: Плейлист
-  title_window: '%{name} (playlist)'
+  title_window: "%{name} (playlist)"
   title_plural: Плейлисты
   tracks:
     title: Треки
@@ -330,34 +329,34 @@ queue_history:
   title: История воспроизведения
 search:
   title: Поиск
-  title_window: 'Поиск: %{term}'
+  title_window: "Поиск: %{term}"
   context_actions:
     sort: Сортировать
-    source: 'Источники (%{count})'
+    source: "Источники (%{count})"
   placeholder: Поиск
   all:
     title: Все
   artists:
     title: Исполнители
-    more: 'Все исполнители (%{count})'
+    more: "Все исполнители (%{count})"
   albums:
     title: Альбомы
-    more: 'Все альбомы (%{count})'
+    more: "Все альбомы (%{count})"
   playlists:
     title: Плейлисты
-    more: 'Все плейлисты (%{count})'
+    more: "Все плейлисты (%{count})"
   tracks:
     title: Треки
 track:
   title: Трек
-  title_window: '%{name} by %{artists} (track)'
-  lyrics_origin: 'Оригинал: '
+  title_window: "%{name} by %{artists} (track)"
+  lyrics_origin: "Оригинал: "
   explicit: Явный
   unplayable: Не воспроизводится
-  disc_number: 'Диск %{number}'
-  track_number: 'Трек %{number}'
+  disc_number: "Диск %{number}"
+  track_number: "Трек %{number}"
   unknown_album: Неизвестный альбом
-  want_lyrics: 'Хотите текст песни? Авторизуйте Genius в разделе '
+  want_lyrics: "Хотите текст песни? Авторизуйте Genius в разделе "
   lyrics: Текст песни
 settings:
   title: Настройки
@@ -394,7 +393,7 @@ settings:
     reporting:
       label: Отчетность
       sublabel: Разрешить отчеты об анонимной статистике использования
-      description: 'Эти анонимные данные об использовании важны для выявления ошибок и потенциальных функций, которые делают Iris лучше для всех. Хотите узнать больше? Прочитайте'
+      description: "Эти анонимные данные об использовании важны для выявления ошибок и потенциальных функций, которые делают Iris лучше для всех. Хотите узнать больше? Прочитайте"
       privacy_policy: политика конфиденциальности
       are_you_sure: Вы уверены, что не хотите это поддерживать?
     commands:
@@ -415,22 +414,25 @@ settings:
       label: Соединения
     version:
       label: Версия
-      upgrade_available: 'Доступно обновление (%{version})'
-      upgrade: 'Обновить до %{version}'
+      upgrade_available: "Доступно обновление (%{version})"
+      upgrade: "Обновить до %{version}"
       up_to_date: Актуально
-    share_configuration: Поделиться конфигурацией
+    shared_configuration:
+      label: Конфигурация
+      share: Поделиться
+      import: Импортировать
     restart: Перезапустить сервер
     reset: Сброс настроек
   about:
     title: О
-    blurb_1: ' это проект с открытым исходным кодом от '
-    blurb_2: '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
-    donate: Donate
+    blurb_1: " это проект с открытым исходным кодом от "
+    blurb_2: ". It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know."
+    donate: Поддержать
     github: GitHub
   pusher_connection_list:
     not_connected: Не подключен
     no_connections: Нет соединений
-    you: ' (вы)'
+    you: " (вы)"
   servers:
     current_track: Текущий трек
     inactive: Неактивный
@@ -445,7 +447,7 @@ settings:
       label: Шифрование
       sublabel: Использовать SSL
       description: Требуется SSL-прокси
-      incompatible: '(требуется при подключении из сеанса браузера HTTPS)'
+      incompatible: "(требуется при подключении из сеанса браузера HTTPS)"
     switch: Переключиться на этот сервер
     reconnect: Переподключиться
   services:
@@ -454,7 +456,7 @@ settings:
     unknown: Неизвестно
     current_user: Текущий пользователь
     authorization: Авторизация
-    refresh_token: RОбновить токен
+    refresh_token: Обновить токен
     authorized: Авторизованный
     read_only: Только для чтения
     unauthorized: Неавторизованный
@@ -472,16 +474,13 @@ settings:
         description: код языка ISO 639 в нижнем регистре и код страны в формате ISO 3166-1 alpha-2 в верхнем регистре, соединенные символом подчеркивания (например, 'en_NZ')
 user:
   title: Пользователь
-  title_window: '%{name} (пользователь)'
+  title_window: "%{name} (пользователь)"
   you: Вы
 discover:
   title: Справочник
-  categories:
-    title: 'Жанр / Настроение'
-  category:
-    title: 'Жанр / Настроение'
-    category: Категория
-  featured:
+  moods:
+    title: "Жанр / Настроение"
+  featured_playlists:
     title: Избранные плейлисты
   new_releases:
     title: Новые выпуски
@@ -510,7 +509,7 @@ library:
 modal:
   add_to_playlist:
     title: Добавить в плейлист
-    subtitle: 'Выберите плейлист, чтобы добавить %{count} элементов%{plural} в'
+    subtitle: "Выберите плейлист, чтобы добавить %{count} элементов%{plural} в"
     no_playlists: Нет доступных плейлистов
     no_editable_playlists: Нет редактируемых плейлистов
   add_to_queue:
@@ -525,7 +524,7 @@ modal:
   edit_playlist:
     title: Редактировать плейлист
     title_create: Создать плейлист
-    subtitle: 'И добавьте%{count} элементов%{plural}'
+    subtitle: "И добавьте%{count} элементов%{plural}"
     name_required: Требуется имя
     name: Имя
     description: Описание
@@ -563,23 +562,59 @@ modal:
     title: Добро пожаловать в Ирис
     username: Пользователь
   kiosk:
-    title: Сейчас играет
-    title_window: '%{name} by %{artist} (сейчас воспроизводится)'
+    title: Воспроизведение
+    title_window: "%{name} by %{artist} (сейчас воспроизводится)"
     lyrics: Текст песни
+  shared_config:
+    no_peers: Нет соединений
+    recipients: Получатели
+    configurations: Настройки
+    import_now: Импортировать
+    imported: Импортирование завершено
+    share: Поделиться
+    shared: Настройки предоставлены
+    push:
+      title: Поделиться настройками
+      subtitle: Поделиться авторизациями и настройками интерфейса с другими подключенными пользователями
+    pushed:
+      title: Настройки получены
+      subtitle: Другой пользователь поделилился настройками с вами
+    server:
+      title: Импортировать настройки
+      subtitle: Импортировать авторизации сторонних серверов и настройки интерфейса
+      label: Сервер
+      description: Сохранить на сервер чтобы другие пользователи могли импортировать
+    config:
+      label: Настройки
+      ui:
+        label: Пользовательский интерфейс
+        description: Тема, сортировка, фильтры и т.д.
+      spotify:
+        label: Авторизация Spotify
+        description: "Вы вошли в систему как %{name}"
+      lastfm:
+        label: Авторизация LastFM
+        description: "Вы вошли в систему как %{name}"
+      genius:
+        label: Авторизация Genius
+        description: "Вы вошли в систему как %{name}"
+      snapcast:
+        label: Сервер Snapcast
+        description: Настройки подключения
   share_configuration:
     title: Поделиться конфигурацией
     subtitle: Передайте свои авторизации и настройки интерфейса другому подключенному пользователю
     no_peers: Нет peer подключений
     recipients: Получатели
     configurations: Конфигурации
-    authorization: '%{service} авторизация'
-    logged_in_as: 'Вы вошли как %{name}'
+    authorization: "%{service} авторизация"
+    logged_in_as: "Вы вошли как %{name}"
     snapcast_description: Детали подключения к серверу
     interface: Настройки интерфейса
     interface_description: Тема, сортировка, фильтры и т. д.
     import:
       title: Конфигурация предоставлена
-      subtitle: 'Другой пользователь поделился с вами своей конфигурацией. Это включает в себя:'
+      subtitle: "Другой пользователь поделился с вами своей конфигурацией. Это включает в себя:"
       do_you_want_to_import: Вы хотите импортировать это?
       import_now: Импортировать
       successful: Импорт выполнен успешно

@@ -1,144 +1,142 @@
-
 .sub-tabs {
+  &__menu {
+    @include clearfix();
 
-	&__menu {
-		@include clearfix();
+    .menu__inner {
+      display: flex;
+      margin: 0 0 0 -5px;
+    }
 
-		.menu__inner {
-			display: flex;
-			margin: 0 0 0 -5px;
-		}
+    .menu-item {
+      @include noanimate();
+      width: 20%;
+      min-width: 120px;
+      max-width: 200px;
+      padding: 0 5px;
+      display: block;
+      box-sizing: border-box;
+      border: none !important;
+      cursor: pointer;
 
-		.menu-item {
-			@include noanimate();
-			width: 20%;
-			min-width: 120px;
-			max-width: 200px;
-			padding: 0 5px;
-			display: block;
-			box-sizing: border-box;
-			border: none !important;
-			cursor: pointer;
+      &__inner {
+        position: relative;
+        padding: 30px 10px;
+        margin-bottom: 10px;
+        border-radius: 3px;
+        display: block;
+        text-align: center;
+        box-sizing: border-box;
+      }
 
-			&__inner {
-				position: relative;
-				padding: 30px 10px;
-				margin-bottom: 10px;
-				border-radius: 3px;
-				display: block;
-				text-align: center;
-				box-sizing: border-box;
-			}
+      &__thumbnail {
+        margin-bottom: 15px;
+        display: inline-block;
+      }
 
-			&__thumbnail {
-				margin-bottom: 15px;
-				display: inline-block;
-			}
+      &__icon {
+        font-size: 40px;
+        height: 40px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+        display: inline-block;
 
-			&__icon {
-				font-size: 40px;
-				height: 40px;
-				margin-top: 10px;
-				margin-bottom: 15px;
-				display: inline-block;
+        &.icon--svg {
+          opacity: 0.8;
 
-				&.icon--svg {
-					opacity: 0.8;
+          img {
+            height: 1em;
+          }
+        }
+      }
 
-					img {
-						height: 1em;
-					}
-				}
-			}
+      &__title {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 1em;
+      }
 
-			&__title {
-				margin: 0;
-				padding: 0;
-				font-weight: bold;
-				font-size: 16px;
-				line-height: 1em;
-			}
+      &:hover {
+        .menu-item__inner {
+          background: colour("dark_grey");
 
-			&:hover {
-				.menu-item__inner {
-					background: lighten(colour('dark_grey'), 4%);
+          @include theme("light") {
+            background: colour("faint_grey");
+          }
+        }
+      }
 
-					@include theme('light') {
-						background: darken(colour('faint_grey'), 4%);
-					}
-				}
-			}
+      &:active {
+        -moz-transform: scale(0.98);
+        -webkit-transform: scale(0.98);
+        transform: scale(0.98);
+      }
 
-			&:active {
-				-moz-transform: scale(0.98);
-				-webkit-transform: scale(0.98);
-				transform: scale(0.98);
-			}
+      &--active {
+        .menu-item__inner {
+          background: colour("dark_grey");
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
+          padding-bottom: 40px;
+          margin-bottom: 0;
 
-			&--active {
-				.menu-item__inner {
-					background: lighten(colour('dark_grey'), 4%);
-					border-bottom-left-radius: 0;
-					border-bottom-right-radius: 0;
-					padding-bottom: 40px;
-					margin-bottom: 0;
+          @include theme("light") {
+            background: colour("faint_grey");
+          }
+        }
+      }
+    }
+  }
 
-					@include theme('light') {
-						background: darken(colour('faint_grey'), 4%);
-					}
-				}
-			}
-		}
-	}
+  &__content {
+    padding: 20px;
+    border-radius: 0 0 3px 3px;
+    background: colour("dark_grey");
 
-	&__content {
-		padding: 20px;
-		border-radius: 0 0 3px 3px;
-		background: lighten(colour('dark_grey'), 4%);
+    .field:last-child {
+      padding-bottom: 0;
+    }
 
-		.field:last-child {
-			padding-bottom: 0;
-		}
+    @include theme("light") {
+      background: colour("faint_grey");
+    }
+  }
 
-		@include theme('light') {
-			background: darken(colour('faint_grey'), 4%);
-		}
-	}
+  @include responsive($bp_medium) {
+    margin-left: -20px;
+    margin-right: -20px;
 
-	@include responsive($bp_medium){
-		margin-left: -20px;
-		margin-right: -20px;
+    &__menu {
+      overflow-x: auto;
 
-		&__menu {
-			overflow-x: auto;
+      &::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+      }
 
-			&::-webkit-scrollbar{
-				width: 0px;
-				height: 0px;
-			}
+      &__inner {
+        padding: 0 20px;
+      }
 
-			&__inner {
-				padding: 0 20px;
-			}
+      .menu-item {
+        width: 140px;
 
-			.menu-item {
-				width: 140px;
+        &__inner {
+          padding-top: 10px;
+          padding-bottom: 10px;
+        }
 
-				&__inner {
-					padding-top: 10px;
-					padding-bottom: 10px;
-				}
+        &--active {
+          .menu-item__inner {
+            padding-bottom: 20px;
+          }
+        }
+      }
+    }
 
-				&--active {
-					.menu-item__inner {
-						padding-bottom: 20px;
-					}
-				}
-			}
-		}
-
-		&__content {
-			margin-top: 0;
-		}
-	}
+    &__content {
+      margin-top: 0;
+    }
+  }
 }

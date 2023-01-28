@@ -6,7 +6,7 @@
   z-index: 96;
   width: 220px;
   overflow: hidden;
-  color: colour('white');
+  color: colour("white");
   box-sizing: border-box;
   transform-style: preserve-3d;
 
@@ -29,10 +29,10 @@
     line-height: 1em;
 
     &__item {
-      font-family: "Overpass";
+      font-family: $font-family-alt;
       font-weight: 600;
       font-size: 1.05rem;
-      color: colour('white');
+      color: colour("white");
       text-decoration: none;
       display: flex;
       padding: 0.75em 0.85em;
@@ -40,13 +40,13 @@
       border-radius: 3px;
       line-break: after-white-space;
 
-      @include theme('dark') {
+      @include theme("dark") {
         @include gradient_overlay(3px);
       }
 
-      @include theme('light') {
+      @include theme("light") {
         @include animate();
-        color: colour('darkest_grey');
+        color: colour("darkest_grey");
         font-weight: 600;
       }
 
@@ -75,31 +75,31 @@
         }
 
         &.sidebar__menu__item {
-          color: colour('mid_grey');
+          color: colour("mid_grey");
 
           &:before,
           &:after {
             display: none;
           }
 
-          @include theme('light') {
-            color: colour('soft_grey');
+          @include theme("light") {
+            color: colour("soft_grey");
           }
 
           &.active {
             background: transparent !important;
-            color: colour('turquoise') !important;
+            color: colour("turquoise") !important;
           }
         }
       }
 
       &--active {
-        background: colour('turquoise');
-        color: colour('white') !important;
+        background: colour("turquoise");
+        color: colour("black") !important;
 
         .status {
           .icon {
-            color: colour('white') !important;
+            color: colour("white") !important;
           }
         }
 
@@ -118,8 +118,8 @@
           opacity: 0.15;
         }
 
-        @include theme('light') {
-          color: lighten(colour('darkest_grey'), 20%);
+        @include theme("light") {
+          color: colour("grey00");
         }
       }
 
@@ -141,7 +141,7 @@
         padding: 0 26px 5px 26px;
         font-size: 12px;
         text-transform: uppercase;
-        color: colour('middle_grey');
+        color: colour("middle_grey");
       }
     }
   }
@@ -157,8 +157,8 @@
     z-index: 99;
     font-size: 1.2rem;
 
-    @include theme('light') {
-      color: colour('darkest_grey');
+    @include theme("light") {
+      color: colour("darkest_grey");
     }
   }
 
@@ -171,12 +171,12 @@
     position: fixed;
     z-index: 100;
 
-    @include theme('light') {
-      background: lighten(colour('faint_grey'), 2%);
+    @include theme("light") {
+      background: colour("faint_grey");
     }
 
-    @include theme('dark') {
-      background: colour('darkest_grey');
+    @include theme("dark") {
+      background: colour("darkest_grey");
     }
 
     .sidebar-open & {
