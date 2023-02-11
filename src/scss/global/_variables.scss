@@ -4,6 +4,7 @@ $bp_medium: 800px;
 $bp_small: 500px;
 $bp_narrow: 360px;
 $bp_shallow: 650px;
+$font-family-alt: "Overpass", Helvetica, Arial, sans-serif;
 
 @mixin one_line_text {
   white-space: nowrap;
@@ -343,7 +344,7 @@ $bp_shallow: 650px;
 }
 
 @mixin feature_font() {
-  font-family: "Overpass";
+  font-family: $font-family-alt;
   font-weight: 600;
 }
 
