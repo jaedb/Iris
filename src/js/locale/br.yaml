@@ -1,0 +1,577 @@
+name: Português
+
+##
+# Common and reusable phrases
+##
+errors:
+  uri_not_found: 'Não posso encotrar naeda com a URI %{uri}'
+  could_not_load: 'Não posso carregar %{name}'
+  could_not_load_library: 'Não posso carregar %{name} de %{provider}'
+  no_results: Sem resultados
+  authorization_required: 'devo autorizar %{provider} antes'
+  enable_first: 'Habilite %{provider} antes'
+  no_service_worker: Serviço não suportado
+  required: Requerido
+  unknown_error: Erro desconhecido
+  need_to_be_online: Você precisa estar online para carregar este recurso
+  nothing_selected: Nada seleccionado
+  cannot_reorder:
+    title: Não consigo reordenar Não consigo reordenar itens
+    description: Limpe a ordem/filtros e tente novamente
+actions:
+  play: Reproduzir
+  play_all: Reproduzir tudo
+  play_next: Reproduzir próximo
+  shuffle_play: Reprodução aleatoria
+  pause: Pausa
+  stop: Parar
+  add_to_playlist: Adicionar à Playlist
+  add_to_library: Adicionar à  Biblioteca
+  added_tracks_to: 'Adicionar %{count} faixas a '
+  remove_from_library: Removido da Biblioteca
+  add_to_queue: Adicionar à fila
+  reset: Reiniciar
+  back: Voltar
+  refresh: Atualizar
+  enable: Habilitar
+  disable: Desabilitar
+  send: Enviar
+  save: Guardar
+  start: Iniciar
+  edit: Editar
+  add: Adicionar
+  confirm: Deseja confirmar?
+  delete: Apagar
+  remove: Remover
+  cancel: Cancelar
+  created: '%{name} Criado'
+  saved: '%{name} guardado'
+  deleted: '%{name} apagado'
+common:
+  popularity: Popularidade
+  name: Nome
+  artist: Artista
+  duration: Duração
+  source: Fonte
+  sources: Fontes
+  sort: Ordenar
+  filter: Filtrar
+  by: ' por  '
+  loading_library: 'Carregando %{provider} %{type}'
+fields:
+  start_typing: 'Começar a escrever...'
+  search: 'Buscar...'
+  sort: Ordenar
+  view: Ver
+  source: Fonte
+  uri: URI(s)
+  items_to_add:
+    label: Etiquetas a adicionar
+    placeholder: Sem Etiquetas
+  filter: Filtrar
+  filters:
+    all: Todo
+    thumbnails: Miniaturas
+    list: Lista
+    as_loaded: Como carregar
+    name: Nome
+    artist: Artista
+    album: Album
+    updated: Atualizando
+    tracks: Faixas
+    source: Fonte
+    editable: Editável
+    owner: Proprietário
+    followers: Seguidores
+    popularity: Popularidade
+time:
+  seconds:
+    short: seg
+    singular: segundo
+    plural: segundos
+  minutes:
+    short: min
+    singular: minuto
+    plural: minutos
+  hours:
+    short: hor
+    singular: hora
+    plural: horas
+  days:
+    short: día
+    singular: día
+    plural: días
+  weeks:
+    short: sem
+    singular: semana
+    plural: semanas
+  years:
+    short: ano
+    singular: ano
+    plural: anos
+specs:
+  tracks: '%{count} faixas'
+  albums: '%{count} álbuns'
+  followers: '%{count} seguidores'
+  listeners: '%{count} ouvintes'
+  playlists: '%{count} playlists'
+  plays: '%{count} reproduções'
+  popularity: '%{percent}% popularidade'
+  added: 'Adicionado '
+  added_ago: 'Adicionado á %{time}'
+  edited: 'Editado '
+  edited_ago: 'Editado á %{time}'
+  played_ago: 'Reproduzido á %{time}'
+services:
+  mopidy:
+    title: Mopidy
+    local: Local
+    adding_uris: 'Adicionando %{count} URI(s)'
+    adding_uris_broadcast: '%{username} está adicionando %{count} URI(s)'
+    searching: 'Buscando %{provider} %{type}'
+    searching_providers: 'Buscando %{count} provedores Mopidy'
+    loading_albums: 'Carregando %{count} álbuns locais'
+  spotify:
+    title: Spotify
+  pusher:
+    title: Pusher
+  snapcast:
+    title: Snapcast
+  genius:
+    title: Genius
+    switch_lyrics_result: Alterar para outro resultado de pesquisa de letras
+    want_lyrics: 'Quer ver as letras das músicas? Autorizar o Genius em '
+  google:
+    title: Google
+  lastfm:
+    title: LastFM
+    love: Love
+    unlove: Unlove
+
+##
+# Components
+##
+sidebar:
+  now_playing: Tocando
+  search: Buscar
+  discover: Encontrar
+  genre: Género
+  featured_playlists: Playlist destacadas
+  new_releases: Novos lançamentos
+  my_music: Minha música
+  playlists: Playlists
+  artists: Artistas
+  albums: Álbuns
+  tracks: Faixas
+  browse: Navegar
+  settings: Ajustes
+  not_connected: '%{name} não conectado'
+  browser_offline: Navegador offline
+  update_available: Atualização disponível
+context_menu:
+  add_to_playlist:
+    title: Adicionar à Playlist
+    no_playlists: Sem Playlists editáveis
+  play_next: Reproduzir a seguir
+  play_top_tracks: Reproduzir as faixas superiores
+  play_all_tracks: Reproduzir todas as faixas
+  love_track: Faixa favorita
+  unlove_track: Faixa descartada
+  pin: Fixar
+  unpin: Desfixar
+  go_to_artist: Ir a artista
+  go_to_user: Ir a usuario
+  track_info: Informações da faixa
+  discover_similar: Encontrar similares
+  start_radio: Começar rádio
+  copy_uri: Copiar URI(s)
+  refresh: Atualizar
+playback_controls:
+  consume: Usar
+  shuffle: Aleatória
+  repeat: Repetir
+  no_outputs: Sem saídas
+  mute: Mute
+  unmute: Desmute
+snapcast:
+  enabled: Habilitado
+  streaming_enabled: Streaming habilitado
+  show_disconnected_clients: Mostrar clientes desconectados
+  no_connected_clients: Nenhum cliente conectado
+  host: Host
+  port: Porta
+  name: Nome
+  name_disconnected: Nome (desconectado)
+  group: Grupo
+  new_group: '+ Novo grupo'
+  latency: Latência
+  stream: Stream
+  volume: Volúme
+authentication:
+  popup_blocked: Pop-up bloqueado. Permita janelas pop-up e tente novamente.
+  failed: Falha na autorização. %{origin} não é o URL de autorização configurado.
+  log_out: Sair
+  log_in: Entrar
+
+
+##
+# Views
+##
+now_playing:
+  title: Reproduzir
+  context_actions:
+    radio: Radio
+    history: Historico
+    add_uri: Adicionar URI
+  current_track:
+    playing_from: Reproduzindo de
+    shuffle: Aleatória
+    clear: Limpar
+    radio: Rádio
+album:
+  title: Álbum
+  title_window: '%{name} por %{artist} (album)'
+  wiki:
+    title: Acerca de
+    published: 'Publicado: %{date}'
+  tracks:
+    title: Faixas
+    sort:
+      disc_track: Número da faixa
+      name: Nome
+artist:
+  title: Artista
+  title_window: '%{name} (artista)'
+  overview:
+    title: Visão geral
+    top_tracks: Faixas superiores
+    albums: Sem álbum
+    related_artists:
+      title: Artistas relacionados
+      more: Todos os artistas relacionados
+  tracks:
+    title: Faixas
+    sort:
+      disc_track: Número de Faixas
+      name: Nome
+      album: Álbum
+  related_artists:
+    title: Artistas relacionados
+  about:
+    title: Acerca de
+    source: '%{source} artista'
+    wiki:
+      published: 'Publicado: %{date}'
+      origin: 'Origem: '
+  albums:
+    sort:
+      default: Por padrão
+      name: Nome
+      release_date: Lançado
+      track_count: Faixa
+    filter:
+      all: Todo
+      albums: Álbuns
+      singles: Singles
+      compilations: Copilação
+debug:
+  title: Depurar
+  ui:
+    title: Interface de usuário
+  debug:
+    title: Depurar
+    overlay: Mostrar capa de depuração
+  logging:
+    title: Iniciando sessão
+    mopidy: Log Mopidy
+    pusher: Log Notificações
+    actions: Log Ações
+    snapcast: Log Snapcast
+  create_notification: Criado notificação
+  create_process: Criado notificação de proceso
+  run_test: Executar teste
+  call: Chamar
+  data: Data
+  examples: Exemplo
+playlist:
+  title: Playlist
+  title_window: '%{name} (playlist)'
+  title_plural: Playlists
+  tracks:
+    title: Faixas
+    sort:
+      default: Por Padrão
+      sort_id: Como cargado
+      added_at: Data adição
+      name: Nome
+      artist: Artista
+      album: Álbum
+queue_history:
+  title: Histórico de reprodução
+search:
+  title: Buscar
+  title_window: 'Buscar: %{term}'
+  context_actions:
+    sort: Ordenar
+    source: 'Fontes (%{count})'
+  placeholder: Buscar
+  all:
+    title: Todo
+  artists:
+    title: Artistas
+    more: 'Todos os artistas (%{count})'
+  albums:
+    title: Álbumes
+    more: 'Todos os álbuns (%{count})'
+  playlists:
+    title: Playlists
+    more: 'Todas as playlists (%{count})'
+  tracks:
+    title: Faixas
+track:
+  title: Faixa
+  title_window: '%{name} por %{artists} (track)'
+  lyrics_origin: 'Origem: '
+  explicit: Explícito
+  disc_number: 'Disco %{number}'
+  track_number: 'Faixa %{number}'
+  unknown_album: Álbum desconhecido
+  want_lyrics: 'Quer ver a letra da faixa? Autorize Genius baixo '
+settings:
+  title: Ajustes
+  help: Ajuda
+  server:
+    title: Servidor
+    username:
+      label: Nome de usuário
+      description: Uma string não exclusiva usada para identificar este cliente (sem caracteres especiais)
+  interface:
+    title: Interface
+    language:
+      label: Idioma
+    theme:
+      label: Tema
+      auto: Auto
+      auto_tooltip: Detectar a sua preferência do navegador do sistema operacional
+      dark: Escuro
+      light: Claro
+    behavior:
+      label: Comportamento
+      clear_tracklist: Limpar lista de faixas da reprodução URI(s)
+      clear_tracklist_tooltip: Reproduzir uma ou mias URIs irá limpar a fila de reprodução atual
+      hotkeys: Habilitar teclas de atalho
+      smooth_scrolling: Ativar rolagem suave
+      touch_events: Ativar eventos de toque nos controles de reprodução
+      touch_events_tooltip: Permitir deslizar para a esquerda e para a direita para mudar de faixa
+      wide_scrollbars: Use barras de rolagem largas
+      grid_glow: Efeito brilhante nas miniaturas
+      grid_glow_tooltip: Desative o efeito para dispositivos lentos ou navegadores antigos
+    reporting:
+      label: Etiquetas
+      sublabel: Permitir etiquetas de estatisticas de uso anônimo
+      description: 'Esses dados de uso anônimos são importantes para identificar bugs e possíveis recursos que tornam o Iris melhor. você quer saber mais? Ler '
+      privacy_policy: Política de privacidade
+      are_you_sure: Tem certeza de que não deseja esse recurso?
+    commands:
+      label: Comandos
+  advanced:
+    title: Avançado
+    start_local_scan: Iniciar pesquisa local
+    artist_uri:
+      label: URI da biblioteca de artistas
+      description: URI usado para armazenar a biblioteca do artista
+    album_uri:
+      label: URI da biblioteca de álbuns
+      description: URI usado para armazenar a biblioteca de álbuns
+    track_uri:
+      label: URI da biblioteca de faixas
+      description: URI usado para armazenar a biblioteca de faixas
+    connections:
+      label: Conexões
+    version:
+      label: Versão
+      upgrade_available: 'Atualização disponível (%{version})'
+      upgrade: 'Aztualizar a %{version}'
+      up_to_date: Atualizada
+    share_configuration: Compartilhar configurações
+    restart: Reiniciar servidor
+    reset: Reiniciar ajustes
+  about:
+    title: Acerca de
+    blurb_1: ' é um projeto open-source de '
+    blurb_2: '. É grátis e não tem garantia. Se você pagou a alguém por este software, informe-nos.'
+    donate: Doar
+    github: GitHub
+  pusher_connection_list:
+    not_connected: Não conectado
+    no_connections: Sem conexão
+    you: ' (Você)'
+  servers:
+    inactive: Inativo
+    connecting: Conectando
+    disconnected: Desconectado
+    connected: Conectado
+    new_server: Novo servidor
+    name: Nome
+    host: Host
+    port: Porta
+    encryption:
+      label: criptografia
+      sublabel: Usar SSL
+      description: Requer um proxy SSL
+    switch: Trocar este servidor
+    reconnect: Reconectar
+  services:
+    title: Serviços
+    limited_access: Acceso limitado
+    unknown: Desconhecido
+    current_user: Usuario atual
+    authorization: Autorização
+    refresh_token: Atualizar o token
+    authorized: Autorizado
+    read_only: Somente leitura
+    unauthorized: Sem autorização
+    enabled: Habilitado
+    disabled: Deshabilitado
+    connected: Conectado
+    disconnected: Desconectado
+    spotify:
+      mopidy_spotify_not_running: A extensão Mopidy-Spotify não está funcionando. Não será possível reproduzir faixas do Spotify
+      country:
+        label: País
+        description: Código do país ISO 3166-1 alpha-2 (eg 'PT')
+      locale:
+        title: Local
+        description: Código de idioma em minúsculas ISO 639 e código do país em maiúsculas ISO 3166-1 alpha-2, acompanhado por um sublinhado (eg 'pt_BR')
+user:
+  title: Usuário
+  title_window: '%{name} (usuario)'
+  you: Vocês
+discover:
+  title: Encontrar
+  categories:
+    title: 'Género / Estilo'
+  category:
+    title: 'Género / Estilo'
+    category: Categoría
+  featured:
+    title: Playlists destacadas
+  new_releases:
+    title: Novos lançamentos
+  recommendations:
+    title: Encontrar
+    tracks: Faixas
+    artists: Artistas
+    albums: Álbuns
+    body_title: Explorar nova música
+    body_subtitle: Adicione propriedades musicais para construir seu som
+    too_many_seeds: Muitas faixas! Você pode usar até 5 faixas entre músicas, artistas e gêneros.
+    find_recommendations: Encontrar recomendações
+library:
+  albums:
+    title: Meus álbuns
+  artists:
+    title: Meus artistas
+  browse:
+    title: Navegar
+  browse_directory:
+    title: Diretório
+  playlists:
+    title: Meinhas playlists
+  tracks:
+    title: Meinhas faixas
+modal:
+  add_to_playlist:
+    title: adicionar à Playlist
+    subtitle: 'Selecione a lista de reprodução para adicionar %{count} faixa%{plural}'
+    no_playlists: Nenhuma lista de reprodução disponível
+    no_editable_playlists: Sem listas de reprodução editáveis
+  add_to_queue:
+    title: Adicionar à fila
+    subtitle: Adicione uma lista separada por vírgulas de URIs à fila de reprodução
+    uris: URI(s)
+    add_random: Encontrar faixas aleatorias
+    position:
+      label: Posição
+      end: Fim
+      next: Depois da faixa atual
+  edit_playlist:
+    title: Editar playlist
+    title_create: Crear playlist
+    name_required: Requier um nome
+    name: Nome
+    description: Descrição
+    provider: Provedor
+    image:
+      label: Arte da capa
+      description: Só JPEG, 256kB máx. Deixe-o vazio para manter a imagem inalterada.
+    options:
+      label: Opções
+      public: Público
+      collaborative: Colaborativa
+    create_playlist: Crio a playlist
+  edit_command:
+    title: Editar comando
+    title_create: Criar comando
+    name: Nome
+    colour: Cor
+    icon: Icone
+    url: URL
+    method:
+      label: Método
+      get: GET
+      post: POST
+    data: Dados
+    headers: Cabeçalhos adicionais
+  edit_radio:
+    title: Rádio
+    subtitle: Adicione e remova faixas para moldar o som do seu rádio. O rádio usa as recomendações do Spotify para sugerir músicas semelhantes às suas faixas.
+    invalid_seed_uri: URI(s) inválida
+    too_many_seeds: Mais de 5 faixas, ignorando o resto
+    only_spotify_uris: Só URIs do Spotify são suportados
+    already_added: URI já adicionado
+    no_seeds: Sem faixas
+  initial_setup:
+    title: Bem-vindo a Iris
+    username: Usuário
+  kiosk:
+    title: Reproduzindo
+    title_window: '%{name} por %{artist} (reproduzindo agora)'
+    lyrics: Letras
+  share_configuration:
+    title: Compartilhar configurações
+    subtitle: Transfira suas autorizações e configurações de interface para outro usuário conectado
+    no_peers: Sem conexões de mesmo nível
+    recipients: Recipientes
+    configurations: ConfiguraçÕes
+    authorization: '%{service} autorização'
+    logged_in_as: 'Registrado como %{name}'
+    snapcast_description: Detalhes da conexão do servidor
+    interface: Ajustes de Interface
+    interface_description: Tema, ordem, filtros, etc
+    import:
+      title: Configuração compartilhad
+      subtitle: 'Outro usuário compartilhou suas configurações com você. Isso inclui:'
+      do_you_want_to_import: Você quer importar?
+      import_now: Importar agora
+      successful: Importada com sucesso
+  reset:
+    title: Reiniciar Iris
+    subtitle: Limpe suas configurações locais, informações de armazenamento ou cache
+    items: Reiniciar de fábrica
+    preferences:
+      label: Preferencias
+      description: Costumização de Interface
+    database:
+      label: Base de dados
+      description: Base de dados local de bibliotecas e ajustes
+    service_worker:
+      label: Service worker
+      description: Reinstalar service worker
+    cache:
+      label: Extrair cacher
+      description: Uma API externa requer cache (requer Service Worker)
+    test_mode:
+      label: Modo Teste
+      description: Log detalhado para fins de diagnóstico
+

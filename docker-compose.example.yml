@@ -10,7 +10,6 @@ services:
       - /tmp/snapserver:/tmp
       - ./docker/snapserver/snapserver.conf:/etc/snapserver.conf
       - ./docker/snapserver/snapserver.json:/root/.config/snapserver/server.json
-      - ./docker/snapserver/meta_mopidy.py:/usr/share/snapserver/plug-ins/meta_mopidy.py
   mopidy:
     image: jaedb/iris
     environment:

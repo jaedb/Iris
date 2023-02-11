@@ -15,10 +15,15 @@ import { SourceIcon } from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
 import FilterField from '../components/Fields/FilterField';
 import { i18n, I18n } from '../locale';
-import * as coreActions from '../services/core/actions';
-import * as uiActions from '../services/ui/actions';
-import * as mopidyActions from '../services/mopidy/actions';
-import * as lastfmActions from '../services/lastfm/actions';
+import { loadAlbum } from '../services/core/actions';
+import { playURIs } from '../services/mopidy/actions';
+import { getAlbum } from '../services/lastfm/actions';
+import {
+  setSort,
+  setWindowTitle,
+  showContextMenu,
+  hideContextMenu,
+} from '../services/ui/actions';
 import { uriSource } from '../util/helpers';
 import Button from '../components/Button';
 import { makeItemSelector, makeSortSelector } from '../util/selectors';
@@ -28,15 +33,6 @@ import { decodeUri, formatContext } from '../util/format';
 const SORT_KEY = 'album_tracks';
 
 const Album = () => {
-  const { loadAlbum } = coreActions;
-  const { getAlbum } = lastfmActions;
-  const { playURIs } = mopidyActions;
-  const {
-    setSort,
-    setWindowTitle,
-    showContextMenu,
-    hideContextMenu,
-  } = uiActions;
   const dispatch = useDispatch();
   const { uri: encodedUri } = useParams();
   const uri = decodeUri(encodedUri);
