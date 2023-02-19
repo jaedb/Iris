@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { connect, useSelector, useDispatch } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { find, groupBy, map } from 'lodash';
+import { useSelector, useDispatch } from 'react-redux';
+import { find, groupBy, map, isEmpty } from 'lodash';
 import VolumeControl from './VolumeControl';
 import MuteControl from './MuteControl';
 import Icon from '../Icon';
 import Thumbnail from '../Thumbnail';
 import LinksSentence from '../LinksSentence';
 import DropdownField from './DropdownField';
-import * as coreActions from '../../services/core/actions';
-import * as mopidyActions from '../../services/mopidy/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
 import { sortItems, indexToArray } from '../../util/arrays';
@@ -166,18 +163,10 @@ const Group = ({
 };
 
 const Outputs = () => {
-  const snapcastEnabled = useSelector((state) => state.snapcast.enabled);
   const allGroups = indexToArray(useSelector((state) => state.snapcast.groups || {}));
   const allStreams = useSelector((state) => state.snapcast.streams || {});
   const allServers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
   const groupsByStream = groupBy(allGroups, 'stream_id');
-  if (!snapcastEnabled) {
-    return (
-      <p className="no-results">
-        <I18n path="playback_controls.snapcast_not_enabled" />
-      </p>
-    );
-  }
 
   return (
     <ErrorBoundary>
@@ -199,12 +188,10 @@ const Outputs = () => {
   );
 }
 
-const Commands = () => {
+const Commands = ({ commands }) => {
   const dispatch = useDispatch();
-  const commandsObj = useSelector((state) => state.pusher.commands || {});
-  if (!commandsObj) return null;
 
-  let items = indexToArray(commandsObj);
+  let items = indexToArray(commands);
   if (items.length <= 0) return null;
 
   items = sortItems(items, 'sort_order');
@@ -230,6 +217,8 @@ const Commands = () => {
 };
 
 const OutputControl = ({ force_expanded }) => {
+  const snapcastEnabled = useSelector((state) => state.snapcast.enabled);
+  const commands = useSelector((state) => state.pusher.commands);
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
@@ -238,9 +227,9 @@ const OutputControl = ({ force_expanded }) => {
     }
   }, [force_expanded]);
 
+  if (!snapcastEnabled && isEmpty(commands)) return null;
+
   if (expanded) {
-    const outputs = <Outputs />;
-    const commands = <Commands />;
     return (
       <span className="output-control">
         {!force_expanded && <div className="click-outside" onClick={() => setExpanded(false)} />}
@@ -251,8 +240,8 @@ const OutputControl = ({ force_expanded }) => {
           <Icon name="speaker" />
         </button>
         <div className="output-control__inner">
-          {commands}
-          {outputs}
+          {!isEmpty(commands) && <Commands commands={commands} />}
+          {snapcastEnabled && <Outputs />}
         </div>
       </span>
     );
