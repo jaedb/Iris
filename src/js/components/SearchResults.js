@@ -1,5 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { sortItems } from '../util/arrays';
 import URILink from './URILink';
 import Icon from './Icon';
@@ -11,38 +12,21 @@ import { makeSearchResultsSelector, getSortSelector } from '../util/selectors';
 
 const SearchResults = ({
   type,
-  query,
-  sortField,
-  sortReverse: sortReverseProp,
-  uri_schemes_priority,
   all,
-  results: rawResults,
 }) => {
-  const encodedTerm = encodeURIComponent(query.term);
-  let results = rawResults;
-  let sortReverse = sortReverseProp;
-
-  if (!results) return null;
-
-  let sort_map = null;
-  switch (sortField) {
-    case 'uri':
-      sort_map = uri_schemes_priority;
-      break;
-    case 'followers':
-      // Followers (aka popularlity works in reverse-numerical order)
-      // Ie "more popular" is a bigger number
-      sortReverse = !sortReverse;
-      break;
-    default:
-      break;
-  }
+  const { term } = useParams();
+  const { sortField, sortReverse } = useSelector(
+    (state) => getSortSelector(state, 'search_results'),
+  );
+  const searchResultsSelector = makeSearchResultsSelector(term, type);
+  const rawResults = useSelector(searchResultsSelector);
+  const encodedTerm = encodeURIComponent(term);
+  let results = [...rawResults];
 
   results = sortItems(
     results,
     (type === 'tracks' && sortField === 'followers' ? 'popularity' : sortField),
     sortReverse,
-    sort_map,
   );
 
   const resultsCount = results.length;
@@ -50,7 +34,7 @@ const SearchResults = ({
     results = results.slice(0, 6);
   }
 
-  if (results.length <= 0) return null;
+  if (all && !results.length) return null;
 
   return (
     <div>
@@ -72,56 +56,59 @@ const SearchResults = ({
           </URILink>
         )}
       </h4>
-      <section className="grid-wrapper">
-        {type === 'artists' && <Grid items={results} show_source_icon mini={all} />}
-        {type === 'albums' && <Grid items={results} show_source_icon mini={all} />}
-        {type === 'playlists' && <Grid items={results} show_source_icon mini={all} />}
-        {type === 'tracks' && (
-          <TrackList
-            source={{
-              uri: `iris:search:${query.type}:${encodedTerm}`,
-              name: 'Search results',
-              type: 'search',
-            }}
-            tracks={results}
-            show_source_icon
-          />
-        )}
-        {/* <LazyLoadListener enabled={this.props.artists_more && spotify_search_enabled} loadMore={loadMore} /> */}
+      {results.length > 0 && (
+        <section className="grid-wrapper">
+          {type === 'artists' && <Grid items={results} show_source_icon mini={all} />}
+          {type === 'albums' && <Grid items={results} show_source_icon mini={all} />}
+          {type === 'playlists' && <Grid items={results} show_source_icon mini={all} />}
+          {type === 'tracks' && (
+            <TrackList
+              source={{
+                uri: `iris:search:${type}:${encodedTerm}`,
+                name: 'Search results',
+                type: 'search',
+              }}
+              tracks={results}
+              show_source_icon
+            />
+          )}
+          {/* <LazyLoadListener enabled={this.props.artists_more && spotify_search_enabled} loadMore={loadMore} /> */}
 
-        {resultsCount > results.length && (
-          <Button uri={`iris:search:${type}:${encodedTerm}`} uriType="search" unencoded>
-            <I18n path={`search.${type}.more`} count={resultsCount} />
-          </Button>
-        )}
-      </section>
+          {resultsCount > results.length && (
+            <Button uri={`iris:search:${type}:${encodedTerm}`} uriType="search" unencoded>
+              <I18n path={`search.${type}.more`} count={resultsCount} />
+            </Button>
+          )}
+        </section>
+      )}
     </div>
   );
 };
 
-const mapStateToProps = (state, ownProps) => {
-  const {
-    query: {
-      term,
-    },
-    type,
-  } = ownProps;
-  const {
-    ui: {
-      uri_schemes_priority = [],
-    },
-  } = state;
-  const searchResultsSelector = makeSearchResultsSelector(term, type);
-  const { sortField, sortReverse } = getSortSelector(state, 'search_results');
+const AllSearchResults = () => (
+  <>
+    <div className="search-result-sections cf">
+      <section className="search-result-sections__item">
+        <div className="inner">
+          <SearchResults type="artists" all />
+        </div>
+      </section>
+      <section className="search-result-sections__item">
+        <div className="inner">
+          <SearchResults type="albums" all />
+        </div>
+      </section>
+      <section className="search-result-sections__item">
+        <div className="inner">
+          <SearchResults type="playlists" all />
+        </div>
+      </section>
+    </div>
+    <SearchResults type="tracks" all />
+  </>
+);
 
-  return {
-    results: searchResultsSelector(state),
-    uri_schemes_priority,
-    sortField,
-    sortReverse,
-  };
-};
-
-const mapDispatchToProps = () => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(SearchResults);
+export {
+  SearchResults,
+  AllSearchResults,
+}
