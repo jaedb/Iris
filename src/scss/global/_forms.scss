@@ -214,6 +214,10 @@ select {
     transform: translate(1px, 1px);
   }
 
+  &:hover {
+    text-decoration: none;
+  }
+
   @include theme('light') {
     &--default {
       border-color: colour('darkest_grey');
