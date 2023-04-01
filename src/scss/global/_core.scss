@@ -195,10 +195,8 @@ main {
     cursor: pointer;
 
     &:not(.control):not(.action):not(.button) {
-      border-bottom: 1px solid transparent;
-
       &:hover {
-        border-color: colour('mid_grey');
+        text-decoration: underline;
       }
     }
   }
