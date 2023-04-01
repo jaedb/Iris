@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { compact } from 'lodash';
 import { I18n } from '../../locale';
 import Link from '../Link';
+import Loader from '../Loader';
 import Icon from '../Icon';
 import { encodeUri } from '../../util/format';
 import {
