@@ -20,7 +20,6 @@ import {
   makeProvidersSelector,
   getSortSelector,
 } from '../../util/selectors';
-import { formatSimpleObject } from '../../util/format';
 
 const SORT_KEY = 'library_artists';
 const processKeys = [

@@ -32,13 +32,11 @@ RUN apt update \
 WORKDIR /usr/src/gst-plugins-rs
 
 # Clone source of gst-plugins-rs to workdir
-ARG GST_PLUGINS_RS_TAG=main
+ARG GST_PLUGINS_RS_TAG=0.10.5
 RUN git clone -c advice.detachedHead=false \
 	--single-branch --depth 1 \
 	--branch ${GST_PLUGINS_RS_TAG} \
 	https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git ./
-# EXPERIMENTAL: For gstreamer-spotify set upgraded version number of dependency librespot to 0.4.2 
-RUN sed -i 's/librespot = { version = "0.4", default-features = false }/librespot = { version = "0.4.2", default-features = false }/g' audio/spotify/Cargo.toml
 
 # Build GStreamer plugins written in Rust (optional with --no-default-features)
 ENV DEST_DIR /target/gst-plugins-rs
@@ -99,9 +97,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
 
 # Install mopidy and (optional) DLNA-server dleyna from apt.mopidy.com
 # see https://docs.mopidy.com/en/latest/installation/debian/
-RUN mkdir -p /usr/local/share/keyrings \
- && wget -q -O /usr/local/share/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg \
- && wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list \
+RUN mkdir -p /etc/apt/keyrings \
+ && wget -q -O /etc/apt/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg \
+ && wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/bullseye.list \
  && apt-get update \
  && apt-get install -y \ 
  	mopidy \
@@ -133,7 +131,7 @@ RUN git clone --depth 1 --single-branch -b ${IRIS_VERSION} https://github.com/ja
 
 # Install mopidy-spotify-gstspotify (Hack, not released yet!)
 # (https://github.com/kingosticks/mopidy-spotify/tree/gstspotifysrc-hack)
-RUN git clone --depth 1 -b gstspotifysrc-hack https://github.com/kingosticks/mopidy-spotify.git mopidy-spotify \
+RUN git clone --depth 1 https://github.com/mopidy/mopidy-spotify.git mopidy-spotify \
  && cd mopidy-spotify \
  && python3 setup.py install \
  && cd .. \

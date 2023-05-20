@@ -1,4 +1,6 @@
 {
+  "start_url": ".",
+  "scope": ".",
   "manifest_version": "3.55",
   "short_name": "Iris",
   "name": "Iris",
@@ -24,7 +26,6 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/",
   "background_color": "#08d58f",
   "theme_color": "#181818",
   "display": "standalone",

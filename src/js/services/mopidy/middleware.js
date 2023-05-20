@@ -848,12 +848,6 @@ const MopidyMiddleware = (function () {
               // Enable Iris providers when the backend is available
               store.dispatch(spotifyActions.set({ enabled: uri_schemes.includes('spotify:') }));
               store.dispatch(googleActions.set({ enabled: uri_schemes.includes('gmusic:') }));
-
-              // If we haven't customised our search schemes, add all to search
-              if (store.getState().ui.uri_schemes_search_enabled === undefined) {
-                store.dispatch(uiActions.set({ uri_schemes_search_enabled: uri_schemes }));
-              }
-
               store.dispatch({ type: 'MOPIDY_URI_SCHEMES', uri_schemes });
             },
           );

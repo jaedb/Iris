@@ -124,7 +124,6 @@ const ShareConfig = () => {
         'grid_glow_enabled',
         'sort',
         'initial_setup_complete',
-        'uri_schemes_search_enabled',
       ],
     ),
     snapcast: pick(snapcast, ['enabled', 'host', 'port', 'ssl']),

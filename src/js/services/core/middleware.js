@@ -180,9 +180,10 @@ const CoreMiddleware = (function () {
         const {
           ui: {
             allow_reporting,
-            uri_schemes_search_enabled = [],
-            search_settings,
           },
+          mopidy: {
+            uri_schemes = [],
+          } = {},
         } = store.getState();
 
         if (allow_reporting) {
@@ -198,15 +199,13 @@ const CoreMiddleware = (function () {
         // Trigger reducer immediately; this will hose out any previous results
         next(action);
 
-        if (uri_schemes_search_enabled.includes('spotify:')) {
-          if (!search_settings || search_settings.spotify) {
-            store.dispatch(spotifyActions.getSearchResults(query));
-          }
+        if (uri_schemes.includes('spotify:')) {
+          store.dispatch(spotifyActions.getSearchResults(query));
         }
         store.dispatch(mopidyActions.getSearchResults(
           query,
           100,
-          uri_schemes_search_enabled.filter((i) => i !== 'spotify:'), // Omit Spotify; handled above
+          uri_schemes.filter((i) => i !== 'spotify:'), // Omit Spotify; handled above
         ));
         break;
       }
