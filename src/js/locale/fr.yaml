@@ -58,6 +58,11 @@ common:
   filter: Filtrer
   by: ' par '
   loading_library: 'Chargement de %{provider} %{type}'
+  play_state:
+    playing: Lecture en cours
+    paused: En pause
+    stopped: Arrêté
+    idle: Inactif
 fields:
   start_typing: 'Commencez à taper...'
   search: 'Rechercher...'
@@ -117,7 +122,8 @@ specs:
   playlists: '%{count} listes de lecture'
   plays: '%{count} lectures'
   popularity: '%{percent}% popularité'
-  added: 'Ajouté '
+  added_from: 'Ajouté à partir de '
+  added_by: 'Ajouté par %{by}'
   added_ago: 'Ajouté il y a %{time}'
   edited: 'Edited '
   edited_ago: 'Édité il y a %{time}'
@@ -132,6 +138,7 @@ services:
     searching: 'Recherche dans %{provider} %{type}'
     searching_providers: 'Recherche parmi %{count} Mopidy services'
     loading_albums: 'Chargement de %{count} albums locaux'
+    loading_artwork: 'Chargement des illustrations'
   spotify:
     title: Spotify
   pusher:
@@ -148,6 +155,12 @@ services:
     title: LastFM
     love: Aimer
     unlove: Ne plus aimer
+  youtube:
+    title: YouTube
+  tidal:
+    title: Tidal
+  jellyfin:
+    title: Jellyfin
 
 ##
 # Components
@@ -184,6 +197,7 @@ context_menu:
   unpin: Ne plus épingler
   go_to_artist: Vers l'artiste
   go_to_user: Vers l'utilisateur
+  go_to_track: Vers le morceau
   track_info: Info sur le morceau
   discover_similar: Découvrir des morceaux similaires
   start_radio: Démarrer la radio
@@ -210,6 +224,7 @@ snapcast:
   latency: Latence
   stream: Flux
   volume: Volume
+  not_controllable: Non contrôlable
   encryption:
     label: Chiffrement
     sublabel: Utiliser SSL
@@ -406,7 +421,10 @@ settings:
       upgrade_available: 'Mise-à-jour disponible (%{version})'
       upgrade: 'Mettre à jour vers %{version}'
       up_to_date: À jour
-    share_configuration: Partager la configuration
+    shared_configuration:
+      label: Partager la configuration
+      share: Exporter/partager
+      import: Importer depuis un serveur
     restart: Redémarrer le serveur
     reset: Réinitialiser tous les paramètres
   about:
@@ -420,6 +438,7 @@ settings:
     no_connections: Pas de connexion
     you: ' (vous)'
   servers:
+    current_track: Morceau actuel
     inactive: Inactif
     connecting: Connexion en cours
     disconnected: Déconnecté
@@ -463,12 +482,9 @@ user:
   you: Vous
 discover:
   title: Découvrir
-  categories:
+  moods:
     title: 'Genre / Ambiance'
-  category:
-    title: 'Genre / Ambiance'
-    category: Categorie
-  featured:
+  featured_playlists:
     title: Listes de lecture en vedette
   new_releases:
     title: Nouveautés
@@ -553,23 +569,46 @@ modal:
     title: Lecture en cours
     title_window: '%{name} par %{artist} (lecture en cours)'
     lyrics: Paroles
-  share_configuration:
-    title: Partager la configuration
-    subtitle: Partager vos autorisations et vos paramètres d'interface avec un autre utilisateur connecté
+  import_configuration:
+    title: Importer la configuration
+    configurations: Configurations à importer
+    import_now: Importer maintenant
+  shared_config:
     no_peers: Aucune autre connexion
     recipients: Destinataire
     configurations: Configurations
-    authorization: '%{service} autorisation'
-    logged_in_as: 'Connecté comme %{name}'
-    snapcast_description: Détail de la connexion
-    interface: Paramètres d'interface
-    interface_description: Thème, tri, filtres, etc.
-    import:
-      title: Configuration partagée
-      subtitle: 'Un autre utilisateur a partagé sa configuration avec vous. Elle contient :'
-      do_you_want_to_import: Voulez-vous importer cette configuration ?
-      import_now: Importer
-      successful: Import réussi
+    import_now: Importer maintenant
+    imported: Import réussi
+    share: Partager maintenant
+    shared: Partage réussi
+    push:
+      title: Partage de configuration
+      subtitle: "Partager les autorisations et les paramètres de l'interface avec un autre utilisateur connecté"
+    pushed:
+      title: Configuration reçue
+      subtitle: Un autre utilisateur a partagé sa configuration avec vous
+    server:
+      title: Import de configuration
+      subtitle: Importer des autorisations et autres paramètres
+      label: Serveur
+      description: "Sauvegarder sur le serveur pour permettre l'import par d'autres utilisateurs"
+    config:
+      label: Configurations
+      ui:
+        label: Interface utilisateur
+        description: Thème, tri, filtres, etc
+      spotify:
+        label: Autorisation Spotify
+        description: 'Connecté en tant que %{name}'
+      lastfm:
+        label: Autorisation LastFM
+        description: 'Connecté en tant que %{name}'
+      genius:
+        label: Authorisation Genius
+        description: 'Connecté en tant que %{name}'
+      snapcast:
+        label: Snapcast
+        description: Détails de la connexion
   reset:
     title: Réinitialiser Iris
     subtitle: Nettoyer la configuration, le stockage ou le cache
@@ -593,6 +632,9 @@ modal:
     title: Touches multimédia
     keys:
       info: Multimédia info
+      now_playing: Lecture en cours
+      search: Recherche
+      kiosk_mode: Mode kiosque
       exit: Annuler l'opération en cours
       play_pause: Lire/pause
       stop: Stop
