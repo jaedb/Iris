@@ -8,20 +8,22 @@ import SearchForm from '../components/Fields/SearchForm';
 import { AllSearchResults, SearchResults } from '../components/SearchResults';
 import { startSearch } from '../services/core/actions';
 import {
-  set,
+  setSort,
   hideContextMenu,
   setWindowTitle,
 } from '../services/ui/actions';
 import { i18n } from '../locale';
 import { getSortSelector } from '../util/selectors';
 
+const SORT_KEY = 'search_results';
+
 const Search = () => {
   const { term, type = 'all' } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const lastQuery = useSelector((state) => state.core?.search_results?.query);
-  const { sortField, sortReverse } = useSelector(
-    (state) => getSortSelector(state, 'search_results'),
+  const [sortField, sortReverse] = useSelector(
+    (state) => getSortSelector(state, SORT_KEY, 'name'),
   );
 
   useEffect(() => {
@@ -43,14 +45,19 @@ const Search = () => {
 
   const onReset = () => navigate('/search');
 
-  const onSortChange = (value) => {
-    dispatch(set({ uri_schemes_search_enabled: value }));
+  const onSortChange = (field) => {
+    let reverse = false;
+    if (field !== null && sortField === field) {
+      reverse = !sortReverse;
+    }
+    dispatch(setSort(SORT_KEY, field, reverse));
     dispatch(hideContextMenu());
   }
 
   const sortOptions = [
-    { value: 'followers', label: i18n('common.popularity') },
     { value: 'name', label: i18n('common.name') },
+    { value: 'uri', label: i18n('fields.filters.source') },
+    { value: 'followers', label: i18n('common.popularity') },
     { value: 'artist', label: i18n('common.artist') },
     { value: 'duration', label: i18n('common.duration') },
   ];

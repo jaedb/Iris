@@ -10,13 +10,15 @@ import { I18n } from '../locale';
 import Button from './Button';
 import { makeSearchResultsSelector, getSortSelector } from '../util/selectors';
 
+const SORT_KEY = 'search_results';
+
 const SearchResults = ({
   type,
   all,
 }) => {
   const { term } = useParams();
-  const { sortField, sortReverse } = useSelector(
-    (state) => getSortSelector(state, 'search_results'),
+  const [sortField, sortReverse] = useSelector(
+    (state) => getSortSelector(state, SORT_KEY, 'name'),
   );
   const searchResultsSelector = makeSearchResultsSelector(term, type);
   const rawResults = useSelector(searchResultsSelector);

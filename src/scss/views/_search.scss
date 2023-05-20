@@ -5,18 +5,18 @@
     position: absolute;
     top: 30px;
     left: 90px;
-    right: 170px;
+    right: 150px;
 
     input {
       @include feature_font();
-      padding: 6px 0 4px 0;
+      padding: 6px 0 0 0;
       width: 100%;
       font-size: 3rem;
       font-weight: 700;
-      height: 4rem;
+      height: 1em;
       background: transparent;
       border: 0;
-      border-bottom: 2px solid colour('grey');
+      border-bottom: 2px solid rgba(128,128,128,0.3);
       border-radius: 0;
       letter-spacing: -0.15rem;
 
@@ -24,6 +24,11 @@
       &:not(:root:root) {
         height: 4.6rem;
         margin-top: -0.5rem;
+
+        @include responsive($bp_medium) {
+          height: 2.6rem;
+          margin-top: 0;
+        }
       }
 
       &:focus,
