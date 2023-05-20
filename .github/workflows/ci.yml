@@ -53,7 +53,7 @@ jobs:
 
     name: ${{ matrix.name }}
     runs-on: ubuntu-20.04
-    container: ghcr.io/mopidy/ci:latest
+    container: ghcr.io/mopidy/ci:7
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
