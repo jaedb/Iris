@@ -17,7 +17,6 @@
 			padding: 0 5px;
 			display: block;
 			box-sizing: border-box;
-			border: none !important;
 			cursor: pointer;
 
 			&__inner {
@@ -60,6 +59,8 @@
 			}
 
 			&:hover {
+				text-decoration: none;
+
 				.menu-item__inner {
 					background: lighten(colour('dark_grey'), 4%);
 

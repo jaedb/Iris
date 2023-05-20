@@ -194,12 +194,8 @@ main {
     text-decoration: none;
     cursor: pointer;
 
-    &:not(.control):not(.action):not(.button) {
-      border-bottom: 1px solid transparent;
-
-      &:hover {
-        border-color: colour('mid_grey');
-      }
+    &:hover {
+      text-decoration: underline 0.15em;
     }
   }
 
@@ -262,17 +258,16 @@ h2 {
 
   a {
     color: inherit;
-    text-decoration: none;
+    text-decoration: none 2px;
 
     &:hover {
-      border-bottom: 2px solid colour('white');
+      text-decoration: underline 2px;
     }
   }
 
   &.grey-text {
     a:hover {
       color: colour('mid_grey') !important;
-      border-bottom: 2px solid colour('mid_grey');
     }
   }
 }
@@ -342,7 +337,7 @@ h5 {
     text-decoration: none;
 
     &:hover {
-      text-decoration: underline;
+      text-decoration: underline 0.15em;
     }
   }
 }

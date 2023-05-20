@@ -7,8 +7,6 @@
     margin-right: 25px;
     font-size: 15px;
     font-weight: 500;
-    border-bottom: 0;
-    padding-bottom: 3px;
     cursor: pointer;
 
     @include theme('light') {
@@ -21,25 +19,7 @@
 
     &--active,
     &:hover {
-      border-bottom-width: 3px !important;
-      border-bottom-style: solid;
-      padding-bottom: 0px;
-    }
-
-    &--active {
-      border-color: colour('white') !important;
-
-      @include theme('light') {
-        border-color: colour('darkest_grey') !important;
-      }
-    }
-
-    &:not(.sub-views__option--active):hover {
-      border-color: colour('soft_grey') !important;
-
-      @include theme('light') {
-        border-color: colour('light_grey') !important;
-      }
+      text-decoration: underline 0.15em;
     }
   }
 
