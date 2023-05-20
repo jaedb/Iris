@@ -1,0 +1,81 @@
+# Use Alpine edge for now as some required dependencies are only in the testing repository
+FROM alpine:edge
+
+# Switch to the root user while we do our changes
+USER root
+WORKDIR /
+
+# Install GStreamer and other required Debian packages
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+ && apk update \
+ && apk add \
+  dumb-init \
+  shadow \
+  sudo \
+  git \
+  py3-pip \
+  mopidy \
+  py3-mopidy-spotify
+
+# Install Node, to build Iris JS application
+RUN apk add nodejs npm
+
+# Upgrade Python package manager pip
+# https://pypi.org/project/pip/
+RUN python3 -m pip install --upgrade pip
+
+# Clone Iris from the repository and install in development mode.
+# This allows a binding at "/iris" to map to your local folder for development, rather than
+# installing using pip.
+# Note: ADD helps prevent RUN caching issues. When HEAD changes in repo, our cache will be invalidated!
+ADD https://api.github.com/repos/jaedb/Iris/git/refs/heads/master version.json
+ENV IRIS_VERSION=develop
+RUN git clone --depth 1 --single-branch -b ${IRIS_VERSION} https://github.com/jaedb/Iris.git /iris \
+ && cd /iris \
+ && npm install \
+ && npm run prod \
+ && python3 setup.py develop \
+ && mkdir -p /var/lib/mopidy/.config \
+ && ln -s /config /var/lib/mopidy/.config/mopidy \
+ # Allow mopidy user to run system commands (restart, local scan, etc)
+ && echo "mopidy ALL=NOPASSWD: /iris/mopidy_iris/system.sh" >> /etc/sudoers \
+ # Enable container mode (disable restart option, etc.)
+ && echo "1" >> /IS_CONTAINER \
+ # Copy Version file
+ && cp /iris/VERSION /
+
+# Install additional mopidy extensions and Python dependencies via pip
+COPY docker/requirements.txt .
+RUN python3 -m pip install -r requirements.txt
+
+# Cleanup
+RUN rm -rf /root/.cache \
+ && rm -rf /iris/node_modules
+
+# Start helper script.
+COPY docker/entrypoint.sh /entrypoint.sh
+
+# Copy Default configuration for mopidy
+COPY docker/mopidy/mopidy.example.conf /config/mopidy.conf
+
+# Copy the pulse-client configuratrion
+COPY docker/mopidy/pulse-client.conf /etc/pulse/client.conf
+
+# Allows any user to run mopidy, but runs by default as a randomly generated UID/GID.
+# RUN useradd -ms /bin/bash mopidy
+ENV HOME=/var/lib/mopidy
+RUN set -ex \
+ && usermod -G audio,wheel mopidy \
+ && mkdir /var/lib/mopidy/local \
+ && chown mopidy:audio -R $HOME /entrypoint.sh /iris \
+ && chmod go+rwx -R $HOME /entrypoint.sh /iris
+
+# Runs as mopidy user by default.
+USER mopidy:audio
+
+VOLUME ["/var/lib/mopidy/local"]
+
+EXPOSE 6600 6680 1704 1705 5555/udp
+
+ENTRYPOINT ["/usr/bin/dumb-init", "/entrypoint.sh"]
+CMD ["mopidy"]
