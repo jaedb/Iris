@@ -542,22 +542,22 @@ class Settings extends React.Component {
           <br />
           <div>
             <Button
-              href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"
-              target="_blank"
-              tracking={{ category: 'About', action: 'Paypal' }}
-            >
-              <I18n path="settings.about.donate">
-                <Icon type="fontawesome" name="paypal" />
-                {' '}
-              </I18n>
-            </Button>
-            <Button
               href="https://github.com/jaedb/Iris"
               target="_blank"
               tracking={{ category: 'About', action: 'GitHub' }}
             >
               <I18n path="settings.about.github">
                 <Icon type="fontawesome" name="github" />
+                {' '}
+              </I18n>
+            </Button>
+            <Button
+              href="https://github.com/sponsors/jaedb"
+              target="_blank"
+              tracking={{ category: 'About', action: 'Sponsor' }}
+            >
+              <I18n path="settings.about.sponsor">
+                <Icon type="fontawesome" name="heart" />
                 {' '}
               </I18n>
             </Button>
