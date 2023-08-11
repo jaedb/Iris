@@ -678,6 +678,10 @@ footer {
     font-size: 12px;
   }
 
+  &--inline {
+    vertical-align: middle;
+  }
+
   h1 &,
   h2 & {
     line-height: 1.4em;

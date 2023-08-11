@@ -207,7 +207,7 @@ class Settings extends React.Component {
             <I18n path="settings.services.title" />
             <a name="services" />
           </h4>
-          
+
           <Services />
 
           <h4 className="underline">
@@ -456,7 +456,7 @@ class Settings extends React.Component {
                     <a
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flag flag--dark"
+                      className="flag flag--dark flag--inline"
                       href={`https://github.com/jaedb/Iris/releases/tag/${pusher.version.latest}`}
                     >
                       <Icon name="cloud_download" className="blue-text" />

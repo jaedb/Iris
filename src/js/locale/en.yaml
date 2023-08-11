@@ -213,6 +213,7 @@ playback_controls:
 snapcast:
   enabled: Enabled
   streaming_enabled: Streaming enabled
+  stream_on_this_device: Stream on this device
   show_disconnected_clients: Show disconnected clients
   no_connected_clients: No connected clients
   host: Host

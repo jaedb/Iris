@@ -1,85 +1,43 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as coreActions from '../services/core/actions';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { SnapStream } from './SnapStream.tsx';
 
-class Stream extends React.Component {
-  constructor(props) {
-    super(props);
-
-    if (props.enabled && props.streaming_enabled) {
-      this.start();
-    }
-  }
-
-  start = () => {
-    const {
-      host,
-      port,
-      ssl,
-    } = this.props;
-
-    if (this.snapstream) {
-      this.snapstream.play();
-    } else {
-      const baseUrl = `${ssl ? 'wss' : 'ws'}://${host}:${port}`;
-      this.snapstream = new SnapStream(baseUrl);
-    }
-  }
-
-  stop = () => {
-    if (this.snapstream) {
-      this.snapstream.stop();
-      this.snapstream = null;
-    }
-  }
-
-  componentDidUpdate = ({
-    streaming_enabled: prevStreamingEnabled,
-  }) => {
-    const {
-      enabled,
-      streaming_enabled,
-    } = this.props;
-
-    if (!prevStreamingEnabled && enabled && streaming_enabled) {
-      this.start();
-    }
-    if (!enabled || !streaming_enabled) {
-      this.stop();
-    }
-  }
-
-  render = () => null;
-}
-
-const mapStateToProps = (state) => {
+const Stream = () => {
+  const [stream, setStream] = useState(null);
   const {
-    snapcast: {
-      enabled,
-      streaming_enabled,
-      host,
-      port,
-      ssl,
-    },
-    pusher: {
-      username,
-    },
-  } = state;
-
-  return {
     enabled,
     streaming_enabled,
     host,
     port,
     ssl,
-    username,
-  };
-};
+  } = useSelector((state) => state?.snapcast || {});
 
-const mapDispatchToProps = (dispatch) => ({
-  coreActions: bindActionCreators(coreActions, dispatch),
-});
+  const start = () => {
+    if (stream) {
+      stream.play();
+    } else {
+      setStream(new SnapStream(`${ssl ? 'wss' : 'ws'}://${host}:${port}`));
+    }
+  }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Stream);
+  const stop = () => {
+    if (stream) {
+      stream.stop();
+      setStream(null);
+    }
+  }
+
+  useEffect(
+    () => {
+      if (enabled && streaming_enabled) {
+        start();
+      } else {
+        stop();
+      }
+    }, [enabled, streaming_enabled],
+  );
+
+  return null;
+}
+
+export default Stream;

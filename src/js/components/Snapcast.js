@@ -44,18 +44,6 @@ const Snapcast = (props) => {
           <label>
             <input
               type="checkbox"
-              name="streaming_enabled"
-              checked={streaming_enabled}
-              disabled={!enabled}
-              onChange={() => actions.setStreamingEnabled(!streaming_enabled)}
-            />
-            <span className="label">
-              <I18n path="snapcast.streaming_enabled" />
-            </span>
-          </label>
-          <label>
-            <input
-              type="checkbox"
               name="show_disconnected_clients"
               checked={show_disconnected_clients}
               onChange={() => uiActions.set({ snapcast_show_disconnected_clients: !show_disconnected_clients })}

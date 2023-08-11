@@ -8,7 +8,13 @@ import Thumbnail from '../Thumbnail';
 import LinksSentence from '../LinksSentence';
 import DropdownField from './DropdownField';
 import * as pusherActions from '../../services/pusher/actions';
-import * as snapcastActions from '../../services/snapcast/actions';
+import {
+  setGroupStream,
+  setClientMute,
+  setClientVolume,
+  setStreamingEnabled,
+  controlStream,
+} from '../../services/snapcast/actions';
 import { sortItems, indexToArray } from '../../util/arrays';
 import { titleCase } from '../../util/helpers';
 import { I18n, i18n } from '../../locale';
@@ -38,10 +44,10 @@ const Header = ({
   let onClick = null;
   switch (playbackStatus) {
     case 'playing':
-      if (canPause) onClick = () => dispatch(snapcastActions.controlStream(id, 'pause'));
+      if (canPause) onClick = () => dispatch(controlStream(id, 'pause'));
       break;
     default:
-      if (canPlay) onClick = () => dispatch(snapcastActions.controlStream(id, 'play'));
+      if (canPlay) onClick = () => dispatch(controlStream(id, 'play'));
       break;
   }
 
@@ -88,6 +94,7 @@ const Header = ({
 };
 
 const Group = ({
+  setExpanded,
   group: {
     id: groupId,
     name: groupName,
@@ -111,6 +118,7 @@ const Group = ({
           className="text"
           to={`/settings/services/snapcast/${groupId}`}
           scrollTo="#services-snapcast-groups"
+          onClick={() => setExpanded(false)}
         >
           {titleCase(groupName)}
         </Link>
@@ -121,7 +129,7 @@ const Group = ({
           options={allStreams.map((s) => ({ value: s.id, label: titleCase(s.id) }))}
           noLabel
           handleChange={
-            (value) => dispatch(snapcastActions.setGroupStream(groupId, value))
+            (value) => dispatch(setGroupStream(groupId, value))
           }
         />
       </h5>
@@ -143,14 +151,14 @@ const Group = ({
                   noTooltip
                   mute={mute}
                   onMuteChange={
-                    (value) => dispatch(snapcastActions.setClientMute(clientId, value))
+                    (value) => dispatch(setClientMute(clientId, value))
                   }
                 />
                 <VolumeControl
                   volume={volume}
                   mute={mute}
                   onVolumeChange={
-                    (value) => dispatch(snapcastActions.setClientVolume(clientId, value))
+                    (value) => dispatch(setClientVolume(clientId, value))
                   }
                 />
               </div>
@@ -162,11 +170,13 @@ const Group = ({
   );
 };
 
-const Outputs = () => {
+const Outputs = ({ setExpanded }) => {
+  const dispatch = useDispatch();
   const allGroups = indexToArray(useSelector((state) => state.snapcast.groups || {}));
   const allStreams = useSelector((state) => state.snapcast.streams || {});
   const allServers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
   const groupsByStream = groupBy(allGroups, 'stream_id');
+  const { streaming_enabled } = useSelector((state) => state?.snapcast || {});
 
   return (
     <ErrorBoundary>
@@ -180,10 +190,29 @@ const Outputs = () => {
         return (
           <div className="output-control__stream" key={`stream_${id}`}>
             <Header stream={stream} />
-            {groups.map((group) => <Group group={group} key={`group_${group.id}`} />)}
+            {
+              groups.map(
+                (group) => (
+                  <Group setExpanded={setExpanded} group={group} key={`group_${group.id}`} />
+                )
+              )
+            }
           </div>
         );
       })}
+      <div className="field checkbox" style={{ paddingLeft: 12 }}>
+        <label>
+          <input
+            type="checkbox"
+            name="streaming_enabled"
+            checked={streaming_enabled}
+            onChange={() => dispatch(setStreamingEnabled(!streaming_enabled))}
+          />
+          <span className="label">
+            <I18n path="snapcast.stream_on_this_device" />
+          </span>
+        </label>
+      </div>
     </ErrorBoundary>
   );
 }
@@ -241,7 +270,7 @@ const OutputControl = ({ force_expanded }) => {
         </button>
         <div className="output-control__inner">
           {!isEmpty(commands) && <Commands commands={commands} />}
-          {snapcastEnabled && <Outputs />}
+          {snapcastEnabled && <Outputs setExpanded={setExpanded} />}
         </div>
       </span>
     );
