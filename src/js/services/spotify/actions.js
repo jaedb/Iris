@@ -1130,7 +1130,9 @@ export function getUser(uri, { full, forceRefetch } = {}) {
  *
  * @oaram uri string
  * */
-export function getAlbum(uri, { full, forceRefetch } = {}) {
+export function getAlbum(uri, options = {}) {
+  const { full, forceRefetch, callbackAction } = options;
+
   return (dispatch, getState) => {
     let endpoint = `albums/${getFromUri('albumid', uri)}`;
     if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
@@ -1145,6 +1147,27 @@ export function getAlbum(uri, { full, forceRefetch } = {}) {
         dispatch(coreActions.itemLoaded({
           ...formatAlbum(response),
         }));
+
+        if (callbackAction) {
+          switch (callbackAction.name) {
+            case 'enqueue':
+              dispatch(mopidyActions.enqueueURIs({
+                uris: [uri],
+                from: formatContext(response),
+                ...callbackAction,
+              }));
+              break;
+            case 'play':
+              dispatch(mopidyActions.playURIs({
+                uris: [uri],
+                from: formatContext(response),
+                ...callbackAction,
+              }));
+              break;
+            default:
+              break;
+          }
+        }
 
         if (full) {
           let tracks = formatTracks(response.tracks.items);

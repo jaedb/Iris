@@ -213,6 +213,7 @@ playback_controls:
 snapcast:
   enabled: Enabled
   streaming_enabled: Streaming enabled
+  stream_on_this_device: Stream on this device
   show_disconnected_clients: Show disconnected clients
   no_connected_clients: No connected clients
   host: Host
@@ -431,7 +432,7 @@ settings:
     title: About
     blurb_1: ' is an open-source project by '
     blurb_2: '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
-    donate: Donate
+    sponsor: Become a sponsor
     github: GitHub
   pusher_connection_list:
     not_connected: Not connected

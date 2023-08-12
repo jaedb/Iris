@@ -1,8 +1,13 @@
 import { compact } from 'lodash';
+import { formatContext } from './format';
 import localForage from 'localforage';
-
-const coreActions = require('../services/core/actions.js');
-const uiActions = require('../services/ui/actions.js');
+import { stopLoading } from '../services/ui/actions';
+import { enqueueURIs, playURIs } from '../services/mopidy/actions';
+import {
+  setLoading,
+  loadItems,
+  restoreItemsFromColdStore,
+} from '../services/core/actions';
 
 /**
  * Inspect object to check for missing dependent properties
@@ -77,6 +82,7 @@ const ensureLoaded = ({
     options: {
       forceRefetch,
       full,
+      callbackAction,
     },
   } = action;
   const {
@@ -86,11 +92,12 @@ const ensureLoaded = ({
       } = {},
     } = {},
   } = store.getState();
+  const dispatch = store.dispatch;
 
   // Forced refetch bypasses everything
   if (forceRefetch) {
     console.info(`Force-refetching "${uri}"`);
-    store.dispatch(coreActions.setLoading(uri, true));
+    store.dispatch(setLoading(uri, true));
     fetch();
     return;
   }
@@ -108,17 +115,40 @@ const ensureLoaded = ({
     fullDependents,
   });
 
+  const runCallback = (item) => {
+    switch (callbackAction.name) {
+      case 'enqueue':
+        dispatch(enqueueURIs({
+          uris: [item.uri],
+          from: formatContext(item),
+          ...callbackAction,
+        }));
+        break;
+      case 'play':
+        dispatch(playURIs({
+          uris: [item.uri],
+          from: formatContext(item),
+          ...callbackAction,
+        }));
+        break;
+      default:
+        break;
+    }
+  }
+
   // Item already in our index?
   if (item) {
     if (missingDependents(item).length === 0) {
-      store.dispatch(uiActions.stopLoading(uri));
+      store.dispatch(stopLoading(uri));
       console.info(`"${uri}" already in index`);
 
       const uris = dependentUris(item);
       if (uris.length) {
         console.info(`Loading ${uris.length} dependents`, { uris });
-        store.dispatch(coreActions.loadItems(type, uris));
+        store.dispatch(loadItems(type, uris));
       }
+
+      if (callbackAction) runCallback(item);
       return;
     }
   }
@@ -126,13 +156,14 @@ const ensureLoaded = ({
   // What about in the coldstore?
   localForage.getItem(uri).then((restoredItem) => {
     if (!restoredItem || missingDependents(restoredItem).length > 0) {
-      store.dispatch(coreActions.setLoading(uri, true));
+      store.dispatch(setLoading(uri, true));
       fetch();
       return;
     }
 
     console.info(`Restoring "${uri}" from database`);
-    store.dispatch(coreActions.restoreItemsFromColdStore([restoredItem]));
+    store.dispatch(restoreItemsFromColdStore([restoredItem]));
+    if (callbackAction) runCallback(restoredItem);
 
     // We already have the dependents of our restored item, so restore them.
     // We assume that because THIS item is in the coldstore, its dependents
@@ -147,7 +178,7 @@ const ensureLoaded = ({
       Promise.all(restoreAllDependents).then(
         (dependentItems) => {
           store.dispatch(
-            coreActions.restoreItemsFromColdStore(
+            restoreItemsFromColdStore(
               compact(dependentItems), // Squash nulls (ie items not found in coldstore)
             ),
           );
