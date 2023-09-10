@@ -44,9 +44,9 @@ actions:
   delete: 삭제
   remove: 제거
   cancel: 취소
-  created: %{name}을(를) 생성하였습니다
-  saved: %{name}을(를) 저장하였습니다
-  deleted: %{name}을(를) 삭제하였습니다
+  created: '%{name}을(를) 생성하였습니다'
+  saved: '%{name}을(를) 저장하였습니다'
+  deleted: '%{name}을(를) 삭제하였습니다'
 common:
   popularity: 인기도
   name: 이름
