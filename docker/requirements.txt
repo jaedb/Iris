@@ -5,5 +5,5 @@ Mopidy-Soundcloud
 Mopidy-Youtube
 Mopidy-YTMusic
 ytmusicapi
-youtube_dl
+yt-dlp
 tox
