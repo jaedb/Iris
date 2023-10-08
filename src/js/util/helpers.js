@@ -603,6 +603,9 @@ const upgradeSpotifyPlaylistUri = function (uri) {
   return upgradeSpotifyPlaylistUris([uri])[0];
 };
 
+const getSearchResultKey = ({ provider, type, term }) =>
+  [provider.replace(':', ''), type, term].join(':');
+
 export {
   debounce,
   throttle,
@@ -626,6 +629,7 @@ export {
   upgradeSpotifyPlaylistUris,
   upgradeSpotifyPlaylistUri,
   iconFromKeyword,
+  getSearchResultKey,
 };
 
 export default {
@@ -651,4 +655,5 @@ export default {
   upgradeSpotifyPlaylistUris,
   upgradeSpotifyPlaylistUri,
   iconFromKeyword,
+  getSearchResultKey,
 };

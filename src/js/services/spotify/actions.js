@@ -6,6 +6,7 @@ import {
   getFromUri,
   uriType,
   upgradeSpotifyPlaylistUris,
+  getSearchResultKey,
 } from '../../util/helpers';
 import {
   formatPlaylistGroup,
@@ -613,7 +614,8 @@ export function getMore(endpoint, core_action = null, custom_action = null, extr
   };
 }
 
-export function getSearchResults({ type, term }, limit = 50, offset = 0) {
+export function getSearchResults(query, limit = 50, offset = 0) {
+  const { type, term } = query;
   const processKey = 'SPOTIFY_GET_SEARCH_RESULTS';
   return (dispatch, getState) => {
     const {
@@ -641,24 +643,21 @@ export function getSearchResults({ type, term }, limit = 50, offset = 0) {
         (response) => {
           if (response.tracks !== undefined) {
             dispatch(coreActions.searchResultsLoaded(
-              { term, type },
-              'tracks',
+              getSearchResultKey({ provider: 'spotify', type: 'tracks', term }),
               formatTracks(response.tracks.items),
             ));
           }
 
           if (response.artists !== undefined) {
             dispatch(coreActions.searchResultsLoaded(
-              { term, type },
-              'artists',
+              getSearchResultKey({ provider: 'spotify', type: 'artists', term }),
               formatArtists(response.artists.items),
             ));
           }
 
           if (response.albums !== undefined) {
             dispatch(coreActions.searchResultsLoaded(
-              { term, type },
-              'albums',
+              getSearchResultKey({ provider: 'spotify', type: 'albums', term }),
               formatAlbums(response.albums.items),
             ));
           }
@@ -669,8 +668,7 @@ export function getSearchResults({ type, term }, limit = 50, offset = 0) {
               can_edit: (meId === item.owner.id),
             }));
             dispatch(coreActions.searchResultsLoaded(
-              { term, type },
-              'playlists',
+              getSearchResultKey({ provider: 'spotify', type: 'playlists', term }),
               playlists,
             ));
           }

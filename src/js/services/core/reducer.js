@@ -176,23 +176,15 @@ export default function reducer(core = {}, action) {
     /**
      * Search results
      * */
-    case 'START_SEARCH':
+
+    case 'SEARCH_RESULTS_LOADED': {
+      console.debug(action)
       return {
         ...core,
         search_results: {
-          query: action.query,
-          artists: [],
-          albums: [],
-          playlists: [],
-          tracks: [],
+          ...core?.search_results || {},
+          [action.key]: action.results,
         },
-      };
-
-    case 'SEARCH_RESULTS_LOADED': {
-      const { search_results } = action;
-      return {
-        ...core,
-        search_results,
       };
     }
 

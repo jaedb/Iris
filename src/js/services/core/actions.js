@@ -100,11 +100,10 @@ export function startSearch(query) {
   };
 }
 
-export function searchResultsLoaded(query, resultType, results) {
+export function searchResultsLoaded(key, results) {
   return {
     type: 'SEARCH_RESULTS_LOADED',
-    query,
-    resultType,
+    key,
     results,
   };
 }

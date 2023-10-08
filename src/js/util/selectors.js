@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { indexToArray } from './arrays';
-import { isLoading } from './helpers';
+import { getSearchResultKey, isLoading } from './helpers';
 import { i18n } from '../locale';
 
 const getItem = (state, uri) => state.core.items[uri];
@@ -68,13 +68,14 @@ const makeLibrarySelector = (name, filtered = true) => createSelector(
   },
 );
 
-const makeSearchResultsSelector = (term, type) => createSelector(
+const makeSearchResultsSelector = (providers = [], term, type) => createSelector(
   [getSearchResults],
-  (searchResults) => {
-    if (!searchResults || searchResults.query.term !== term) return [];
-    return searchResults[type] || [];
-  },
-);
+  (searchResults) => providers.reduce(
+    (acc, curr) => {[
+      ...acc,
+      ...searchResults[getSearchResultKey({ provider: curr, term, type })] || [],
+    ]}, []),
+  );
 
 const makeProcessProgressSelector = (keys) => createSelector(
   [getProcesses],

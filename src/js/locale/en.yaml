@@ -337,7 +337,7 @@ search:
   title_window: 'Search: %{term}'
   context_actions:
     sort: Sort
-    source: 'Sources (%{count})'
+    source: Sources
   placeholder: Search
   all:
     title: All

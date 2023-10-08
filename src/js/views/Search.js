@@ -18,13 +18,21 @@ import { getSortSelector } from '../util/selectors';
 const SORT_KEY = 'search_results';
 
 const Search = () => {
-  const { term, type = 'all' } = useParams();
+  const {
+    term,
+    providers: providersString = 'all',
+    type = 'all',
+  } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const lastQuery = useSelector((state) => state.core?.search_results?.query);
   const [sortField, sortReverse] = useSelector(
     (state) => getSortSelector(state, SORT_KEY, 'name'),
   );
+  const allProviders = useSelector((state) => state.mopidy?.uri_schemes || []);
+  const providers = providersString == 'all'
+                    ? [...allProviders]
+                    : providersString.split(',').filter((str) => allProviders.indexOf(str) > -1);
 
   useEffect(() => {
     dispatch(setWindowTitle('Search'));
@@ -32,25 +40,38 @@ const Search = () => {
   }, []);
 
   useEffect(() => {
-    if (term && type && term !== lastQuery?.term) {
+    console.debug(providers, lastQuery?.providers)
+    if (term && type && (term !== lastQuery?.term || providers.length !== lastQuery?.providers?.length)) {
+      console.debug('STARTING SEARCH', { term, type, providers })
       dispatch(setWindowTitle(i18n('search.title_window', { term: decodeURIComponent(term) })));
-      dispatch(startSearch({ term, type }));
+      dispatch(startSearch({ term, type, providers }));
     }
-  }, [term, type])
+  }, [term, type, providersString])
 
-  const onSubmit = (nextTerm) => {
-    const encodedTerm = encodeURIComponent(nextTerm);
-    navigate(`/search/${type}/${encodedTerm}`);
+  const onSubmit = (term) => {
+    updateSearchQuery(term, providers);
+  }
+
+  const updateSearchQuery = (term, providers) => {
+    const encodedTerm = encodeURIComponent(term);
+    navigate(`/search/${type}/${providers.join(',')}/${encodedTerm || ''}`);
   }
 
   const onReset = () => navigate('/search');
 
-  const onSortChange = (field) => {
+  const onProvidersChange = (providers) => {
+    console.debug(providers)
+    // ON BLUR then trigger search event
+    updateSearchQuery(term, providers)
+    dispatch(hideContextMenu());
+  }
+
+  const onSortChange = (value) => {
     let reverse = false;
-    if (field !== null && sortField === field) {
+    if (value !== null && sortField === value) {
       reverse = !sortReverse;
     }
-    dispatch(setSort(SORT_KEY, field, reverse));
+    dispatch(setSort(SORT_KEY, value, reverse));
     dispatch(hideContextMenu());
   }
 
@@ -62,16 +83,27 @@ const Search = () => {
     { value: 'duration', label: i18n('common.duration') },
   ];
 
+  const providerOptions = allProviders.map((value) => ({ value, label: value}))
+
   const options = (
-    <DropdownField
-      icon="swap_vert"
-      name={i18n('common.sort')}
-      value={sortField}
-      options={sortOptions}
-      selected_icon={sortField ? (sortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-      handleChange={onSortChange}
-      valueAsLabel
-    />
+    <>
+      <DropdownField
+        icon="swap_vert"
+        name={i18n('common.sort')}
+        value={sortField}
+        options={sortOptions}
+        selected_icon={sortField ? (sortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+        handleChange={onSortChange}
+        valueAsLabel
+      />
+      <DropdownField
+        icon="cloud"
+        name={i18n('search.context_actions.source')}
+        value={providers}
+        options={providerOptions}
+        handleChange={onProvidersChange}
+      />
+    </>
   );
 
   return (

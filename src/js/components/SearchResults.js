@@ -16,12 +16,14 @@ const SearchResults = ({
   type,
   all,
 }) => {
-  const { term } = useParams();
+  const { term, providers = '' } = useParams();
   const [sortField, sortReverse] = useSelector(
     (state) => getSortSelector(state, SORT_KEY, 'name'),
   );
-  const searchResultsSelector = makeSearchResultsSelector(term, type);
+  const providersArray = providers.split(',');
+  const searchResultsSelector = makeSearchResultsSelector(providersArray, term, type);
   const rawResults = useSelector(searchResultsSelector);
+  console.debug(rawResults, providersArray, term, type)
   const encodedTerm = encodeURIComponent(term);
   let results = [...rawResults];
 
@@ -43,7 +45,7 @@ const SearchResults = ({
       <h4>
         {!all && (
           <span>
-            <URILink uri={`iris:search:all:${encodedTerm}`} uriType="search" unencoded>
+            <URILink uri={`iris:search:all:all:${encodedTerm}`} uriType="search" unencoded>
               <I18n path="search.title" />
             </URILink>
             {' '}
@@ -53,7 +55,7 @@ const SearchResults = ({
           </span>
         )}
         {all && (
-          <URILink uri={`iris:search:${type}:${encodedTerm}`} uriType="search" unencoded>
+          <URILink uri={`iris:search:${type}:${providers}:${encodedTerm}`} uriType="search" unencoded>
             <I18n path={`search.${type}.title`} />
           </URILink>
         )}
@@ -66,7 +68,7 @@ const SearchResults = ({
           {type === 'tracks' && (
             <TrackList
               source={{
-                uri: `iris:search:${type}:${encodedTerm}`,
+                uri: `iris:search:${type}:${providers}:${encodedTerm}`,
                 name: 'Search results',
                 type: 'search',
               }}

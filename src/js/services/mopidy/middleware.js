@@ -8,6 +8,7 @@ import {
   uriSource,
   setFavicon,
   titleCase,
+  getSearchResultKey,
 } from '../../util/helpers';
 import {
   digestMopidyImages,
@@ -263,10 +264,11 @@ const MopidyMiddleware = (function () {
       type,
       term,
       requestType,
-      uri_scheme,
+      provider,
       method = 'library.search',
       data,
     } = queue.shift();
+    const resultKey = getSearchResultKey({ provider, type, term });
     const processKey = 'MOPIDY_GET_SEARCH_RESULTS';
     const processor = store.getState().ui.processes[processKey];
 
@@ -281,7 +283,7 @@ const MopidyMiddleware = (function () {
         content: i18n(
           'services.mopidy.searching',
           {
-            provider: titleCase(uri_scheme.replace(':', '')),
+            provider: titleCase(provider.replace(':', '')),
             type: requestType,
           },
         ),
@@ -348,7 +350,7 @@ const MopidyMiddleware = (function () {
       playlists: (response) => {
         const playlists = response.filter(
           (item) => {
-            if (!item.uri.includes(uri_scheme)) return false;
+            if (!item.uri.includes(provider)) return false;
             return item.name.toLowerCase().includes(term.toLowerCase());
           },
         );
@@ -371,8 +373,7 @@ const MopidyMiddleware = (function () {
       (response) => {
         if (response.length > 0) {
           store.dispatch(coreActions.searchResultsLoaded(
-            { term, type },
-            requestType,
+            resultKey,
             processResults[requestType](response),
           ));
         }
@@ -1221,35 +1222,35 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_GET_SEARCH_RESULTS': {
         const {
-          uri_schemes = [],
-          query = {},
+          query: { term, type: queryType } = {},
+          providers,
         } = action;
-        const types = query.type === 'all'
+        const types = queryType === 'all'
           ? ['artists', 'albums', 'tracks', 'playlists']
-          : [query.type];
+          : [queryType];
 
         const queue = [];
-        uri_schemes.forEach(
-          (uri_scheme) => types.forEach(
+        providers.forEach(
+          (provider) => types.forEach(
             (type) => {
               const item = {
-                type: query.type,
-                term: query.term,
+                type,
+                term,
+                provider,
                 requestType: type,
-                uri_scheme,
                 data: {
-                  uris: [uri_scheme],
+                  uris: [provider],
                 },
               };
               switch (type) {
                 case 'tracks':
-                  item.data.query = { any: [query.term] };
+                  item.data.query = { any: [term] };
                   break;
                 case 'artists':
-                  item.data.query = { artist: [query.term] };
+                  item.data.query = { artist: [term] };
                   break;
                 case 'albums':
-                  item.data.query = { album: [query.term] };
+                  item.data.query = { album: [term] };
                   break;
                 case 'playlists':
                   // Searching for playlists is not supported, so we get a simple
