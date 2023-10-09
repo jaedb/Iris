@@ -68,13 +68,13 @@ const makeLibrarySelector = (name, filtered = true) => createSelector(
   },
 );
 
-const makeSearchResultsSelector = (providers = [], term, type) => createSelector(
+const makeSearchResultsSelector = (providers, term, type) => createSelector(
   [getSearchResults],
   (searchResults) => providers.reduce(
-    (acc, curr) => {[
+    (acc, curr) => [
       ...acc,
       ...searchResults[getSearchResultKey({ provider: curr, term, type })] || [],
-    ]}, []),
+    ], []),
   );
 
 const makeProcessProgressSelector = (keys) => createSelector(

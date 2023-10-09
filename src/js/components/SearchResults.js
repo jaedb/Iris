@@ -9,6 +9,7 @@ import { Grid } from './Grid';
 import { I18n } from '../locale';
 import Button from './Button';
 import { makeSearchResultsSelector, getSortSelector } from '../util/selectors';
+import useSearchQuery from '../util/useSearchQuery';
 
 const SORT_KEY = 'search_results';
 
@@ -16,14 +17,13 @@ const SearchResults = ({
   type,
   all,
 }) => {
-  const { term, providers = '' } = useParams();
+  const { term, providers } = useSearchQuery();
+  const encodedProviders = providers.join(',').replace(/:/g,'');
   const [sortField, sortReverse] = useSelector(
     (state) => getSortSelector(state, SORT_KEY, 'name'),
   );
-  const providersArray = providers.split(',');
-  const searchResultsSelector = makeSearchResultsSelector(providersArray, term, type);
+  const searchResultsSelector = makeSearchResultsSelector(providers, term, type);
   const rawResults = useSelector(searchResultsSelector);
-  console.debug(rawResults, providersArray, term, type)
   const encodedTerm = encodeURIComponent(term);
   let results = [...rawResults];
 
@@ -45,7 +45,7 @@ const SearchResults = ({
       <h4>
         {!all && (
           <span>
-            <URILink uri={`iris:search:all:all:${encodedTerm}`} uriType="search" unencoded>
+            <URILink uri={`iris:search:all:${encodedProviders}:${encodedTerm}`} uriType="search" unencoded>
               <I18n path="search.title" />
             </URILink>
             {' '}
@@ -55,7 +55,7 @@ const SearchResults = ({
           </span>
         )}
         {all && (
-          <URILink uri={`iris:search:${type}:${providers}:${encodedTerm}`} uriType="search" unencoded>
+          <URILink uri={`iris:search:${type}:${encodedProviders}:${encodedTerm}`} uriType="search" unencoded>
             <I18n path={`search.${type}.title`} />
           </URILink>
         )}
@@ -68,7 +68,7 @@ const SearchResults = ({
           {type === 'tracks' && (
             <TrackList
               source={{
-                uri: `iris:search:${type}:${providers}:${encodedTerm}`,
+                uri: `iris:search:${type}:${encodedProviders}:${encodedTerm}`,
                 name: 'Search results',
                 type: 'search',
               }}
@@ -79,7 +79,7 @@ const SearchResults = ({
           {/* <LazyLoadListener enabled={this.props.artists_more && spotify_search_enabled} loadMore={loadMore} /> */}
 
           {resultsCount > results.length && (
-            <Button uri={`iris:search:${type}:${encodedTerm}`} uriType="search" unencoded>
+            <Button uri={`iris:search:${type}:${encodedProviders}:${encodedTerm}`} uriType="search" unencoded>
               <I18n path={`search.${type}.more`} count={resultsCount} />
             </Button>
           )}

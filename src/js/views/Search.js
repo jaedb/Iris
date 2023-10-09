@@ -14,25 +14,23 @@ import {
 } from '../services/ui/actions';
 import { i18n } from '../locale';
 import { getSortSelector } from '../util/selectors';
+import useSearchQuery from '../util/useSearchQuery';
 
 const SORT_KEY = 'search_results';
 
 const Search = () => {
-  const {
-    term,
-    providers: providersString = 'all',
-    type = 'all',
-  } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const lastQuery = useSelector((state) => state.core?.search_results?.query);
+  const {
+    term,
+    type,
+    providers,
+    allProviders,
+    providersString,
+  } = useSearchQuery();
   const [sortField, sortReverse] = useSelector(
     (state) => getSortSelector(state, SORT_KEY, 'name'),
   );
-  const allProviders = useSelector((state) => state.mopidy?.uri_schemes || []);
-  const providers = providersString == 'all'
-                    ? [...allProviders]
-                    : providersString.split(',').filter((str) => allProviders.indexOf(str) > -1);
 
   useEffect(() => {
     dispatch(setWindowTitle('Search'));
@@ -40,13 +38,12 @@ const Search = () => {
   }, []);
 
   useEffect(() => {
-    console.debug(providers, lastQuery?.providers)
-    if (term && type && (term !== lastQuery?.term || providers.length !== lastQuery?.providers?.length)) {
+    if (term) {
       console.debug('STARTING SEARCH', { term, type, providers })
       dispatch(setWindowTitle(i18n('search.title_window', { term: decodeURIComponent(term) })));
       dispatch(startSearch({ term, type, providers }));
     }
-  }, [term, type, providersString])
+  }, [])
 
   const onSubmit = (term) => {
     updateSearchQuery(term, providers);
