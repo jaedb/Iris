@@ -178,7 +178,6 @@ export default function reducer(core = {}, action) {
      * */
 
     case 'SEARCH_RESULTS_LOADED': {
-      console.debug(action)
       return {
         ...core,
         search_results: {

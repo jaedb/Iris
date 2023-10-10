@@ -503,7 +503,6 @@ const CoreMiddleware = (function () {
 
       case 'LOAD_LIBRARY':
         store.dispatch(uiActions.startLoading(action.uri, action.uri));
-        console.debug(action);
         const fetchLibrary = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':

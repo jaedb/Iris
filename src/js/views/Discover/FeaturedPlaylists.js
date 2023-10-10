@@ -197,8 +197,6 @@ class FeaturedPlaylists extends React.Component {
       },
     ];
 
-    console.debug({ source, view })
-
     const options = (
       <>
         <FilterField
