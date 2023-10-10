@@ -197,12 +197,12 @@ const CoreMiddleware = (function () {
         // Trigger reducer immediately; this will hose out any previous results
         next(action);
 
-        if (providers.includes('spotify:')) {
+        if (providers.includes('spotify')) {
           store.dispatch(spotifyActions.getSearchResults(query));
         }
         store.dispatch(mopidyActions.getSearchResults(
           query,
-          providers.filter((i) => i !== 'spotify:'), // Omit Spotify; handled above
+          providers.filter((i) => i !== 'spotify'), // Omit Spotify; handled above
         ));
         break;
       }

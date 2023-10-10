@@ -603,8 +603,7 @@ const upgradeSpotifyPlaylistUri = function (uri) {
   return upgradeSpotifyPlaylistUris([uri])[0];
 };
 
-const getSearchResultKey = ({ provider, type, term }) =>
-  [provider.replace(':', ''), type, term].join(':');
+const getSearchResultKey = ({ provider, type, term }) => [provider, type, term].join(':');
 
 export {
   debounce,

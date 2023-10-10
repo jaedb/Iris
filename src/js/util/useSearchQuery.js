@@ -7,11 +7,13 @@ const useSearchQuery = () => {
     type = 'all',
     providers: rawProviders = 'all',
   } = useParams();
-  const allProviders = useSelector((state) => state.mopidy?.uri_schemes || []);
+  const allProviders = useSelector(
+    ({ mopidy: { uri_schemes } }) => uri_schemes || []
+  ).map((str) => str.replace(/:/g,''));
   const providers = rawProviders == 'all'
                     ? [...allProviders]
                     : rawProviders.split(',').filter((str) => allProviders.indexOf(str) > -1);
-  const providersString = providers.join(',').replace(/:/g,'');
+  const providersString = providers.join(',');
 
   return {
     term,

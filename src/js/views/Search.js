@@ -34,16 +34,15 @@ const Search = () => {
 
   useEffect(() => {
     dispatch(setWindowTitle('Search'));
-    $(document).find('.search-form input').focus();
+    $(document).find('.search-form input').trigger('focus');
   }, []);
 
   useEffect(() => {
     if (term) {
-      console.debug('STARTING SEARCH', { term, type, providers })
       dispatch(setWindowTitle(i18n('search.title_window', { term: decodeURIComponent(term) })));
       dispatch(startSearch({ term, type, providers }));
     }
-  }, [])
+  }, [providersString, type, term])
 
   const onSubmit = (term) => {
     updateSearchQuery(term, providers);
@@ -57,8 +56,6 @@ const Search = () => {
   const onReset = () => navigate('/search');
 
   const onProvidersChange = (providers) => {
-    console.debug(providers)
-    // ON BLUR then trigger search event
     updateSearchQuery(term, providers)
     dispatch(hideContextMenu());
   }

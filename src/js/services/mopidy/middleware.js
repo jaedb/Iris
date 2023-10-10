@@ -32,6 +32,7 @@ import {
   indexToArray,
 } from '../../util/arrays';
 import { getProvider, getSortSelector } from '../../util/selectors';
+import { iterate } from 'localforage';
 
 const mopidyActions = require('./actions.js');
 const coreActions = require('../core/actions.js');
@@ -268,13 +269,19 @@ const MopidyMiddleware = (function () {
       method = 'library.search',
       data,
     } = queue.shift();
-    const resultKey = getSearchResultKey({ provider, type, term });
     const processKey = 'MOPIDY_GET_SEARCH_RESULTS';
     const processor = store.getState().ui.processes[processKey];
-
     if (processor && processor.status === 'cancelling') {
       store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS'));
       return;
+    }
+
+    const iterateNext = (store, queue) => {
+      if (queue.length) {
+        processSearchQueue(store, queue);
+      } else {
+        store.dispatch(uiActions.processFinished(processKey));
+      }
     }
 
     store.dispatch(uiActions.updateProcess(
@@ -283,13 +290,19 @@ const MopidyMiddleware = (function () {
         content: i18n(
           'services.mopidy.searching',
           {
-            provider: titleCase(provider.replace(':', '')),
+            provider: titleCase(provider),
             type: requestType,
           },
         ),
         remaining: queue.length,
       },
     ));
+  
+    const resultKey = getSearchResultKey({ provider, type, term });
+    if (resultKey in store.getState().core.search_results) {
+      iterateNext(store, queue);
+      return;
+    }
 
     // Each type has a different method of formatting and destructuring.
     const processResults = {
@@ -377,12 +390,7 @@ const MopidyMiddleware = (function () {
             processResults[requestType](response),
           ));
         }
-
-        if (queue.length) {
-          processSearchQueue(store, queue);
-        } else {
-          store.dispatch(uiActions.processFinished(processKey));
-        }
+        iterateNext(store, queue);
       },
     );
   };
@@ -1239,7 +1247,7 @@ const MopidyMiddleware = (function () {
                 provider,
                 requestType: type,
                 data: {
-                  uris: [provider],
+                  uris: [`${provider}:`],
                 },
               };
               switch (type) {
