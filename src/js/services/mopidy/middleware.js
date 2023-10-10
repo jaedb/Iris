@@ -978,7 +978,6 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_ENQUEUE_URIS': {
-        console.debug(action)
         if (!action.uris || action.uris.length <= 0) {
           this.props.uiActions.createNotification({
             content: 'No URIs to enqueue',
@@ -1827,13 +1826,13 @@ const MopidyMiddleware = (function () {
             if (item.__model__ === 'Track') {
               tracks.push(formatTrack(item));
             } else if (item.__model__ === 'Ref' && item.type === 'track') {
-              tracks.push(formatTrack({ ...item, loading: true }));
+              tracks.push(formatTrack(item));
               trackUrisToLoad.push(item.uri);
             } else if (item.__model__ === 'Ref' && item.type === 'album') {
-              subdirectories.push(formatAlbum({ ...item, loading: true }));
+              subdirectories.push(formatAlbum(item));
               subdirectoryImagesToLoad.push(item.uri);
             } else if (item.__model__ === 'Ref' && item.type === 'artist') {
-              subdirectories.push(formatArtist({ ...item, loading: true }));
+              subdirectories.push(formatArtist(item));
               subdirectoryImagesToLoad.push(item.uri);
             } else if (item.__model__ === 'Ref' && item.type === 'playlist') {
               // Tidal moods and genres incorrectly marked as Playlist type
@@ -1846,7 +1845,7 @@ const MopidyMiddleware = (function () {
                   type: 'directory',
                 });
               } else {
-                subdirectories.push(formatPlaylist({ ...item, loading: true }));
+                subdirectories.push(formatPlaylist(item));
                 subdirectoryImagesToLoad.push(item.uri);
                 playlistsToLoad.push(item.uri);
               }
