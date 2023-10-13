@@ -48,9 +48,9 @@ const SearchResults = ({
             <URILink uri={`iris:search:all:${encodedProviders}:${encodedTerm}`} uriType="search" unencoded>
               <I18n path="search.title" />
             </URILink>
-            {' '}
+            <span style={{ display: 'inline-block', width: 10 }} />
             <Icon type="fontawesome" name="angle-right" />
-            {' '}
+            <span style={{ display: 'inline-block', width: 10 }} />
             <I18n path={`search.${type}.title`} />
           </span>
         )}
