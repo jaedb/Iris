@@ -54,7 +54,7 @@ const Content = () => (
         <Route path="settings/debug" element={<Debug />} />
         <Route path="settings/*" element={<Settings />} />
         <Route path="search" element={<Search />} />
-        <Route path="search/:type/:term" element={<Search />} />
+        <Route path="search/:type/:providers/:term" element={<Search />} />
         <Route path="artist/:uri/*" element={<Artist />} />
         <Route path="album/:uri/" element={<Album />} />
         <Route path="album/:uri/:name" element={<Album />} />

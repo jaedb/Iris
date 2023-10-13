@@ -8,6 +8,7 @@ import {
   uriSource,
   setFavicon,
   titleCase,
+  getSearchResultKey,
 } from '../../util/helpers';
 import {
   digestMopidyImages,
@@ -31,6 +32,7 @@ import {
   indexToArray,
 } from '../../util/arrays';
 import { getProvider, getSortSelector } from '../../util/selectors';
+import { iterate } from 'localforage';
 
 const mopidyActions = require('./actions.js');
 const coreActions = require('../core/actions.js');
@@ -263,16 +265,23 @@ const MopidyMiddleware = (function () {
       type,
       term,
       requestType,
-      uri_scheme,
+      provider,
       method = 'library.search',
       data,
     } = queue.shift();
     const processKey = 'MOPIDY_GET_SEARCH_RESULTS';
     const processor = store.getState().ui.processes[processKey];
-
     if (processor && processor.status === 'cancelling') {
       store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS'));
       return;
+    }
+
+    const iterateNext = (store, queue) => {
+      if (queue.length) {
+        processSearchQueue(store, queue);
+      } else {
+        store.dispatch(uiActions.processFinished(processKey));
+      }
     }
 
     store.dispatch(uiActions.updateProcess(
@@ -281,13 +290,19 @@ const MopidyMiddleware = (function () {
         content: i18n(
           'services.mopidy.searching',
           {
-            provider: titleCase(uri_scheme.replace(':', '')),
+            provider: titleCase(provider),
             type: requestType,
           },
         ),
         remaining: queue.length,
       },
     ));
+  
+    const resultKey = getSearchResultKey({ provider, type, term });
+    if (resultKey in store.getState().core.search_results) {
+      iterateNext(store, queue);
+      return;
+    }
 
     // Each type has a different method of formatting and destructuring.
     const processResults = {
@@ -348,7 +363,7 @@ const MopidyMiddleware = (function () {
       playlists: (response) => {
         const playlists = response.filter(
           (item) => {
-            if (!item.uri.includes(uri_scheme)) return false;
+            if (!item.uri.includes(provider)) return false;
             return item.name.toLowerCase().includes(term.toLowerCase());
           },
         );
@@ -371,17 +386,11 @@ const MopidyMiddleware = (function () {
       (response) => {
         if (response.length > 0) {
           store.dispatch(coreActions.searchResultsLoaded(
-            { term, type },
-            requestType,
+            resultKey,
             processResults[requestType](response),
           ));
         }
-
-        if (queue.length) {
-          processSearchQueue(store, queue);
-        } else {
-          store.dispatch(uiActions.processFinished(processKey));
-        }
+        iterateNext(store, queue);
       },
     );
   };
@@ -969,7 +978,6 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_ENQUEUE_URIS': {
-        console.debug(action)
         if (!action.uris || action.uris.length <= 0) {
           this.props.uiActions.createNotification({
             content: 'No URIs to enqueue',
@@ -1221,35 +1229,35 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_GET_SEARCH_RESULTS': {
         const {
-          uri_schemes = [],
-          query = {},
+          query: { term, type: queryType } = {},
+          providers,
         } = action;
-        const types = query.type === 'all'
+        const types = queryType === 'all'
           ? ['artists', 'albums', 'tracks', 'playlists']
-          : [query.type];
+          : [queryType];
 
         const queue = [];
-        uri_schemes.forEach(
-          (uri_scheme) => types.forEach(
+        providers.forEach(
+          (provider) => types.forEach(
             (type) => {
               const item = {
-                type: query.type,
-                term: query.term,
+                type,
+                term,
+                provider,
                 requestType: type,
-                uri_scheme,
                 data: {
-                  uris: [uri_scheme],
+                  uris: [`${provider}:`],
                 },
               };
               switch (type) {
                 case 'tracks':
-                  item.data.query = { any: [query.term] };
+                  item.data.query = { any: [term] };
                   break;
                 case 'artists':
-                  item.data.query = { artist: [query.term] };
+                  item.data.query = { artist: [term] };
                   break;
                 case 'albums':
-                  item.data.query = { album: [query.term] };
+                  item.data.query = { album: [term] };
                   break;
                 case 'playlists':
                   // Searching for playlists is not supported, so we get a simple
@@ -1818,13 +1826,13 @@ const MopidyMiddleware = (function () {
             if (item.__model__ === 'Track') {
               tracks.push(formatTrack(item));
             } else if (item.__model__ === 'Ref' && item.type === 'track') {
-              tracks.push(formatTrack({ ...item, loading: true }));
+              tracks.push(formatTrack(item));
               trackUrisToLoad.push(item.uri);
             } else if (item.__model__ === 'Ref' && item.type === 'album') {
-              subdirectories.push(formatAlbum({ ...item, loading: true }));
+              subdirectories.push(formatAlbum(item));
               subdirectoryImagesToLoad.push(item.uri);
             } else if (item.__model__ === 'Ref' && item.type === 'artist') {
-              subdirectories.push(formatArtist({ ...item, loading: true }));
+              subdirectories.push(formatArtist(item));
               subdirectoryImagesToLoad.push(item.uri);
             } else if (item.__model__ === 'Ref' && item.type === 'playlist') {
               // Tidal moods and genres incorrectly marked as Playlist type
@@ -1837,7 +1845,7 @@ const MopidyMiddleware = (function () {
                   type: 'directory',
                 });
               } else {
-                subdirectories.push(formatPlaylist({ ...item, loading: true }));
+                subdirectories.push(formatPlaylist(item));
                 subdirectoryImagesToLoad.push(item.uri);
                 playlistsToLoad.push(item.uri);
               }

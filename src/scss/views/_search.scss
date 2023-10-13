@@ -5,7 +5,7 @@
     position: absolute;
     top: 30px;
     left: 90px;
-    right: 150px;
+    right: 250px;
 
     input {
       @include feature_font();
@@ -81,6 +81,10 @@
   }
 
   @include responsive($bp_medium) {
+    header {
+      margin-bottom: 0;
+    }
+
     .search-form {
       top: 10px;
       left: 40px;
@@ -97,7 +101,7 @@
     }
 
     .search-result-sections {
-      padding: 10px 10px 0;
+      // padding: 10px 10px 0;
 
       section {
         width: auto;

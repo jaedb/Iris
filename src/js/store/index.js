@@ -38,6 +38,7 @@ let initialState = {
     tracks: {},
     items: {},
     libraries: {},
+    search_results: {},
   },
   ui: {
     language: 'en',

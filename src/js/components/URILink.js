@@ -47,7 +47,7 @@ export default memo(({
 
     case 'search':
       var exploded = uri.split(':');
-      to = `/search/${exploded[2]}/${exploded[3]}`;
+      to = `/search/${exploded[2]}/${exploded[3]}/${exploded[4]}`;
       break;
 
     default:

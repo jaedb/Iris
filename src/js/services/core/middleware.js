@@ -177,76 +177,33 @@ const CoreMiddleware = (function () {
 
       case 'START_SEARCH': {
         const { query } = action;
+        const { term = '', providers = [], type = 'all' } = query;
         const {
           ui: {
             allow_reporting,
           },
-          mopidy: {
-            uri_schemes = [],
-          } = {},
         } = store.getState();
 
         if (allow_reporting) {
           ReactGA.event({
             category: 'Search',
             action: 'Started',
-            label: `${query.type}: ${query.term}`,
+            label: `${type}: ${term}`,
           });
         }
 
-        console.info(`Searching for ${query.type} matching "${query.term}"`);
+        console.info(`Searching ${providers.length} providers for ${type} matching "${term}"`);
 
         // Trigger reducer immediately; this will hose out any previous results
         next(action);
 
-        if (uri_schemes.includes('spotify:')) {
+        if (providers.includes('spotify')) {
           store.dispatch(spotifyActions.getSearchResults(query));
         }
         store.dispatch(mopidyActions.getSearchResults(
           query,
-          100,
-          uri_schemes.filter((i) => i !== 'spotify:'), // Omit Spotify; handled above
+          providers.filter((i) => i !== 'spotify'), // Omit Spotify; handled above
         ));
-        break;
-      }
-
-      case 'SEARCH_RESULTS_LOADED': {
-        const {
-          query: {
-            term,
-            type,
-          },
-          resultType,
-          results,
-        } = action;
-        const {
-          core: {
-            search_results: {
-              query: {
-                term: prevTerm,
-                type: prevType,
-              } = {},
-              ...allResults
-            } = {},
-          } = {},
-        } = store.getState();
-
-        // Add to our existing results, so long as the search term is the same
-        const search_results = {
-          query: { term, type },
-          ...(term === prevTerm && type === prevType ? allResults : {}),
-        };
-
-        // Merge our new results with the existing (if any)
-        search_results[resultType] = [
-          ...(search_results[resultType] || []),
-          ...results,
-        ];
-
-        next({
-          ...action,
-          search_results,
-        });
         break;
       }
 
@@ -546,7 +503,6 @@ const CoreMiddleware = (function () {
 
       case 'LOAD_LIBRARY':
         store.dispatch(uiActions.startLoading(action.uri, action.uri));
-        console.debug(action);
         const fetchLibrary = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
