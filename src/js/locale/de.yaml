@@ -214,7 +214,7 @@ artist:
       more: Alle verwandten Künstler/innen
   tracks:
     title: Titel
-  related_artists
+  related_artists:
     title: Verwandte Künstler/innen
   about:
     title: Über
