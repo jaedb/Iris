@@ -2,10 +2,13 @@ version: "3"
 services:
   snapserver:
     image: jaedb/snapserver
+    depends_on:
+      mopidy:
+        condition: service_healthy
     ports:
-      - 1704:1704
-      - 1705:1705
-      - 1780:1780
+      - 1704
+      - 1705
+      - 1780
     volumes:
       - /tmp/snapserver:/tmp
       - ./docker/snapserver/snapserver.conf:/etc/snapserver.conf
@@ -16,11 +19,9 @@ services:
       - PIP_PACKAGES=Mopidy-YTMusic Mopidy-Tidal Mopidy-SoundCloud Mopidy-MusicBox-Webclient
     build:
       context: .
-    depends_on:
-      - snapserver
     ports:
-      - 6600:6600
-      - 6680:6680
+      - 6600
+      - 6680
     volumes:
       # - ./mopidy/iris:/iris/mopidy/iris # To use a locally-built UI 
       - ./docker/mopidy/iris:/var/lib/mopidy/iris # Iris-specific storage
