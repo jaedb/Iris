@@ -17,11 +17,13 @@ services:
     image: jaedb/iris
     environment:
       - PIP_PACKAGES=Mopidy-YTMusic Mopidy-Tidal Mopidy-SoundCloud Mopidy-MusicBox-Webclient
-    build:
-      context: .
     ports:
       - 6600
       - 6680
+    healthcheck:
+      test: curl -f http://localhost:6680/iris/http/get_config || exit 1
+      timeout: 5s
+      retries: 5
     volumes:
       # - ./mopidy/iris:/iris/mopidy/iris # To use a locally-built UI 
       - ./docker/mopidy/iris:/var/lib/mopidy/iris # Iris-specific storage
