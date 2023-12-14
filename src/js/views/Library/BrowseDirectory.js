@@ -143,6 +143,8 @@ const BrowseDirectory = () => {
     subdirectories = applyFilter('name', filter, subdirectories);
     tracks = applyFilter('name', filter, tracks);
   }
+  let items = subdirectories.filter((item) => item.type != 'directory');
+  subdirectories = subdirectories.filter((item) => item.type == 'directory');
 
   const view_options = [
     {
@@ -205,6 +207,7 @@ const BrowseDirectory = () => {
         <ErrorBoundary>
 
           <Subdirectories items={subdirectories} view={view} />
+          <Subdirectories items={items} view={view} />
 
           <TrackList
             context={{
