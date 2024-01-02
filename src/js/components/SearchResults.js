@@ -38,8 +38,6 @@ const SearchResults = ({
     results = results.slice(0, 6);
   }
 
-  if (all && !results.length) return null;
-
   return (
     <div>
       <h4>
@@ -60,7 +58,7 @@ const SearchResults = ({
           </URILink>
         )}
       </h4>
-      {results.length > 0 && (
+      {results.length > 0 ? (
         <section className="grid-wrapper">
           {type === 'artists' && <Grid items={results} show_source_icon mini={all} />}
           {type === 'albums' && <Grid items={results} show_source_icon mini={all} />}
@@ -84,6 +82,10 @@ const SearchResults = ({
             </Button>
           )}
         </section>
+      ) : (
+        <span style={{ opacity: 0.5 }}>
+          <I18n key="search.no_results" />
+        </span>
       )}
     </div>
   );

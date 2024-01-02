@@ -50,7 +50,7 @@ const Search = () => {
 
   const updateSearchQuery = (term, providers) => {
     const encodedTerm = encodeURIComponent(term);
-    navigate(`/search/${type}/${providers.join(',')}/${encodedTerm || ''}`);
+    navigate(`/search/${type}/${providers.join(',') || 'none'}/${encodedTerm || ''}`);
   }
 
   const onReset = () => navigate('/search');
@@ -113,13 +113,15 @@ const Search = () => {
         onReset={onReset}
       />
 
-      <div className="content-wrapper">
-        {type != 'all' ? (
-          <SearchResults type={type} />
-        ) : (
-          <AllSearchResults />
-        )}
-      </div>
+      {term && (
+        <div className="content-wrapper">
+          {type != 'all' ? (
+            <SearchResults type={type} />
+          ) : (
+            <AllSearchResults />
+          )}
+        </div>
+      )}
     </div>
   );
 }

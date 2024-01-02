@@ -339,6 +339,7 @@ search:
     sort: Sort
     source: Sources
   placeholder: Search
+  no_results: No results
   all:
     title: All
   artists:
