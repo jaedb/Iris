@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import { sortItems } from '../util/arrays';
 import URILink from './URILink';
 import Icon from './Icon';
@@ -83,8 +82,8 @@ const SearchResults = ({
           )}
         </section>
       ) : (
-        <span style={{ opacity: 0.5 }}>
-          <I18n key="search.no_results" />
+        <span style={{ opacity: 0.25 }}>
+          <I18n path="search.no_results" />
         </span>
       )}
     </div>
