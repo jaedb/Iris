@@ -17,15 +17,15 @@ const LyricsScroller = ({
   content = '',
   percent = 0,
 }) => {
-  const containerRef = useRef({});
-  const contentRef = useRef({});
+  const containerRef = useRef(null);
+  const contentRef = useRef(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const onWheel = () => setAutoScroll(false);
 
   useEffect(() => {
     if (autoScroll) {
-      const scrollable = contentRef.current?.scrollHeight - containerRef.current.clientHeight;
-      containerRef.current.scrollTo(0, percent * scrollable)
+      const height = (contentRef.current?.scrollHeight - containerRef.current?.clientHeight) || 0;
+      containerRef.current.scrollTo(0, percent * height)
     }
   }, [percent]);
 
