@@ -79,6 +79,11 @@ class Browse extends React.Component {
             subdirectory.icons = ['assets/backgrounds/browse-mixcloud.jpg'];
             break;
 
+          case 'Hearthis':
+          case 'Hearthis music community':
+            subdirectory.icons = ['assets/backgrounds/browse-hearthis.jpg'];
+          break;
+
           case 'iTunes Store: Podcasts':
             subdirectory.icons = ['assets/backgrounds/browse-itunes.jpg'];
             break;
