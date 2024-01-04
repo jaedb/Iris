@@ -187,7 +187,7 @@
 	}
 
 	@include responsive($bp_medium){
-		@include fadein(0.2s, 40px);
+		@include fadein(0.1s, '100px');
 		top: 0 !important;
 		right: 0 !important;
 		bottom: 0 !important;
@@ -196,7 +196,7 @@
 		text-align: center;
 
 		&--closing {
-			@include fadeout(0.2s, 40px);
+			@include fadeout(0.2s, '100px');
 		}
 
 		&__background {
@@ -205,11 +205,24 @@
 			right: 0;
 			bottom: 0;
 			left: 0;
-			background-image: linear-gradient(rgba(24,24,24,0) 0%, rgba(24,24,24,1) 20%);
 			z-index: 1;
 
-			@include theme('light') {
-				background-image: linear-gradient(rgba(255,255,255,0) 0%, rgba(255,255,255,1) 20%);
+			&::after {
+				@include fadein(0.1s, '100px');
+				display: block;
+				content: '';
+				position: absolute;
+				top: calc(20% - 20px);
+				left: 5%;
+				right: 5%;
+				bottom: 0;
+				border-top-left-radius: 20px;
+				border-top-right-radius: 20px;
+				background: colour('white');
+	
+				@include theme('dark') {
+					background: colour('grey');
+				}
 			}
 		}
 

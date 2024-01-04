@@ -129,11 +129,12 @@
 		}
 
 		&__label {
-			padding: 0 0 3px 0;
+			padding: 0 0 12px 0;
 			opacity: 0.5;
 			font-size: 1rem;
 			display: block;
 			cursor: default;
+			text-transform: uppercase;
 
 			&__value {
 				display: none;
@@ -156,6 +157,8 @@
 		&__options {
 			display: block;
 			position: static;
+			width: 50%;
+			margin: 0 auto;
 			background: transparent;
 			border-radius: 0;
 			border: 0;
@@ -182,6 +185,7 @@
 			}
 
 			&__item {
+				@include click_feedback();
 				display: block;
 				padding: 3px 5px;
 				border-radius: 0;
@@ -197,8 +201,8 @@
 
 				.icon {
 					display: inline-block;
-					position: static;
-					padding-right: 2px;
+					position: absolute;
+					left: 0;
 					padding-bottom: 3px;
 					font-size: 0.9em;
 				}
