@@ -200,7 +200,7 @@ const Album = () => {
         >
           <I18n path="actions.play" />
         </Button>
-        {uriSource(uri) === 'spotify' && (
+        {uriSource(uri) === 'spotify' && !slim_mode && (
           <FollowButton
             uri={uri}
             is_following={album.in_library}

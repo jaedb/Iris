@@ -30,6 +30,7 @@ const SORT_KEY = 'playlist_tracks';
 
 const Actions = ({
   encodedUri,
+  slim_mode,
   playlist: {
     uri,
     can_edit,
@@ -71,10 +72,12 @@ const Actions = ({
           >
             <I18n path="actions.play" />
           </Button>
-          <FollowButton
-            uri={uri}
-            is_following={in_library}
-          />
+          {!slim_mode && (
+            <FollowButton
+              uri={uri}
+              is_following={in_library}
+            />
+          )}
           <PinButton item={{ uri, name }} />
           <ContextMenuTrigger onTrigger={handleContextMenu} />
         </div>
@@ -298,6 +301,7 @@ const Playlist = ({
         playlist={playlist}
         onPlay={onPlay}
         handleContextMenu={handleContextMenu}
+        slim_mode={slim_mode}
       />
 
       <h4 className="no-bottom-margin">

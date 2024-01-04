@@ -29,6 +29,7 @@ const Artist = () => {
   const { uri: encodedUri } = useParams();
   const uri = decodeUri(encodedUri);
 
+  const { slim_mode } = useSelector((state) => state.ui);
   const artistSelector = makeItemSelector(uri);
   const artist = useSelector(artistSelector);
   const albumSelector = makeItemSelector(artist?.albums_uris || []);
@@ -135,7 +136,7 @@ const Artist = () => {
                 >
                   <I18n path="actions.play" />
                 </Button>
-                {is_spotify && (
+                {is_spotify && !slim_mode && (
                   <FollowButton
                     uri={uri}
                     is_following={artist.in_library}
