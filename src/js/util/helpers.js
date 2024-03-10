@@ -140,8 +140,10 @@ const uriType = function (uri) {
   if (!uri) return '';
 
   const exploded = `${uri}`.split(':');
+  const is_playlist_uri = exploded.length >= 1 && exploded[1] === 'playlist'
 
-  if (exploded[0] === 'm3u') {
+  // The following covers m3u, webm3u, subidy:playlist URI schemes.
+  if (exploded[0].endsWith('m3u') || is_playlist_uri) {
     return 'playlist';
   }
 
@@ -193,8 +195,10 @@ const sourceIcon = function (uri, source = null) {
   if (uri) source = uriSource(uri);
   switch (source) {
     case 'local':
-    case 'm3u':
     case 'file':
+    case 'm3u':
+    case 'webm3u':
+    case 'subidy':
       return 'folder';
 
     case 'gmusic':

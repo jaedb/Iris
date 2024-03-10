@@ -108,6 +108,16 @@ const providers = {
       title: i18n('services.mopidy.local'),
     },
     {
+      scheme: 'webm3u:',
+      uri: 'webm3u:playlists',
+      title: i18n('services.webm3u.title'),
+    },
+    {
+      scheme: 'subidy:',
+      uri: 'subidy:playlists',
+      title: i18n('services.subidy.title'),
+    },
+    {
       scheme: 'spotify:',
       uri: 'spotify:library:playlists',
       title: i18n('services.spotify.title'),
@@ -133,6 +143,11 @@ const providers = {
       scheme: 'local:',
       setting_name: 'library_albums_uri',
       title: i18n('services.mopidy.local'),
+    },
+    {
+      scheme: 'subidy:',
+      uri: 'subidy:vdir:albums',
+      title: i18n('services.subidy.title'),
     },
     {
       scheme: 'gmusic:',
@@ -165,6 +180,11 @@ const providers = {
       scheme: 'local:',
       setting_name: 'library_artists_uri',
       title: i18n('services.mopidy.local'),
+    },
+    {
+      scheme: 'subidy:',
+      uri: 'subidy:vdir:artists',
+      title: i18n('services.subidy.title'),
     },
     {
       scheme: 'gmusic:',
