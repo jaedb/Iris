@@ -390,18 +390,18 @@
         width: 70%;
         height: 100%;
         margin-top: 50px;
-        overflow-y: hidden;
         position: relative;
+        overflow-y: scroll;
+        scroll-behavior: smooth;
 
         &__content {
           font-size: 1.6rem;
           line-height: 2.2rem;
-          position: absolute;
-          top: 50%;
-          left: 10%;
           width: 80%;
-          transition: transform 0.9s linear;
+          margin: 0 auto;
           text-align: center;
+          padding-top: 40vh;
+          padding-bottom: 40vh;
 
           @include responsive(null, null, $bp_medium) {
             font-size: 1.4rem;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Modal from './Modal';
 import Thumbnail from '../../components/Thumbnail';
@@ -17,12 +17,24 @@ const LyricsScroller = ({
   content = '',
   percent = 0,
 }) => {
+  const containerRef = useRef(null);
+  const contentRef = useRef(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const onWheel = () => setAutoScroll(false);
+
+  useEffect(() => {
+    if (autoScroll) {
+      const height = (contentRef.current?.scrollHeight - containerRef.current?.clientHeight) || 0;
+      containerRef.current.scrollTo(0, percent * height)
+    }
+  }, [percent]);
+
   return (
-    <div className="lyrics">
+    <div ref={containerRef} className="lyrics" onWheel={onWheel}>
       <div
+        ref={contentRef}
         className="lyrics__content"
         dangerouslySetInnerHTML={{ __html: content }}
-        style={{ transform: `translateY(-${(percent * 110).toFixed(4)}%)` }}
       />
     </div>
   );
