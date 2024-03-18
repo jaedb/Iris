@@ -135,6 +135,10 @@ RUN git clone -c advice.detachedHead=false \
 	--single-branch --depth 1 \
 	--branch ${MOPIDY_SPOTIFY_TAG} \
 	https://github.com/mopidy/mopidy-spotify.git mopidy-spotify \
+ && cd mopidy-spotify \
+ && python3 setup.py install \
+ && cd .. \
+ && rm -rf mopidy-spotify
 
 # Install additional mopidy extensions and Python dependencies via pip
 COPY docker/requirements.txt .
