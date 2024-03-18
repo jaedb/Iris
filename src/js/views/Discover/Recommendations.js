@@ -223,7 +223,6 @@ class Recommendations extends React.Component {
     if (!uri) return;
 
     const seeds = uri.replace('iris:discover:', '').split(',').map((seed) => decodeUri(seed));
-    console.debug({ uri, uriProp, seeds })
     loadUris(seeds);
     this.setState(
       { seeds },

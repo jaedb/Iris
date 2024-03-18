@@ -4,25 +4,25 @@ name: Português
 # Common and reusable phrases
 ##
 errors:
-  uri_not_found: 'Não posso encotrar naeda com a URI %{uri}'
-  could_not_load: 'Não posso carregar %{name}'
-  could_not_load_library: 'Não posso carregar %{name} de %{provider}'
+  uri_not_found: 'Não foi possível encontrar nada na URI %{uri}'
+  could_not_load: 'Não foi possível carregar %{name}'
+  could_not_load_library: 'Não foi possível carregar %{name} de %{provider}'
   no_results: Sem resultados
-  authorization_required: 'devo autorizar %{provider} antes'
+  authorization_required: 'Você precisa autorizar o %{provider} antes'
   enable_first: 'Habilite %{provider} antes'
   no_service_worker: Serviço não suportado
-  required: Requerido
+  required: Campo obrigatório
   unknown_error: Erro desconhecido
   need_to_be_online: Você precisa estar online para carregar este recurso
-  nothing_selected: Nada seleccionado
+  nothing_selected: Nada selecionado
   cannot_reorder:
-    title: Não consigo reordenar Não consigo reordenar itens
+    title: Não é possível reordenar os itens
     description: Limpe a ordem/filtros e tente novamente
 actions:
   play: Reproduzir
   play_all: Reproduzir tudo
   play_next: Reproduzir próximo
-  shuffle_play: Reprodução aleatoria
+  shuffle_play: Reprodução aleatória
   pause: Pausa
   stop: Parar
   add_to_playlist: Adicionar à Playlist
@@ -36,7 +36,7 @@ actions:
   enable: Habilitar
   disable: Desabilitar
   send: Enviar
-  save: Guardar
+  save: Salvar
   start: Iniciar
   edit: Editar
   add: Adicionar
@@ -44,9 +44,9 @@ actions:
   delete: Apagar
   remove: Remover
   cancel: Cancelar
-  created: '%{name} Criado'
-  saved: '%{name} guardado'
-  deleted: '%{name} apagado'
+  created: '%{name} foi criado'
+  saved: '%{name} for salvo'
+  deleted: '%{name} foi apagado'
 common:
   popularity: Popularidade
   name: Nome
@@ -164,7 +164,7 @@ sidebar:
   albums: Álbuns
   tracks: Faixas
   browse: Navegar
-  settings: Ajustes
+  settings: Configurações
   not_connected: '%{name} não conectado'
   browser_offline: Navegador offline
   update_available: Atualização disponível
@@ -209,7 +209,7 @@ snapcast:
   volume: Volúme
 authentication:
   popup_blocked: Pop-up bloqueado. Permita janelas pop-up e tente novamente.
-  failed: Falha na autorização. %{origin} não é o URL de autorização configurado.
+  failed: Falha na autorização. %{origin} não corresponde ao URL de autorização configurado.
   log_out: Sair
   log_in: Entrar
 
@@ -273,7 +273,7 @@ artist:
       all: Todo
       albums: Álbuns
       singles: Singles
-      compilations: Copilação
+      compilations: Compilados
 debug:
   title: Depurar
   ui:
@@ -359,7 +359,7 @@ settings:
       label: Comportamento
       clear_tracklist: Limpar lista de faixas da reprodução URI(s)
       clear_tracklist_tooltip: Reproduzir uma ou mias URIs irá limpar a fila de reprodução atual
-      hotkeys: Habilitar teclas de atalho
+      hotkeys: Ativar teclas de atalho
       smooth_scrolling: Ativar rolagem suave
       touch_events: Ativar eventos de toque nos controles de reprodução
       touch_events_tooltip: Permitir deslizar para a esquerda e para a direita para mudar de faixa
@@ -391,8 +391,8 @@ settings:
     version:
       label: Versão
       upgrade_available: 'Atualização disponível (%{version})'
-      upgrade: 'Aztualizar a %{version}'
-      up_to_date: Atualizada
+      upgrade: 'Atualizar para %{version}'
+      up_to_date: Você está na versão mais recente
     share_configuration: Compartilhar configurações
     restart: Reiniciar servidor
     reset: Reiniciar ajustes
@@ -469,20 +469,20 @@ discover:
     find_recommendations: Encontrar recomendações
 library:
   albums:
-    title: Meus álbuns
+    title: Meus Álbuns
   artists:
-    title: Meus artistas
+    title: Meus Artistas
   browse:
     title: Navegar
   browse_directory:
     title: Diretório
   playlists:
-    title: Meinhas playlists
+    title: Minhas Playlists
   tracks:
-    title: Meinhas faixas
+    title: Minhas Faixas
 modal:
   add_to_playlist:
-    title: adicionar à Playlist
+    title: Adicionar à Playlist
     subtitle: 'Selecione a lista de reprodução para adicionar %{count} faixa%{plural}'
     no_playlists: Nenhuma lista de reprodução disponível
     no_editable_playlists: Sem listas de reprodução editáveis
@@ -496,20 +496,20 @@ modal:
       end: Fim
       next: Depois da faixa atual
   edit_playlist:
-    title: Editar playlist
-    title_create: Crear playlist
-    name_required: Requier um nome
+    title: Editar Playlist
+    title_create: Criar Playlist
+    name_required: Requer um nome
     name: Nome
     description: Descrição
     provider: Provedor
     image:
       label: Arte da capa
-      description: Só JPEG, 256kB máx. Deixe-o vazio para manter a imagem inalterada.
+      description: Apenas JPEG, 256kB máx. Deixe-o vazio para manter a imagem inalterada.
     options:
       label: Opções
       public: Público
       collaborative: Colaborativa
-    create_playlist: Crio a playlist
+    create_playlist: Criar Playlist
   edit_command:
     title: Editar comando
     title_create: Criar comando
@@ -528,7 +528,7 @@ modal:
     subtitle: Adicione e remova faixas para moldar o som do seu rádio. O rádio usa as recomendações do Spotify para sugerir músicas semelhantes às suas faixas.
     invalid_seed_uri: URI(s) inválida
     too_many_seeds: Mais de 5 faixas, ignorando o resto
-    only_spotify_uris: Só URIs do Spotify são suportados
+    only_spotify_uris: Apenas URIs do Spotify são suportados
     already_added: URI já adicionado
     no_seeds: Sem faixas
   initial_setup:
@@ -554,14 +554,14 @@ modal:
       subtitle: 'Outro usuário compartilhou suas configurações com você. Isso inclui:'
       do_you_want_to_import: Você quer importar?
       import_now: Importar agora
-      successful: Importada com sucesso
+      successful: Importado com sucesso
   reset:
     title: Reiniciar Iris
-    subtitle: Limpe suas configurações locais, informações de armazenamento ou cache
+    subtitle: Limpe suas configurações locais, informações de armazenamento e cache
     items: Reiniciar de fábrica
     preferences:
       label: Preferencias
-      description: Costumização de Interface
+      description: Personalizações de Interface
     database:
       label: Base de dados
       description: Base de dados local de bibliotecas e ajustes
@@ -569,9 +569,9 @@ modal:
       label: Service worker
       description: Reinstalar service worker
     cache:
-      label: Extrair cacher
+      label: Extrair cache
       description: Uma API externa requer cache (requer Service Worker)
     test_mode:
       label: Modo Teste
-      description: Log detalhado para fins de diagnóstico
+      description: Log detalhado para fins de diagnóstico de erros
 

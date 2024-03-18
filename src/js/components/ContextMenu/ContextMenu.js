@@ -49,7 +49,7 @@ const Title = ({
     );
   }
 
-  if (item) {
+  if (item?.added_from) {
     return (
       <div className="context-menu__title">
         <AddedFrom
@@ -62,9 +62,7 @@ const Title = ({
     );
   }
 
-  if (type === 'custom') {
-    if (!title) return null;
-
+  if (title && type === 'custom') {
     return (
       <div className="context-menu__title">
         <div className="context-menu__title__text">

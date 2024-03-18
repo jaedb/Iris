@@ -28,7 +28,11 @@ elif [[ $1 = "restart" ]]; then
 elif [[ $1 = "local_scan" ]]; then
 	START=$(date +%s)
 	if $IS_CONTAINER; then
-		SCAN=$(mopidy --config /config/mopidy.conf local scan)
+		if [ -n "$IRIS_CONFIG_LOCATION" ]; then
+			SCAN=$(mopidy --config $IRIS_CONFIG_LOCATION local scan)
+		else
+			SCAN=$(mopidy --config /config/mopidy.conf local scan)
+		fi
 	else
 		SCAN=$(sudo mopidyctl local scan)
 	fi

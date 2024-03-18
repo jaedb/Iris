@@ -61,7 +61,7 @@ fields:
     name: Name
     artist: Künstler/in
     updated: Aktualisiert
-    tracks: Titeln
+    tracks: Titel
     source: Quelle
     editable: Editierbar
     owner: Eigentümer/in
@@ -91,7 +91,7 @@ time:
     singular: Jahr
     plural: Jahre
 specs:
-  tracks: '%{count} Titeln'
+  tracks: '%{count} Titel'
   followers: '%{count} Anhänger'
   listeners: '%{count} Zuhörer'
   playlists: '%{count} Wiedergabelisten'
@@ -137,7 +137,7 @@ sidebar:
   playlists: Wiedergabelisten
   artists: Künstler/in
   albums: Alben
-  tracks: Titeln
+  tracks: Titel
   browse: Durchsuchen
   settings: Einstellungen
   not_connected: '%{name} nicht verbunden'
@@ -208,12 +208,12 @@ artist:
   title_window: '%{name} (Künstler/in)'
   overview:
     title: Übersicht
-    top_tracks: Top-Titeln
+    top_tracks: Top-Titel
     related_artists:
       title: Verwandte Künstler/innen
       more: Alle verwandten Künstler/innen
   tracks:
-    title: Titeln
+    title: Titel
   related_artists:
     title: Verwandte Künstler/innen
   about:
@@ -266,7 +266,7 @@ search:
     title: Wiedergabelisten
     more: 'Alle Wiedergabelisten (%{count})'
   tracks:
-    title: Titeln
+    title: Titel
 track:
   title: Titel
   title_window: '%{name} von %{artists} (Tiel)'
@@ -301,7 +301,7 @@ settings:
       hotkeys: Hotkeys aktivieren
       smooth_scrolling: Smooth Scrolling aktivieren
       touch_events: Aktivieren Berührungsereignissen zur Steuerungen
-      touch_events_tooltip: Ermöglicht Links- und Rechts-Wischen zum Wechseln der Titeln
+      touch_events_tooltip: Ermöglicht Links- und Rechts-Wischen zum Wechseln der Titel
       wide_scrollbars: Breite Bildlaufleisten verwenden
     reporting:
       label: Berichterstattung
@@ -395,7 +395,7 @@ discover:
     title: Neuerscheinungen
   recommendations:
     title: Entdecke
-    tracks: Titeln
+    tracks: Titel
     artists: Künstler/innen
     albums: Alben
     body_title: Neue Musik entdecken
