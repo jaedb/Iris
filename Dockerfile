@@ -116,9 +116,8 @@ ADD https://api.github.com/repos/jaedb/Iris/git/refs/heads/master version.json
 ENV IRIS_VERSION=develop
 RUN git clone --depth 1 --single-branch -b ${IRIS_VERSION} https://github.com/jaedb/Iris.git /iris \
  && cd /iris \
- && npm install -g yarn \
- && yarn install \
- && yarn run prod \
+ && npm install \
+ && npm run prod \
  && python3 setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
  && ln -s /config /var/lib/mopidy/.config/mopidy \
@@ -131,10 +130,8 @@ RUN git clone --depth 1 --single-branch -b ${IRIS_VERSION} https://github.com/ja
 
 # Install Mopidy Spotify
 ARG MOPIDY_SPOTIFY_TAG=v5.0.0a1
-RUN git clone -c advice.detachedHead=false \
-	--single-branch --depth 1 \
-	--branch ${MOPIDY_SPOTIFY_TAG} \
-	https://github.com/mopidy/mopidy-spotify.git mopidy-spotify \
+RUN git clone --depth 1 --single-branch -b ${MOPIDY_SPOTIFY_TAG} \
+ && https://github.com/mopidy/mopidy-spotify.git mopidy-spotify
 
 # Install additional mopidy extensions and Python dependencies via pip
 COPY docker/requirements.txt .

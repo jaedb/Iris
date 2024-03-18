@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { compact } from 'lodash';
-import InputRange from 'react-input-range';
+// import InputRange from 'react-input-range';
 import { Grid } from '../../components/Grid';
 import TrackList from '../../components/TrackList';
 import Thumbnail from '../../components/Thumbnail';
@@ -28,6 +28,12 @@ import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
 import { decodeUri, encodeUri } from '../../util/format';
 import { withRouter } from '../../util';
+
+const InputRange = () => {
+  return (
+    <div />
+  );
+}
 
 class Recommendations extends React.Component {
   constructor(props) {
