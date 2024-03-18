@@ -20,9 +20,8 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/reposit
 # Install Node, to build Iris JS application
 RUN apk add nodejs npm
 
-# Upgrade Python package manager pip
-# https://pypi.org/project/pip/
-RUN python3 -m pip install --upgrade pip
+# Allow pip to install over system packages
+ENV PIP_BREAK_SYSTEM_PACKAGES 1
 
 # Clone Iris from the repository and install in development mode.
 # This allows a binding at "/iris" to map to your local folder for development, rather than

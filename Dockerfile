@@ -1,5 +1,5 @@
 # --- Build Node ---
-FROM rust:slim-bullseye AS Builder
+FROM rust:slim-bookworm AS Builder
 LABEL org.opencontainers.image.authors="https://github.com/seppi91"
 ARG TARGETPLATFORM
 ARG TARGETARCH
@@ -23,16 +23,16 @@ RUN apt update \
 	libgstreamer-plugins-base1.0-dev \
 	libgstreamer1.0-dev \
     libcsound64-dev \
-	libclang-11-dev \
+	libclang-14-dev \
  	libpango1.0-dev  \
 	libdav1d-dev \
-	# libgtk-4-dev \ Only in bookworm
+	libgtk-4-dev \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/gst-plugins-rs
 
 # Clone source of gst-plugins-rs to workdir
-ARG GST_PLUGINS_RS_TAG=0.10.5
+ARG GST_PLUGINS_RS_TAG=0.12.2
 RUN git clone -c advice.detachedHead=false \
 	--single-branch --depth 1 \
 	--branch ${GST_PLUGINS_RS_TAG} \
@@ -53,7 +53,7 @@ RUN export CSOUND_LIB_DIR="/usr/lib/$(uname -m)-linux-gnu" \
 
 
 # --- Release Node ---
-FROM debian:bullseye-slim as Release
+FROM debian:bookworm-slim as Release
 
 # Switch to the root user while we do our changes
 USER root
@@ -79,6 +79,7 @@ RUN apt-get update \
     python3-gst-1.0 \
     python3-setuptools \
     python3-pip \
+    python3-venv \
     # GStreamer (Plugins)
     gstreamer1.0-plugins-good \
     gstreamer1.0-plugins-bad \
@@ -87,12 +88,15 @@ RUN apt-get update \
     gstreamer1.0-pulseaudio \
  && rm -rf /var/lib/apt/lists/*
 
+# Allow pip to install over system packages
+ENV PIP_BREAK_SYSTEM_PACKAGES 1
+
 # Copy builded target data from Builder DEST_DIR to root
 # Note: target directory tree links directly to $GST_PLUGIN_PATH
 COPY --from=Builder /target/gst-plugins-rs/ /
 
 # Install Node, to build Iris JS application
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs
 
 # Install mopidy and (optional) DLNA-server dleyna from apt.mopidy.com
@@ -101,13 +105,8 @@ RUN mkdir -p /etc/apt/keyrings \
  && wget -q -O /etc/apt/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg \
  && wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/bullseye.list \
  && apt-get update \
- && apt-get install -y \ 
- 	mopidy \
+ && apt-get install -y mopidy \
  && rm -rf /var/lib/apt/lists/*
-
-# Upgrade Python package manager pip
-# https://pypi.org/project/pip/
-RUN python3 -m pip install --upgrade pip
 
 # Clone Iris from the repository and install in development mode.
 # This allows a binding at "/iris" to map to your local folder for development, rather than
@@ -117,8 +116,9 @@ ADD https://api.github.com/repos/jaedb/Iris/git/refs/heads/master version.json
 ENV IRIS_VERSION=develop
 RUN git clone --depth 1 --single-branch -b ${IRIS_VERSION} https://github.com/jaedb/Iris.git /iris \
  && cd /iris \
- && npm install \
- && npm run prod \
+ && npm install -g yarn \
+ && yarn install \
+ && yarn run prod \
  && python3 setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
  && ln -s /config /var/lib/mopidy/.config/mopidy \
@@ -129,13 +129,12 @@ RUN git clone --depth 1 --single-branch -b ${IRIS_VERSION} https://github.com/ja
  # Copy Version file
  && cp /iris/VERSION /
 
-# Install mopidy-spotify-gstspotify (Hack, not released yet!)
-# (https://github.com/kingosticks/mopidy-spotify/tree/gstspotifysrc-hack)
-RUN git clone --depth 1 https://github.com/mopidy/mopidy-spotify.git mopidy-spotify \
- && cd mopidy-spotify \
- && python3 setup.py install \
- && cd .. \
- && rm -rf mopidy-spotify
+# Install Mopidy Spotify
+ARG MOPIDY_SPOTIFY_TAG=v5.0.0a1
+RUN git clone -c advice.detachedHead=false \
+	--single-branch --depth 1 \
+	--branch ${MOPIDY_SPOTIFY_TAG} \
+	https://github.com/mopidy/mopidy-spotify.git mopidy-spotify \
 
 # Install additional mopidy extensions and Python dependencies via pip
 COPY docker/requirements.txt .
