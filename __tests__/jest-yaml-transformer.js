@@ -1,4 +1,4 @@
-const transformer = require("jest-transform-yaml").default
+const transformer = require("yaml-jest").default
 
 const newTransformer = {
   ...transformer,
