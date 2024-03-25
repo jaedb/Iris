@@ -527,7 +527,7 @@ const formatPlaylist = function (data) {
   }
 
   if (playlist.tracks_total === undefined) {
-    playlist.tracks_total = playlist.tracks ? playlist.tracks.length : 0;
+    playlist.tracks_total = playlist.tracks?.length || data?.tracks?.total || 0;
   }
 
   if (data.last_modified_date && playlist.last_modified === undefined) {
