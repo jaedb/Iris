@@ -81,7 +81,7 @@ class IrisCore(pykka.ThreadingActor):
                 content = pickle.load(f)
                 f.close()
                 return content
-        except Exception:
+        except BaseException:  # noqa: B036
             if name == "pinned":
                 return []
             else:
@@ -101,7 +101,7 @@ class IrisCore(pykka.ThreadingActor):
             with file_path.open("wb") as f:
                 pickle.dump(dict, f, pickle.HIGHEST_PROTOCOL)
                 pickle.close()
-        except Exception:
+        except BaseException:  # noqa: B036
             return False
 
     ##
@@ -139,7 +139,7 @@ class IrisCore(pykka.ThreadingActor):
             generated = False
 
         # invalid, so just create a default connection, and auto-generate an ID
-        except BaseException:
+        except BaseException:  # noqa: B036
             client_id = self.generateGuid()
             connection_id = self.generateGuid()
             username = "Anonymous"
@@ -198,7 +198,7 @@ class IrisCore(pykka.ThreadingActor):
                 callback(response)
             else:
                 return response
-        except BaseException:
+        except BaseException:  # noqa: B036
             error = "Failed to send message to " + data["recipient"]
             logger.error(error)
 
@@ -331,7 +331,7 @@ class IrisCore(pykka.ThreadingActor):
                         "params": {"connection": client},
                     }
                 )
-            except BaseException:
+            except BaseException:  # noqa: B036
                 logger.error("Failed to close connection to " + connection_id)
 
     def set_username(self, *args, **kwargs):
@@ -671,7 +671,7 @@ class IrisCore(pykka.ThreadingActor):
             await self.get_spotify_token()
             spotify_token = self.spotify_token
             access_token = spotify_token["access_token"]
-        except BaseException:
+        except BaseException:  # noqa: B036
             error = "IrisFrontend: access_token missing or invalid"
             logger.error(error)
             return False
@@ -971,7 +971,7 @@ class IrisCore(pykka.ThreadingActor):
         try:
             http_client = AsyncHTTPClient()
             command_response = await http_client.fetch(request)
-        except Exception as e:
+        except Exception as e:  # noqa: B036
             error = {"message": "Command failed", "description": str(e)}
             if callback:
                 callback(False, error)
@@ -982,13 +982,13 @@ class IrisCore(pykka.ThreadingActor):
         # Attempt to parse body as JSON
         try:
             command_response_body = json.loads(command_response.body)
-        except BaseException:
+        except BaseException:  # noqa: B036
             # Perhaps it requires unicode encoding?
             try:
                 command_response_body = tornado.escape.to_unicode(
                     command_response.body
                 )
-            except BaseException:
+            except BaseException:  # noqa: B036
                 command_response_body = ""
 
         # Finally, return the result
@@ -1038,7 +1038,7 @@ class IrisCore(pykka.ThreadingActor):
                 "client_secret": self.config["spotify"]["client_secret"],
                 "grant_type": "client_credentials",
             }
-        except (Exception):
+        except BaseException:  # noqa: B036
             error = {
                 "message": "Could not refresh Spotify token: invalid configuration"
             }
@@ -1111,7 +1111,7 @@ class IrisCore(pykka.ThreadingActor):
         try:
             path = request.get_argument("path")
             url = "https://genius.com" + path
-        except Exception as e:
+        except Exception as e:  # noqa: B036
             logger.error(e)
             error = {"message": "Path not valid", "description": str(e)}
 
@@ -1126,7 +1126,7 @@ class IrisCore(pykka.ThreadingActor):
                     + " not connected",
                 }
 
-        except Exception as e:
+        except Exception as e:  # noqa: B036
             logger.error(e)
             error = {
                 "message": "Unauthorized request",
@@ -1206,7 +1206,7 @@ class IrisCore(pykka.ThreadingActor):
                 "message": "Could not update Snapcast meta",
                 error: error,
             }
-        except Exception as e:
+        except Exception as e:  # noqa: B036
             logger.error(e)
             response = {"message": "Could not update Snapcast meta"}
 

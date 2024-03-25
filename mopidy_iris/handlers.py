@@ -113,7 +113,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                                 error=error,
                             ),
                         )
-                except Exception as e:
+                except Exception as e:  # noqa: B036
                     logger.error(str(e))
 
             else:
@@ -222,7 +222,7 @@ class HttpHandler(tornado.web.RequestHandler):
                             id=id, method=slug, response=response, error=error
                         ),
                     )
-            except Exception as e:
+            except Exception as e:  # noqa: B036
                 logger.error(str(e))
 
         else:
@@ -241,7 +241,7 @@ class HttpHandler(tornado.web.RequestHandler):
 
         try:
             params = json.loads(self.request.body.decode("utf-8"))
-        except BaseException:
+        except BaseException:  # noqa: B036
             self.handle_result(
                 id=id,
                 error={"code": 32700, "message": "Missing or invalid payload"},
