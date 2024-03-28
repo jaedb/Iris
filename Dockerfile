@@ -130,8 +130,7 @@ RUN git clone --depth 1 --single-branch -b ${IRIS_VERSION} https://github.com/ja
 
 # Install Mopidy Spotify
 ARG MOPIDY_SPOTIFY_TAG=v5.0.0a1
-RUN git clone --depth 1 --single-branch -b ${MOPIDY_SPOTIFY_TAG} \
- && https://github.com/mopidy/mopidy-spotify.git mopidy-spotify \
+RUN git clone --depth 1 --single-branch -b ${MOPIDY_SPOTIFY_TAG} https://github.com/mopidy/mopidy-spotify.git mopidy-spotify \
  && cd mopidy-spotify \
  && python3 setup.py install \
  && cd .. \
