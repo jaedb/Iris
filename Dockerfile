@@ -129,13 +129,8 @@ RUN git clone --depth 1 --single-branch -b ${IRIS_VERSION} https://github.com/ja
  # Copy Version file
  && cp /iris/VERSION /
 
-# Install mopidy-spotify-gstspotify (Hack, not released yet!)
-# (https://github.com/kingosticks/mopidy-spotify/tree/gstspotifysrc-hack)
-RUN git clone --depth 1 https://github.com/mopidy/mopidy-spotify.git mopidy-spotify \
- && cd mopidy-spotify \
- && python3 setup.py install \
- && cd .. \
- && rm -rf mopidy-spotify
+# Install mopidy-spotify
+RUN sudo python3 -m pip install --break-system-packages Mopidy-Spotify==5.0.0a2
 
 # Install additional mopidy extensions and Python dependencies via pip
 COPY docker/requirements.txt .
