@@ -20,6 +20,7 @@ docker/snapserver/meta_mopidy.py
 docker/mopidy/mopidy.conf
 docker/mopidy/iris/
 docker/mopidy/m3u/
+docker/mopidy/spotify/
 docker/mopidy/icecast2.xml
 docker/jellyfin/
 docker-compose.yml
