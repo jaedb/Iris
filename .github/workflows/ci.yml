@@ -220,6 +220,6 @@ jobs:
         with:
           push: true
           platforms: linux/amd64,linux/arm64
-          file: "{{context}}/Dockerfile.alpine"
+          file: "Dockerfile.alpine"
           tags: ${{ steps.release_meta.outputs.tags || steps.edge_meta.outputs.tags }}
           labels: ${{ steps.release_meta.outputs.labels || steps.edge_meta.outputs.tags }}
