@@ -317,7 +317,7 @@ const formatSimpleObjects = function (records = []) {
  */
 const encodeUri = (rawUri = '') => {
   try {
-    return btoa(unescape(encodeURIComponent(rawUri)));
+    return btoa(unescape(encodeURIComponent(rawUri))).replaceAll('+', '-').replaceAll('/', '_');
   } catch {
     console.error('Failed to encode', rawUri);
     return null;
@@ -329,6 +329,7 @@ const encodeUri = (rawUri = '') => {
  *
  * Why base64? Some Mopidy backends have varying encoding styles, and handling all of these became
  * unweildy. Instead we take whatever Mopidy gives us, convert to binary, and then base64 it.
+ * We use RFC 4648 Base 64 Encoding with URL and Filename Safe Alphabet.
  *
  * Even when a URI is not URIEncoded, the browser will do some of it's own encoding/decoding which
  * we can avoid by giving a base64 string.
@@ -336,7 +337,7 @@ const encodeUri = (rawUri = '') => {
  */
 const decodeUri = (rawUri = '') => {
   try {
-    return decodeURIComponent(escape(atob(rawUri)));
+    return decodeURIComponent(escape(atob(rawUri.replaceAll('-', '+').replaceAll('_', '/'))));
   } catch {
     console.error('Failed to decode', rawUri);
     return null;
