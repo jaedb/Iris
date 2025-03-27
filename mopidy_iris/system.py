@@ -25,7 +25,7 @@ class IrisSystemPermissionError(IrisSystemError):
 
 
 class IrisSystemThread(Thread):
-    _USE_SUDO = os.environ.get("IRIS_USE_SUDO", True)
+    _USE_SUDO = os.getenv("IRIS_USE_SUDO", 'True').lower() in ('true','1')
 
     def __init__(self, action, ioloop, callback):
         Thread.__init__(self)
