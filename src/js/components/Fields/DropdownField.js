@@ -91,7 +91,7 @@ export default class DropdownField extends React.Component {
 
     if (optionsProp) {
       // Value not set, default to first option
-      if (value === null || value === undefined) {
+      if (value === undefined) {
         selectedOptions = [optionsProp[0]];
       } else if (this.isMultiSelect()) {
         for (const multiSelectValue of value) {
