@@ -17,6 +17,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/reposit
   alsa-utils \
   py3-pip \
   mopidy \
+  libcairo2 \
   py3-mopidy-spotify
 
 # Install Node, to build Iris JS application

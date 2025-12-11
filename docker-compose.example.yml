@@ -9,6 +9,8 @@ services:
       - 1704
       - 1705
       - 1780
+    extra_hosts:
+      - "apresolve.spotify.com=0.0.0.0"
     volumes:
       - /tmp/snapserver:/tmp
       - ./docker/snapserver/snapserver.conf:/etc/snapserver.conf
