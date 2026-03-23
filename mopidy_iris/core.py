@@ -9,8 +9,8 @@ import sys
 import tornado.web
 import tornado.ioloop
 import time
+import packaging
 import pickle
-from pkg_resources import parse_version
 from tornado.escape import json_encode
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 
@@ -437,9 +437,9 @@ class IrisCore(pykka.ThreadingActor):
             current_version = Extension.version
 
             # compare our versions, and convert result to boolean
-            upgrade_available = parse_version(latest_version) > parse_version(
-                current_version
-            )
+            upgrade_available = packaging.version.parse(
+                latest_version
+            ) > packaging.version.parse(current_version)
             upgrade_available = upgrade_available == 1
 
         except (urllib.request.HTTPError, urllib.request.URLError):
