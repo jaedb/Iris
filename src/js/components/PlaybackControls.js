@@ -165,6 +165,16 @@ const PlaybackControls = () => {
       <section className="settings">
         <button
           type="button"
+          className={`control tooltip`}
+          onClick={() => dispatch(mopidyActions.stop())}
+        >
+          <Icon name="stop" type="material" />
+          <span className="tooltip__content">
+            <I18n path="actions.stop" />
+          </span>
+        </button>
+        <button
+          type="button"
           className={`control${consume ? ' control--active' : ''} tooltip`}
           onClick={() => dispatch(mopidyActions.setConsume(!consume))}
         >
