@@ -739,10 +739,10 @@ const formatTrack = function (data) {
     track.album = formatSimpleObject(track.album);
   }
 
-  // Produce a sort-friendly disc_track float (XXX.XXX)
-  track.disc_track = `${track.disc_number || 0}`.padStart(3, '0');
+  // Produce a sort-friendly disc_track float (XXXXXX.XXXXXX)
+  track.disc_track = `${track.disc_number || 0}`.padStart(6, '0');
   track.disc_track += '.';
-  track.disc_track += `${track.track_number || 0}`.padStart(3, '0');
+  track.disc_track += `${track.track_number || 0}`.padStart(6, '0');
 
   // Remove lower-case encoding of ':'
   // See https://github.com/tkem/mopidy-dleyna/issues/72
