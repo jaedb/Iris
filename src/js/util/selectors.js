@@ -283,7 +283,7 @@ const makeProvidersSelector = (context) => createSelector(
 const makeSortSelector = (key, defaultField = 'sort_id') => createSelector(
   [getSorts],
   (sorts) => [
-    sorts[key]?.field || defaultField,
+    sorts[key]?.field === undefined ? defaultField : sorts[key].field,
     sorts[key]?.reverse || false,
   ],
 );
@@ -291,7 +291,7 @@ const makeSortSelector = (key, defaultField = 'sort_id') => createSelector(
 const getSortSelector = (state, key, defaultField = 'sort_id') => {
   const result = state.ui.sort[key];
   return [
-    result?.field || defaultField,
+    result?.field === undefined ? defaultField : result.field,
     result?.reverse || false,
   ];
 };
