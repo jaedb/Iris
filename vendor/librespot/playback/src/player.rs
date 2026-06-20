@@ -1,3 +1,7 @@
+use disk_persist::DiskPersist;
+use serde::{Deserialize, Serialize};
+use librespot_core::audio_key::AudioKey;
+use std::path::PathBuf;
 use std::{
     collections::HashMap,
     fmt, fs,
@@ -54,6 +58,10 @@ const LOAD_HANDLES_POISON_MSG: &str = "load handles mutex should not be poisoned
 
 pub type PlayerResult = Result<(), Error>;
 
+#[derive(Serialize, Deserialize, Debug)]
+struct DataSer{
+    key: [u8; 16],
+}
 pub struct Player {
     commands: Option<mpsc::UnboundedSender<PlayerCommand>>,
     thread_handle: Option<thread::JoinHandle<()>>,
@@ -1073,9 +1081,34 @@ impl PlayerTrackLoader {
 
             let stream_loader_controller = encrypted_file.get_stream_loader_controller().ok()?;
 
+            let key: Option<AudioKey>;
+            let ext_path = PathBuf::from(&format!("/var/lib/mopidy/cache/{}.ext", file_id.to_string()));
+            let persist: DiskPersist<DataSer> = DiskPersist::init_with_path(ext_path).unwrap();
+            key = match persist.read().unwrap() {
+                    Some(inner) => {
+                                info!("Extended cache used");
+                                Some(librespot_core::audio_key::AudioKey(inner.key))
+                                },
+                    None => match self.session.audio_key().request(track_id, file_id).await {
+                                Ok(ikey) => {
+                                                info!("Storing Extended cache");
+                                                let dataser = DataSer {
+                                                        key: ikey.0
+                                                };
+                                                persist.write(&dataser).unwrap();
+                                                Some(ikey)
+                                           },
+                                Err(e) => {
+                                        warn!("Unable to load key, continuing without decryption: {}", e);
+                                        None
+                                },
+                        }
+            };
+
             // Not all audio files are encrypted. If we can't get a key, try loading the track
             // without decryption. If the file was encrypted after all, the decoder will fail
             // parsing and bail out, so we should be safe from outputting ear-piercing noise.
+            /*
             let key = match self.session.audio_key().request(track_id, file_id).await {
                 Ok(key) => Some(key),
                 Err(e) => {
@@ -1083,6 +1116,7 @@ impl PlayerTrackLoader {
                     None
                 }
             };
+            */
 
             let mut decrypted_file = AudioDecrypt::new(key, encrypted_file);
 
