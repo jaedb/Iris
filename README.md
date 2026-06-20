@@ -146,10 +146,13 @@ rm -rf vendor/librespot/.git
   an earlier (abandoned) attempt to build on Mopidy 4 instead.
 - `Mopidy-Podcast`, `Mopidy-Mobile`, `Mopidy-Scrobbler`, `Mopidy-MPD` are
   present in production but not yet in this image.
-- `k8s/mopidy1-deployment.yaml` is a trimmed mirror of the live
-  Deployment as a starting point; `mopidy2`-`mopidy5` aren't captured yet,
-  and it doesn't yet reflect the version pins/fixes above (still says
-  `:latest`, not the `:test` tag used during verification).
-- Currently only `mopidy1` has been switched to the new image (tag
-  `k8s1:31320/mopidy_stable:test`) for testing; `mopidy2`-`mopidy4` are
-  still on the old `:latest` image with the unpatched librespot.
+- `k8s/mopidy{1,2,3,4}-deployment.yaml` mirror the live Deployments;
+  `mopidy5` isn't captured (it has no Deployment in the cluster, service
+  only). `mopidy2`-`4` had drifted - their `conf`/`podcast`
+  `volumeMounts` were missing even though `volumes` still referenced
+  them, so they were silently running on a blank default config with
+  Spotify disabled (not visible until something tried to use Spotify on
+  them). Restored to match `mopidy1`.
+- All four (`mopidy1`-`4`) are now verified running
+  `k8s1:31320/mopidy_stable:latest` with the librespot CDN fix and
+  playing real Spotify audio.

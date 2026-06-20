@@ -1,0 +1,79 @@
+# Mirrors the live Deployment in namespace snapserver. See
+# k8s/mopidy1-deployment.yaml for context - this one previously had its
+# `conf`/`podcast` volumeMounts missing (drifted from the `volumes` list,
+# which still referenced them), causing it to silently fall back to a
+# blank default config with Spotify disabled. Restored here.
+# Apply with: kubectl -n snapserver apply -f k8s/mopidy2-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mopidy2
+  namespace: snapserver
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: mopidy2
+  template:
+    metadata:
+      labels:
+        run: mopidy2
+    spec:
+      containers:
+        - name: mopidy2
+          image: k8s1:31320/mopidy_stable:latest
+          imagePullPolicy: Always
+          env:
+            - name: TZ
+              value: Europe/Berlin
+          ports:
+            - name: http
+              containerPort: 6680
+              protocol: TCP
+            - name: mpd
+              containerPort: 6600
+              protocol: TCP
+          volumeMounts:
+            - name: conf
+              mountPath: /root/.config/mopidy/mopidy.conf
+              subPath: mopidy.conf
+            - name: cache
+              mountPath: /var/lib/mopidy/cache
+            - name: spotify
+              mountPath: /var/lib/mopidy/spotify
+            - name: lib
+              mountPath: /var/lib/mopidy/
+            - name: music
+              mountPath: /var/lib/music
+            - name: podcast
+              mountPath: /etc/mopidy/podcast/Podcasts.opml
+              subPath: Podcasts.opml
+      dnsPolicy: ClusterFirstWithHostNet
+      volumes:
+        - name: podcast
+          configMap:
+            name: podcast
+        - name: conf
+          configMap:
+            name: mopidy2-config
+        - name: cache
+          persistentVolumeClaim:
+            claimName: cache
+        - name: spotify
+          persistentVolumeClaim:
+            claimName: spotify
+        - name: lib
+          persistentVolumeClaim:
+            claimName: mopidy2
+        - name: music
+          flexVolume:
+            driver: fstab/cifs
+            fsType: cifs
+            options:
+              networkPath: //diskstation/Musik
+              mountOptions: dir_mode=0755,file_mode=0644,noperm
+            secretRef:
+              name: mopidy-cifs-secret
