@@ -31,8 +31,35 @@ need to touch version strings or republish a crate.
 
 Mopidy itself and Mopidy-Spotify (the Python backend that drives
 `spotifyaudiosrc` and handles config/search/browsing) are **not**
-vendored — they're installed from PyPI in the final image. Only the
-Rust/librespot side was in scope for local development.
+vendored — they're installed from PyPI in the final image, pinned to
+`Mopidy==3.4.2` / `Mopidy-Spotify==5.0.0a3` (see "Why Mopidy 3.4.2, not
+4.x" below). Only the Rust/librespot side was in scope for local
+development.
+
+`vendor/librespot/audio/src/fetch/mod.rs` carries one backported patch:
+librespot's CDN fetch accepted whatever URL `storage-resolve` returned
+first and gave up entirely on anything other than a 206 response, instead
+of trying the next candidate URL. Spotify's CDN intermittently returns
+500 for the first URL in the list - on the production account this
+reliably broke 100% of track playback (login, search, and metadata all
+worked fine; the audio fetch itself didn't). Fixed by backporting
+[librespot-org/librespot#1722](https://github.com/librespot-org/librespot/pull/1722)
+(open, unmerged upstream as of 2026-06-19).
+
+### Why Mopidy 3.4.2, not 4.x
+
+Mopidy 4 rewrote its models around pydantic and deleted
+`mopidy.models.serialize.ModelJSONEncoder` entirely. The current
+Mopidy-Iris (3.70.0) still imports that class directly, so Iris fails to
+even load its extension on Mopidy 4 - confirmed by testing, not just
+reading changelogs. `Mopidy-Spotify` correspondingly has to stay on
+`5.0.0a3` (the last alpha supporting `Mopidy>=3.4.0`; the final 5.0.0
+requires `Mopidy>=4.0.0`), and `Mopidy-Local`/`Mopidy-InternetArchive` are
+pinned to their last Mopidy-3-compatible releases (`3.2.1` / `3.1.2`).
+This whole combination matches what's already running in production
+(verified via `pip show` on the live pods) - we're not introducing a new
+stack, just replacing `libgstspotify.so` with one built from current,
+editable sources.
 
 ## Build chain
 
@@ -105,11 +132,24 @@ rm -rf vendor/librespot/.git
 
 ## Known gaps / not yet addressed
 
-- The deployed `mopidy.conf` (see `mopidy1-config` ConfigMap) has `[m3u]`
-  and `[file]` sections, but `Mopidy-M3U` is abandoned upstream
-  (Python 2-only on PyPI) and `Mopidy-File` was never published as a
-  separate package — neither is installed in the final image. Needs a
-  decision on whether to drop those sections, find a maintained fork, or
-  reimplement minimally.
+- `Mopidy-Local==3.2.1` (pinned per above) imports the stdlib `imghdr`
+  module to sniff embedded cover art, which Python 3.13 removed (PEP
+  594). The `local` extension currently fails to load
+  (`ModuleNotFoundError: No module named 'imghdr'`), so local file
+  browsing/playback is broken on this image even though it works in the
+  currently-deployed production image (which runs Python 3.11). Needs
+  either a small `imghdr` shim module or patching `mopidy_local/storage.py`
+  to not need it.
+- `Mopidy==3.4.2` is bundled `m3u`/`file`/`stream`/`http`, so unlike an
+  earlier version of this README claimed, no separate `Mopidy-M3U`/
+  `Mopidy-File` packages are needed - that requirement was an artifact of
+  an earlier (abandoned) attempt to build on Mopidy 4 instead.
+- `Mopidy-Podcast`, `Mopidy-Mobile`, `Mopidy-Scrobbler`, `Mopidy-MPD` are
+  present in production but not yet in this image.
 - `k8s/mopidy1-deployment.yaml` is a trimmed mirror of the live
-  Deployment as a starting point; `mopidy2`-`mopidy5` aren't captured yet.
+  Deployment as a starting point; `mopidy2`-`mopidy5` aren't captured yet,
+  and it doesn't yet reflect the version pins/fixes above (still says
+  `:latest`, not the `:test` tag used during verification).
+- Currently only `mopidy1` has been switched to the new image (tag
+  `k8s1:31320/mopidy_stable:test`) for testing; `mopidy2`-`mopidy4` are
+  still on the old `:latest` image with the unpatched librespot.
