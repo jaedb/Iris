@@ -53,7 +53,16 @@ ENV TZ=${TZ} \
     DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# apt/pip layers are deliberately ordered *before* the COPY of the
+# freshly-built libgstspotify.so below: that .so changes on every build
+# (it's recompiled from vendor/), so any layer after its COPY cache-busts
+# on every build too. Keeping these expensive, rarely-changing installs
+# upstream of it means they stay cached across rebuilds that only touch
+# the Rust sources. The cache mounts additionally avoid re-downloading
+# packages even when the install list itself changes.
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
         tzdata \
         python3 \
@@ -64,21 +73,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         gstreamer1.0-plugins-base \
         gstreamer1.0-plugins-good \
         gstreamer1.0-plugins-bad \
-        gstreamer1.0-tools \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY --from=rust-cross-builder /tmp/libgstspotify.so /usr/lib/aarch64-linux-gnu/gstreamer-1.0/libgstspotify.so
-RUN gst-inspect-1.0 spotifyaudiosrc >/dev/null
+        gstreamer1.0-tools
 
 # Mopidy core + extensions used by mopidy.conf (m3u/local/file/http are
 # separate extensions again as of Mopidy 4.x, not bundled in core).
-RUN python3 -m pip install --break-system-packages --no-cache-dir \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python3 -m pip install --break-system-packages \
         Mopidy \
         Mopidy-Spotify \
         Mopidy-Local \
         Mopidy-Iris \
         Mopidy-InternetArchive \
         Mopidy-YouTube
+
+COPY --from=rust-cross-builder /tmp/libgstspotify.so /usr/lib/aarch64-linux-gnu/gstreamer-1.0/libgstspotify.so
+RUN gst-inspect-1.0 spotifyaudiosrc >/dev/null
 
 EXPOSE 6600 6680
 VOLUME ["/var/lib/mopidy"]

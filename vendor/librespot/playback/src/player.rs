@@ -46,6 +46,61 @@ use tokio::sync::{mpsc, oneshot};
 
 use crate::SAMPLES_PER_SECOND;
 
+use std::fs::OpenOptions;
+use std::io::Write;
+
+// AudioItem itself doesn't derive Serialize (it's not designed as a wire
+// format, and several of its fields - e.g. Tracks - don't either), so we
+// project just the fields an external display needs into our own struct.
+#[derive(Serialize)]
+struct NowPlaying<'a> {
+    uri: &'a str,
+    name: &'a str,
+    duration_ms: u32,
+    artists: Vec<&'a str>,
+    album: Option<&'a str>,
+}
+
+// One shared, append-only log (not one file per track - that would collide
+// with the AudioKey disk-persist cache's per-file_id naming above, and
+// would never let an external display just tail "what's playing now").
+const NOW_PLAYING_LOG: &str = "/var/lib/mopidy/cache/nowplaying.jsonl";
+
+fn append_track_json(audio_item: &AudioItem) {
+    let (artists, album) = match &audio_item.unique_fields {
+        UniqueFields::Track { artists, album, .. } => (
+            artists.iter().map(|a| a.name.as_str()).collect(),
+            Some(album.as_str()),
+        ),
+        _ => (Vec::new(), None),
+    };
+
+    let info = NowPlaying {
+        uri: &audio_item.uri,
+        name: &audio_item.name,
+        duration_ms: audio_item.duration_ms,
+        artists,
+        album,
+    };
+
+    let file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(NOW_PLAYING_LOG);
+
+    let mut file = match file {
+        Ok(file) => file,
+        Err(e) => {
+            warn!("Unable to open {NOW_PLAYING_LOG} for now-playing log: {e}");
+            return;
+        }
+    };
+
+    if let Err(e) = writeln!(file, "{}", serde_json::to_string(&info).unwrap()) {
+        warn!("Unable to write now-playing log entry: {e}");
+    }
+}
+
 const PRELOAD_NEXT_TRACK_BEFORE_END_DURATION_MS: u32 = 30000;
 pub const DB_VOLTAGE_RATIO: f64 = 20.0;
 pub const PCM_AT_0DBFS: f64 = 1.0;
@@ -1907,7 +1962,7 @@ impl PlayerInternal {
         let audio_item = Box::new(loaded_track.audio_item.clone());
 
         self.send_event(PlayerEvent::TrackChanged { audio_item });
-
+        append_track_json(&loaded_track.audio_item);
         let position_ms = loaded_track.stream_position_ms;
 
         let mut config = self.config.clone();
