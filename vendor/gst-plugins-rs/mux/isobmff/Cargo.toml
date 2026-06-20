@@ -1,0 +1,62 @@
+[package]
+name = "gst-plugin-isobmff"
+version.workspace = true
+authors = ["Sebastian Dröge <sebastian@centricular.com>"]
+license = "MPL-2.0"
+description = "GStreamer ISO Base Media File Format (MP4) Plugin"
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+anyhow = "1"
+gst = { workspace = true,  features = ["v1_18"] }
+gst-base = { workspace = true, features = ["v1_18"] }
+gst-audio = { workspace = true, features = ["v1_18"] }
+gst-video = { workspace = true, features = ["v1_18"] }
+gst-pbutils = { workspace = true, features = ["v1_20"] }
+gst-tag = { workspace = true, features = ["v1_20"] }
+bitstream-io = "4"
+num-integer = { version = "0.1", default-features = false, features = [] }
+
+[lib]
+name = "gstisobmff"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[dev-dependencies]
+gst-app = { workspace = true, features = ["v1_18"] }
+gst-check = { workspace = true, features = ["v1_18"] }
+gst-pbutils = { workspace = true, features = ["v1_20"] }
+chrono = "0.4.35"
+dash-mpd = { version = "0.19", default-features = false }
+m3u8-rs = "6.0"
+mp4-atom = "0.9"
+quick-xml = { version = "0.38", features = ["serialize"] }
+serde = "1"
+tempfile = "3"
+url = "2"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+default = []
+static = []
+capi = []
+doc = []
+v1_28 = ["gst/v1_28"]
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-base-1.0, gstreamer-audio-1.0, gstreamer-video-1.0, gobject-2.0, glib-2.0, gmodule-2.0"

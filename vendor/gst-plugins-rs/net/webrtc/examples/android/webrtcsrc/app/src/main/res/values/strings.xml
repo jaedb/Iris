@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">GStreamer WebRTCSrc</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Producer List -->
+    <string name="producer_list_label">WebRTC Producers</string>
+    <string name="producer_id_label">Producer Id</string>
+    <string name="producer_meta_label">Meta</string>
+    <string name="producer_list_refresh">Refresh</string>
+    <string name="no_producers_message">No producers found</string>
+    <string name="producer_retrieval_error">Error retrieving producers:\n%1$s</string>
+
+    <!-- Consumer -->
+    <string name="consumer_label">WebRTC Consumer</string>
+    <string name="consumer_back">Back</string>
+    <string name="consumer_producer_label">Receiving from:</string>
+    <string name="consumer_producer_id">-</string>
+
+    <!-- Settings Signaller -->
+    <string name="signaller_header">Signaller</string>
+    <string name="signaller_uri_label">URI</string>
+    <string name="signaller_uri">ws://192.168.1.22:8443</string>
+
+    <!-- Settings Audio -->
+    <string name="audio_header">Audio</string>
+    <string name="prefer_opus_hardware_decoder_label">Prefer OPUS hardware decoding</string>
+    <string name="prefer_opus_hardware_decoder_summary">
+        OPUS hardware decoding crashed the app on some devices.
+        Enabling this will lower OPUS software decoder rank.
+    </string>
+</resources>

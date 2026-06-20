@@ -1,0 +1,81 @@
+---
+# test with
+# act --job prepare-release --eventpath ./.github/example/prepare-release.event
+name: prepare release
+on:
+  workflow_dispatch:
+    inputs:
+      versionBump:
+        description: "Version bump for"
+        required: true
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  prepare-release:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-tags: true
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Bump versions
+        env:
+          fragment: ${{ github.event.inputs.versionBump }}
+        run: ./.github/scripts/bump-versions.sh
+
+      - name: Update Cargo.lock
+        run: cargo update --workspace
+
+      - name: Get binary version
+        id: get-version
+        run: |
+          VERSION=$(cat ./Cargo.toml | awk "/version/{print; exit}" | cut -d\" -f 2)
+          echo VERSION=$VERSION >> ${GITHUB_OUTPUT}
+
+      - name: Update Changelog
+        uses: thomaseizinger/keep-a-changelog-new-release@3.1.0
+        with:
+          tag: v${{ steps.get-version.outputs.VERSION }}
+          version: ${{ steps.get-version.outputs.VERSION }}
+
+      - name: Create PR to review automated changes
+        uses: peter-evans/create-pull-request@v7
+        if: ${{ !env.ACT }}
+        with:
+          commit-message: 'Preparations for v${{ steps.get-version.outputs.VERSION }}'
+          title: "Preparations for v${{ steps.get-version.outputs.VERSION }}"
+          branch: "prepare-release/v${{ steps.get-version.outputs.VERSION }}"
+          assignees: ${{ github.actor }}
+          body: |
+            This PR prepares for the next ${{ github.event.inputs.versionBump }} release v${{ steps.get-version.outputs.VERSION }}.
+
+            **Files that should be automatically modified:**
+            - `Cargo.toml` (version bump)
+              - `<crate>/Cargo.toml` (version bump)
+              > for patch versions only the necessary crates will receive an update
+            - `Cargo.lock` (only bumps own crate versions)
+            - `CHANGELOG.md` (finalize changelog for upcoming version)
+            
+            **Review checklist:**
+            - [ ] Confirm the version bump in `Cargo.toml` is correct
+            - [ ] Ensure `Cargo.lock` did only update our crates
+            - [ ] Review the changelog for accuracy and completeness
+            
+            Please verify these changes before merging.
+            
+            ---
+            After merging, continue by creating a new release with the tag `v${{ steps.get-version.outputs.VERSION }}`.
+
+            > See [PUBLISHING.md](https://github.com/librespot-org/librespot/blob/dev/PUBLISHING.md) for further infos.

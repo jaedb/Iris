@@ -1,0 +1,74 @@
+[package]
+name = "gst-plugin-gtk4"
+version.workspace = true
+authors = ["Bilal Elmoussaoui <bil.elmoussaoui@gmail.com>", "Jordan Petridis <jordan@centricular.com>", "Sebastian Dröge <sebastian@centricular.com>"]
+repository.workspace = true
+license = "MPL-2.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "GStreamer GTK 4 sink element"
+
+[dependencies]
+gtk.workspace = true
+gdk-wayland = { workspace = true, optional = true}
+gdk-x11 = { workspace = true, optional = true}
+
+gst = { workspace = true, features = ["v1_16"] }
+gst-base.workspace = true
+gst-video.workspace = true
+gst-gl = { workspace = true, features = ["v1_16"] }
+gst-allocators = { workspace = true, features = ["v1_24"], optional = true }
+
+gst-gl-wayland = { workspace = true, features = ["v1_16"], optional = true }
+gst-gl-x11 = { workspace = true, features = ["v1_16"], optional = true }
+gst-gl-egl = { workspace = true, features = ["v1_16"], optional = true }
+async-channel = "2.0.0"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+gst-gl = { workspace = true, features = ["v1_16"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+gdk-win32.workspace = true
+gst-gl = { workspace = true, features = ["v1_20"] }
+windows-sys = { version = ">=0.52, <=0.61", features = ["Win32_Graphics_OpenGL", "Win32_Foundation", "Win32_Graphics_Gdi"] }
+
+[lib]
+name = "gstgtk4"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+default = ["gtk_v4_10"]
+static = []
+# Deprecated
+wayland = ["waylandegl"]
+waylandegl = ["gdk-wayland", "gst-gl-wayland"]
+x11glx = ["gdk-x11", "gst-gl-x11"]
+x11egl = ["gdk-x11", "gst-gl-egl"]
+winegl = ["gdk-win32/egl", "gst-gl-egl"]
+dmabuf = ["gst-allocators", "gtk_v4_14", "gst-video/v1_24"]
+capi = []
+doc = ["gst/v1_18"]
+gtk_v4_10 = ["gtk/v4_10"]
+gtk_v4_12 = ["gtk/v4_12", "gtk_v4_10"]
+gtk_v4_14 = ["gtk/v4_14", "gtk_v4_12"]
+gtk_v4_16 = ["gtk/v4_16", "gtk_v4_14"]
+gtk_v4_18 = ["gtk/v4_18", "gtk_v4_16"]
+gtk_v4_20 = ["gtk/v4_20", "gtk_v4_18"]
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-base-1.0, gstreamer-video-1.0, gtk4, gobject-2.0, glib-2.0, gmodule-2.0"

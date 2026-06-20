@@ -1,0 +1,86 @@
+[package]
+name = "gst-plugin-rtp"
+version.workspace = true
+authors = ["Vivienne Watermeier <vwatermeier@igalia.com>", "Sebastian Dröge <sebastian@centricular.com>"]
+repository.workspace = true
+license = "MPL-2.0"
+edition.workspace = true
+description = "GStreamer Rust RTP Plugin"
+rust-version.workspace = true
+
+[dependencies]
+anyhow = "1"
+atomic_refcell = "0.1"
+bitstream-io = "4"
+byte-slice-cast = "1.2"
+chrono = { version = "0.4", default-features = false }
+gst       = { workspace = true, features = ["v1_20"] }
+gst-audio = { workspace = true, features = ["v1_20"] }
+gst-base  = { workspace = true, features = ["v1_20"] }
+gst-net   = { workspace = true, features = ["v1_20"] }
+gst-rtp   = { workspace = true, features = ["v1_20"] }
+gst-video = { workspace = true, features = ["v1_20"] }
+futures = "0.3"
+glib.workspace = true
+gio.workspace = true
+hex = "0.4.3"
+log = "0.4"
+rand = { version = "0.9", default-features = false, features = ["std", "std_rng", "thread_rng" ] }
+rtp-types = { version = "0.1" }
+rtcp-types = { version = "0.2" }
+slab = "0.4.9"
+smallvec = { version = "1.11", features = ["union", "write", "const_generics", "const_new"] }
+thiserror = "2"
+time = { version = "0.3", default-features = false, features = ["std"] }
+# TODO: experiment with other async executors (mio, async-std, etc)
+tokio = { version = "1", default-features = false, features = ["rt-multi-thread", "time", "sync"] }
+tokio-util = "0.7.15"
+
+[dev-dependencies]
+gst-check = { workspace = true, features = ["v1_20"] }
+gst-app   = { workspace = true, features = ["v1_20"] }
+tokio = { version = "1", default-features = false, features = ["macros", "signal"] }
+itertools = "0.14"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[lib]
+name = "gstrsrtp"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[features]
+static = []
+capi = []
+doc = []
+
+[[example]]
+name = "rtpbin2-send"
+path = "examples/rtpbin2-send.rs"
+
+[[example]]
+name = "rtpbin2-recv"
+path = "examples/rtpbin2-recv.rs"
+
+[[example]]
+name = "rtpbin2-send-bundle"
+path = "examples/rtpbin2-send-bundle.rs"
+
+[[example]]
+name = "rtpbin2-recv-bundle"
+path = "examples/rtpbin2-recv-bundle.rs"
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-base-1.0, gstreamer-rtp-1.0, gstreamer-net-1.0, gstreamer-video-1.0 gobject-2.0, glib-2.0, gmodule-2.0, gio-2.0"

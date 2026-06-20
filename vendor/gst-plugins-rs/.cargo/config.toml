@@ -1,0 +1,6 @@
+[net]
+
+# Use the `git` executable for git operations. The built-in cargo git
+# client seems to often hang with gitlab.freedesktop.org's fastly
+# cache configuration.
+git-fetch-with-cli = true

@@ -1,0 +1,54 @@
+[package]
+name = "gst-plugin-rtsp"
+version.workspace = true
+authors = ["Nirbheek Chauhan <nirbheek centricular com>"]
+repository.workspace = true
+license = "MPL-2.0"
+description = "GStreamer RTSP Client Plugin"
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+anyhow = "1"
+atomic_refcell = "0.1"
+data-encoding = "2.4"
+futures = "0.3"
+gst = { workspace = true, features = ["v1_20"] }
+gst-app = { workspace = true, features = ["v1_20"] }
+gst-net = { workspace = true, features = ["v1_20"] }
+gst-pbutils = { workspace = true, features = ["v1_20"] }
+lru = "0.16"
+rtsp-types = "0.1"
+sdp-types = "0.1"
+socket2 = { version = "0.6", features = ["all"] }
+thiserror = "2"
+tokio = { version = "1.0", default-features = false, features = ["io-util", "macros", "net", "time", "rt-multi-thread", "sync"] }
+tokio-stream = "0.1"
+url = "2"
+
+[lib]
+name = "gstrsrtsp"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+static = []
+capi = []
+doc = ["gst/v1_18"]
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-net-1.0, gobject-2.0, glib-2.0, gmodule-2.0"

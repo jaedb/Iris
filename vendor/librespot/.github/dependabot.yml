@@ -1,0 +1,15 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    schedule:
+      interval: weekly
+      day: saturday
+      time: "10:00"
+    groups:
+      gha-deps:
+        patterns:
+          - "*"
+    target-branch: dev
+    directories:
+      - "/.github/workflows"

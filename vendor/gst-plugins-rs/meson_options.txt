@@ -1,0 +1,87 @@
+# Same order as members in Cargo.toml
+
+# analytics
+option('analytics', type: 'feature', value: 'auto', description: 'Build analytics plugin')
+
+# audio
+option('audiofx', type: 'feature', value: 'auto', description: 'Build audiofx plugin')
+option('audioparsers', type: 'feature', value: 'auto', description: 'Build audioparsers plugin')
+option('claxon', type: 'feature', value: 'auto', description: 'Build claxon plugin')
+option('csound', type: 'feature', value: 'auto', description: 'Build csound plugin')
+option('elevenlabs', type: 'feature', value: 'auto', description: 'Build elevenlabs plugin')
+option('lewton', type: 'feature', value: 'auto', description: 'Build lewton plugin')
+option('spotify', type: 'feature', value: 'auto', description: 'Build spotify plugin')
+option('speechmatics', type: 'feature', value: 'auto', description: 'Build speechmatics plugin')
+
+# generic
+option('file', type: 'feature', value: 'auto', description: 'Build file plugin')
+option('originalbuffer', type: 'feature', value: 'auto', description: 'Build originalbuffer plugin')
+option('gopbuffer', type: 'feature', value: 'auto', description: 'Build gopbuffer plugin')
+option('sodium', type: 'feature', value: 'auto', description: 'Build sodium plugin')
+option('sodium-source', type: 'combo',
+       choices: ['system', 'built-in'], value: 'built-in',
+       description: 'Whether to use libsodium from the system or the built-in version from the sodiumoxide crate')
+option('threadshare', type: 'feature', value: 'auto', description: 'Build threadshare plugin')
+option('inter', type: 'feature', value: 'auto', description: 'Build inter plugin')
+option('streamgrouper', type: 'feature', value: 'auto', description: 'Build streamgrouper plugin')
+
+# mux
+option('flavors', type: 'feature', value: 'auto', description: 'Build flavors plugin')
+option('isobmff', type: 'feature', value: 'auto', description: 'Build ISO BMFF plugin')
+
+# net
+option('aws', type: 'feature', value: 'auto', description: 'Build aws plugin')
+option('deepgram', type: 'feature', value: 'auto', description: 'Build deepgram plugin')
+option('hlsmultivariantsink', type: 'feature', value: 'auto', description: 'Build hlsmultivariantsink plugin')
+option('hlssink3', type: 'feature', value: 'auto', description: 'Build hlssink3 plugin')
+option('mpegtslive', type: 'feature', value: 'auto', description: 'Build mpegtslive plugin')
+option('ndi', type: 'feature', value: 'auto', description: 'Build ndi plugin')
+option('onvif', type: 'feature', value: 'auto', description: 'Build onvif plugin')
+option('raptorq', type: 'feature', value: 'auto', description: 'Build raptorq plugin')
+option('reqwest', type: 'feature', value: 'auto', description: 'Build reqwest plugin')
+option('rtsp', type: 'feature', value: 'auto', description: 'Build rtsp plugin')
+option('rtp', type: 'feature', value: 'auto', description: 'Build rtp plugin')
+option('webrtc', type: 'feature', value: 'auto', yield: true, description: 'Build webrtc plugin')
+option('webrtc-livekit', type: 'feature', value: 'disabled',  description: 'Build webrtc aws')
+option('webrtc-aws', type: 'feature', value: 'disabled', description: 'Build webrtc livekit')
+option('webrtchttp', type: 'feature', value: 'auto', description: 'Build webrtchttp plugin')
+option('quinn', type: 'feature', value: 'auto', description: 'Build quinn plugin')
+
+# text
+option('textaccumulate', type: 'feature', value: 'auto', description: 'Build textaccumulate plugin')
+option('textahead', type: 'feature', value: 'auto', description: 'Build textahead plugin')
+option('json', type: 'feature', value: 'auto', description: 'Build json plugin')
+option('regex', type: 'feature', value: 'auto', description: 'Build regex plugin')
+option('textwrap', type: 'feature', value: 'auto', description: 'Build textwrap plugin')
+
+# utils
+option('fallbackswitch', type: 'feature', value: 'auto', description: 'Build fallbackswitch plugin')
+option('livesync', type: 'feature', value: 'auto', description: 'Build livesync plugin')
+option('togglerecord', type: 'feature', value: 'auto', description: 'Build togglerecord plugin')
+option('tracers', type: 'feature', value: 'auto', description: 'Build tracers plugin')
+option('uriplaylistbin', type: 'feature', value: 'auto', description: 'Build uriplaylistbin plugin')
+
+# video
+option('cdg', type: 'feature', value: 'auto', description: 'Build cdg plugin')
+option('closedcaption', type: 'feature', value: 'auto', description: 'Build closedcaption plugin')
+option('dav1d', type: 'feature', value: 'auto', description: 'Build dav1d plugin')
+option('ffv1', type: 'feature', value: 'auto', description: 'Build ffv1 plugin')
+option('gif', type: 'feature', value: 'auto', description: 'Build gif plugin')
+option('gtk4', type: 'feature', value: 'auto', description: 'Build GTK4 plugin')
+option('hsv', type: 'feature', value: 'auto', description: 'Build hsv plugin')
+option('png', type: 'feature', value: 'auto', description: 'Build png plugin')
+option('rav1e', type: 'feature', value: 'auto', description: 'Build rav1e plugin')
+option('skia', type: 'feature', value: 'auto', description: 'Build skia plugin')
+option('videofx', type: 'feature', value: 'auto', description: 'Build videofx plugin')
+option('vvdec', type: 'feature', value: 'auto', description: 'Build vvdec plugin')
+option('webp', type: 'feature', value: 'auto', description: 'Build webp plugin')
+
+# Common options
+option('doc', type: 'feature', value: 'auto', yield: true,
+       description: 'Enable documentation')
+option('examples', type: 'feature', value: 'disabled', yield: true,
+       description: 'Build examples')
+option('tests', type : 'feature', value : 'auto', yield : true,
+       description : 'Build and enable unit tests')
+option('auto_plugin_features', type: 'feature', value: 'auto',
+       description: 'Override value of all auto plugin features')

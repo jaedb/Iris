@@ -1,0 +1,78 @@
+// Extracted from: Spotify 1.2.52.442 (windows)
+
+syntax = "proto3";
+
+package spotify.collection.proto;
+
+option optimize_for = CODE_SIZE;
+
+message IndexRepairerState {
+    bytes last_checked_uri = 1;
+    int64 last_full_check_finished_at = 2;
+}
+
+message AddTime {
+    int64 timestamp = 1;
+}
+
+message CollectionTrackEntry {
+    string uri = 1;
+    string track_name = 2;
+    string album_uri = 3;
+    string album_name = 4;
+    int32 disc_number = 5;
+    int32 track_number = 6;
+    string artist_uri = 7;
+    repeated string artist_name = 8;
+    int64 add_time = 9;
+}
+
+message CollectionAlbumEntry {
+    string uri = 1;
+    string album_name = 2;
+    string artist_uri = 4;
+    string artist_name = 5;
+    int64 add_time = 6;
+    int64 last_played = 8;
+    int64 release_date = 9;
+}
+
+message CollectionShowEntry {
+    string uri = 1;
+    string show_name = 2;
+    string creator_name = 5;
+    int64 add_time = 6;
+    int64 publish_date = 7;
+    int64 last_played = 8;
+}
+
+message CollectionBookEntry {
+    string uri = 1;
+    string book_name = 2;
+    string author_name = 5;
+    int64 add_time = 6;
+    int64 last_played = 8;
+}
+
+message CollectionArtistEntry {
+    string uri = 1;
+    string artist_name = 2;
+    int64 add_time = 4;
+    int64 last_played = 8;
+}
+
+message CollectionAuthorEntry {
+    string uri = 1;
+    string author_name = 2;
+    int64 add_time = 4;
+}
+
+message CollectionEpisodeEntry {
+    string uri = 1;
+    string episode_name = 2;
+    string show_uri = 3;
+    string show_name = 4;
+    int64 add_time = 5;
+    int64 publish_time = 6;
+}
+

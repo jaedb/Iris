@@ -1,0 +1,64 @@
+[package]
+name = "gst-plugin-quinn"
+version.workspace = true
+authors = ["Sanchayan Maity <sanchayan@asymptotic.io"]
+repository.workspace = true
+license = "MPL-2.0"
+edition.workspace = true
+description = "GStreamer Plugin for QUIC"
+rust-version.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+glib.workspace = true
+gst.workspace = true
+gst-base = { workspace = true, features = ["v1_22"] }
+tokio = { version = "1.36.0", default-features = false, features = ["time", "rt-multi-thread", "macros"] }
+futures = "0.3.30"
+quinn = { version = "0.11.6", default-features = false, features = ["rustls-ring", "runtime-tokio", "log"] }
+quinn-proto = { version = "0.11.9", default-features = false, features = ["rustls-ring", "log"] }
+rustls = { version = "0.23", default-features = false, features = ["std"] }
+rustls-pemfile = "2"
+rustls-pki-types = "1"
+rcgen = "0.14"
+bytes = "1.5.0"
+thiserror = "2"
+async-channel = "2.3"
+itertools = "0.14"
+env_logger = "0.11"
+web-transport-quinn = { version = "0.9", default-features = false, features = ["ring"] }
+url = "2.5.2"
+
+[dev-dependencies]
+gst-check = { workspace = true, features = ["v1_20"] }
+serial_test = "3"
+ctrlc = "3.4"
+clap = { version = "4", features = ["derive"] }
+
+[lib]
+name = "gstquinn"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+static = []
+capi = []
+doc = []
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-base-1.0, gobject-2.0, glib-2.0"

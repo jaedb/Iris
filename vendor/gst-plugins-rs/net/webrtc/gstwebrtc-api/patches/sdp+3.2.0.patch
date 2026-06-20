@@ -1,0 +1,15 @@
+diff --git a/node_modules/sdp/sdp.js b/node_modules/sdp/sdp.js
+index d0e6488..007570f 100644
+--- a/node_modules/sdp/sdp.js
++++ b/node_modules/sdp/sdp.js
+@@ -796,7 +796,6 @@ SDPUtils.isValidSDP = function(blob) {
+   return true;
+ };
+ 
+-// Expose public methods.
+-if (typeof module === 'object') {
+-  module.exports = SDPUtils;
+-}
++// Expose public methods (patched for ESM)
++export default SDPUtils;
++export { SDPUtils };

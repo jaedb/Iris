@@ -1,0 +1,4 @@
+# Generated:
+androidmedia/
+# FindGStreamerMobile blocks generation until the java targets are executed.
+*.java

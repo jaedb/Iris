@@ -1,0 +1,16 @@
+[package]
+name = "librespot-protocol"
+version = "0.8.0"
+rust-version.workspace = true
+authors = ["Paul Liétar <paul@lietar.net>"]
+license.workspace = true
+description = "The protobuf logic for communicating with Spotify servers"
+repository.workspace = true
+edition.workspace = true
+build = "build.rs"
+
+[dependencies]
+protobuf = "3"
+
+[build-dependencies]
+protobuf-codegen = "3"

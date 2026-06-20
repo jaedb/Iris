@@ -1,0 +1,29 @@
+// Extracted from: Spotify 1.2.52.442 (windows)
+
+syntax = "proto3";
+
+package spotify.extendedmetadata.audiofiles;
+
+import "metadata.proto";
+
+option optimize_for = CODE_SIZE;
+option java_package = "com.spotify.audiophile.proto";
+
+message NormalizationParams {
+    float loudness_db = 1;
+    float true_peak_db = 2;
+}
+
+message ExtendedAudioFile {
+    reserved 2;
+    reserved 3;
+    metadata.AudioFile file = 1;
+    int32 average_bitrate = 4;
+}
+
+message AudioFilesExtensionResponse {
+    repeated ExtendedAudioFile files = 1;
+    NormalizationParams default_file_normalization_params = 2;
+    NormalizationParams default_album_normalization_params = 3;
+    bytes audio_id = 4;
+}

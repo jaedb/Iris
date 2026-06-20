@@ -1,0 +1,62 @@
+[package]
+name = "librespot-discovery"
+version = "0.8.0"
+rust-version.workspace = true
+authors = ["Paul Lietar <paul@lietar.net>"]
+license.workspace = true
+description = "The discovery logic for librespot"
+repository.workspace = true
+edition.workspace = true
+
+[features]
+# Refer to the workspace Cargo.toml for the list of features
+default = ["with-libmdns", "native-tls"]
+
+# Discovery backends
+with-avahi = ["dep:serde", "dep:zbus", "futures-util/async-await-macro"]
+with-dns-sd = ["dep:dns-sd"]
+with-libmdns = ["dep:libmdns"]
+
+# TLS backend propagation
+native-tls = ["librespot-core/native-tls"]
+rustls-tls-native-roots = ["librespot-core/rustls-tls-native-roots"]
+rustls-tls-webpki-roots = ["librespot-core/rustls-tls-webpki-roots"]
+
+[dependencies]
+librespot-core = { version = "0.8.0", path = "../core", default-features = false }
+
+aes = "0.8"
+base64 = "0.22"
+bytes = "1"
+ctr = "0.9"
+dns-sd = { version = "0.1", optional = true }
+form_urlencoded = "1.2"
+futures-core = "0.3"
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+hmac = "0.12"
+http-body-util = "0.1"
+hyper = { version = "1.6", features = ["http1"] }
+hyper-util = { version = "0.1", features = [
+    "server-auto",
+    "server-graceful",
+    "service",
+] }
+libmdns = { version = "0.10", optional = true }
+log = "0.4"
+rand = { version = "0.9", default-features = false, features = ["thread_rng"] }
+serde = { version = "1", default-features = false, features = [
+    "derive",
+], optional = true }
+serde_repr = "0.1"
+serde_json = "1.0"
+sha1 = "0.10"
+thiserror = "2"
+tokio = { version = "1", features = ["sync", "rt"] }
+zbus = { version = "5", default-features = false, features = [
+    "tokio",
+], optional = true }
+
+[dev-dependencies]
+futures = "0.3"
+hex = "0.4"
+tokio = { version = "1", features = ["macros", "rt"] }

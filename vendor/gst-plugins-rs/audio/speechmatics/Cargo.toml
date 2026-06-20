@@ -1,0 +1,50 @@
+[package]
+name = "gst-plugin-speechmatics"
+version.workspace = true
+authors = ["Mathieu Duponchelle <mathieu@centricular.com>"]
+repository.workspace = true
+license = "MPL-2.0"
+description = "GStreamer Speechmatics plugin"
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+futures = "0.3"
+gst = { workspace = true, features = ["v1_20"] }
+gst-base.workspace = true
+gst-audio = { workspace = true, features = ["v1_16"] }
+tokio = { version = "1", features = [ "full" ] }
+async-tungstenite = { version = "0.32", features = ["tokio", "tokio-runtime", "tokio-rustls-native-certs"] }
+rustls = { version = "0.23", default-features = false, features = ["std", "ring"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+atomic_refcell = "0.1"
+http = { version = "1.0" }
+url = "2"
+
+[lib]
+name = "gstspeechmatics"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+static = []
+capi = []
+doc = ["gst/v1_18"]
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-base-1.0, gobject-2.0, glib-2.0, gmodule-2.0"

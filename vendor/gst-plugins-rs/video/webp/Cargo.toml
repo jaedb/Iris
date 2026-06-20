@@ -1,0 +1,45 @@
+[package]
+name = "gst-plugin-webp"
+version.workspace = true
+authors = ["Mathieu Duponchelle <mathieu@centricular.com>"]
+license = "MPL-2.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "GStreamer WebP Plugin"
+repository.workspace = true
+
+[dependencies]
+libwebp-sys2 = { version = "0.2", default-features = false, features = ["std", "demux", "0_5"] }
+gst.workspace = true
+gst-video.workspace = true
+
+[dev-dependencies]
+pretty_assertions = "1"
+gst-check.workspace = true
+
+[lib]
+name = "gstrswebp"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+static = []
+capi = []
+doc = ["gst/v1_18"]
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-video-1.0, gobject-2.0, glib-2.0, gmodule-2.0, libwebpdemux"

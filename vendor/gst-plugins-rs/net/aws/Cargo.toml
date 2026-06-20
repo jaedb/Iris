@@ -1,0 +1,77 @@
+[package]
+name = "gst-plugin-aws"
+version.workspace = true
+authors = ["Arun Raghavan <arun@arunraghavan.net>",
+           "Jordan Petridis <jordan@centricular.com>",
+           "Mathieu Duponchelle <mathieu@centricular.com>"]
+repository.workspace = true
+license = "MPL-2.0"
+description = "GStreamer Amazon Web Services plugin"
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+async-stream = "0.3.4"
+base32 = "0.5"
+aws-config = { version = "1.0", default-features = false, features = ["credentials-process", "rt-tokio"] }
+aws-sdk-sso = { version = "1.0", default-features = false, features = ["rt-tokio", "rustls"] }
+aws-sdk-sts = { version = "1.0", default-features = false, features = ["rt-tokio", "rustls"]}
+aws-sdk-s3 = { version = "1.0", default-features = false, features = ["rt-tokio", "rustls", "sigv4a"] }
+aws-sdk-transcribestreaming = { version = "1.0", default-features = false, features = ["rt-tokio", "rustls"] }
+aws-sdk-translate = { version = "1.0", default-features = false, features = ["rt-tokio", "rustls"] }
+aws-types = "1.0"
+aws-credential-types = "1.0"
+aws-sdk-polly = { version = "1.0", default-features = false, features = ["rt-tokio", "rustls"] }
+bytes = "1.0"
+futures = "0.3"
+gio.workspace = true
+gst.workspace = true
+gst-base.workspace = true
+gst-audio = { workspace = true, features = ["v1_16"] }
+percent-encoding = "2"
+tokio = { version = "1.0", features = [ "full" ] }
+serde = "1"
+serde_derive = "1"
+serde_json = "1"
+serde_with = "3"
+url = "2"
+gst-video = { workspace = true, features = ["v1_22"] }
+sprintf = "0.4"
+anyhow = "1"
+signalsmith-stretch = { version = "0.1.2", optional = true }
+
+[dev-dependencies]
+chrono = { version = "0.4", features = [ "alloc" ] }
+env_logger = "0.11"
+gst-check = { workspace = true, features = ["v1_18"] }
+rand = "0.9"
+test-with = { version = "0.15", default-features = false }
+
+[lib]
+name = "gstaws"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+default = []
+static = []
+capi = []
+doc = ["gst/v1_18"]
+signalsmith_stretch = ["dep:signalsmith-stretch"]
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-base-1.0, gobject-2.0, glib-2.0, gmodule-2.0, openssl"

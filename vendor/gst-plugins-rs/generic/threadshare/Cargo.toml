@@ -1,0 +1,126 @@
+[package]
+name = "gst-plugin-threadshare"
+version.workspace = true
+authors = ["Sebastian Dröge <sebastian@centricular.com>"]
+license = "MPL-2.0"
+description = "GStreamer Threadshare Plugin"
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+async-task = "4.3.0"
+async-lock = "3.4.0"
+byte-slice-cast = "1.0"
+cfg-if = "1"
+concurrent-queue = "2.2.0"
+flume = "0.11"
+futures = "0.3.28"
+gio.workspace = true
+gst.workspace = true
+gst-audio.workspace = true
+gst-net.workspace = true
+gst-rtp.workspace = true
+num-traits = "0.2"
+pin-project-lite = "0.2.0"
+polling = "3.1.0"
+rand = "0.9"
+rtp-types = "0.1"
+rustix = { version = "1.0", default-features = false, features = ["std", "fs", "net"] }
+slab = "0.4.7"
+socket2 = {features = ["all"], version = "0.6"}
+thiserror = "2"
+waker-fn = "1.1"
+getifaddrs = "0.6"
+libc = "0.2"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-sys = { version = ">=0.52, <=0.61", features = ["Win32_Foundation", "Win32_Networking", "Win32_Networking_WinSock"] }
+
+[dev-dependencies]
+gst-check.workspace = true
+gst-app = { workspace = true, features = [ "v1_20" ] }
+# Used by examples
+clap = { version = "4", features = ["derive"] }
+gst-plugin-rtp = { path = "../../net/rtp" }
+
+[lib]
+name = "gstthreadshare"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[[example]]
+name = "ts-benchmark"
+path = "examples/benchmark.rs"
+
+[[example]]
+name = "udpsrc-benchmark-sender"
+path = "examples/udpsrc_benchmark_sender.rs"
+
+[[example]]
+name = "tcpclientsrc-benchmark-sender"
+path = "examples/tcpclientsrc_benchmark_sender.rs"
+
+[[example]]
+name = "ts-standalone"
+path = "examples/standalone/main.rs"
+
+[[example]]
+name = "ts-standalone-rtprecv"
+path = "examples/standalone/rtprecv.rs"
+
+[[example]]
+name = "ts-inter-simple"
+path = "examples/inter/simple.rs"
+
+[[test]]
+name = "ts-inter"
+path = "tests/inter.rs"
+
+[[test]]
+name = "ts-pad"
+path = "tests/pad.rs"
+
+[[test]]
+name = "ts-pipeline"
+path = "tests/pipeline.rs"
+
+[[test]]
+name = "ts-proxy"
+path = "tests/proxy.rs"
+
+[[test]]
+name = "ts-queue"
+path = "tests/queue.rs"
+
+[[test]]
+name = "ts-rtpdtmfsrc"
+path = "tests/rtpdtmfsrc.rs"
+
+[[test]]
+name = "ts-blocking-adapter"
+path = "tests/blocking_adapter.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+static = []
+capi = []
+# Adds performance counters used by benchmarking tools.
+tuning = []
+doc = ["gst/v1_18"]
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-net-1.0, gstreamer-rtp-1.0, gobject-2.0, glib-2.0, gmodule-2.0"

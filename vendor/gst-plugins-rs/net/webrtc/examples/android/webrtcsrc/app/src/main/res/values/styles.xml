@@ -1,0 +1,6 @@
+<resources>
+    <style name="producer_table_row_item" parent="@android:style/TextAppearance.Large">
+        <item name="android:gravity">start</item>
+        <item name="android:paddingEnd">15dp</item>
+    </style>
+</resources>

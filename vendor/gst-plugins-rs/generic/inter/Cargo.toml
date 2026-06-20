@@ -1,0 +1,63 @@
+[package]
+name = "gst-plugin-inter"
+version.workspace = true
+authors = ["Mathieu Duponchelle <mathieu@centricular.com>"]
+license = "MPL-2.0"
+description = "GStreamer Inter Plugin"
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+anyhow = "1"
+gst = { workspace = true, features = ["v1_18"] }
+gst-utils.workspace = true
+gst-app.workspace = true
+
+[dev-dependencies]
+pretty_assertions = "1"
+glib.workspace = true
+gst-check.workspace = true
+gst-gl.workspace = true
+futures = "0.3"
+tokio = { version = "1", features = ["fs", "macros", "rt-multi-thread", "time"] }
+tokio-stream = "0.1.11"
+serial_test = "3"
+
+[lib]
+name = "gstrsinter"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+static = []
+capi = []
+doc = ["gst/v1_18"]
+
+[package.metadata.capi]
+min_version = "0.8.0"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gobject-2.0, glib-2.0, gmodule-2.0"
+
+[[example]]
+name = "inter-plug-and-play"
+path = "examples/plug-and-play.rs"
+
+[[example]]
+name = "inter-basic"
+path = "examples/basic.rs"
+
+[[example]]
+name = "inter-basic-gl"
+path = "examples/basic-gl.rs"

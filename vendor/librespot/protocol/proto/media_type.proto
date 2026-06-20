@@ -1,0 +1,16 @@
+// Extracted from: Spotify 1.2.52.442 (windows)
+
+syntax = "proto3";
+
+package spotify.stream_reporting_esperanto.proto;
+
+option objc_class_prefix = "ESP";
+option java_package = "com.spotify.stream_reporting_esperanto.proto";
+
+enum MediaType {
+    AUDIO = 0;
+    VIDEO = 1;
+    MEDIA_TYPE_AUDIO = 0;
+    MEDIA_TYPE_VIDEO = 1;
+    MEDIA_TYPE_UNKNOWN = 2;
+}

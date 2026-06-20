@@ -1,0 +1,43 @@
+[package]
+name = "gst-plugin-vvdec"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors = ["Carlos Bentzen <cadubentzen@igalia.com>"]
+repository.workspace = true
+license = "MPL-2.0"
+description = "GStreamer VVdeC VVC/H.266 decoder plugin"
+
+[dependencies]
+gst.workspace = true
+gst-audio.workspace = true
+gst-video = { workspace = true, features = ["v1_26"] }
+vvdec = { version = "0.6" }
+
+[dev-dependencies]
+gst-check.workspace = true
+
+[lib]
+name = "gstvvdec"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+capi = []
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-base-1.0, gstreamer-video-1.0, gobject-2.0, glib-2.0, gmodule-2.0, libvvdec >= 3.0"

@@ -1,0 +1,1 @@
+The code here has been taken from [cros-codecs](https://android.googlesource.com/platform/system/cros-codecs/) with the GitHub mirror being [here](https://github.com/chromeos/cros-codecs). Only the required bits for parsing of SPS in H264/H265 has been copied. Copied code is from the released version on crates.io at the time of this writing was v0.0.5.

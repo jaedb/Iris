@@ -1,0 +1,45 @@
+[package]
+name = "gst-plugin-mpegtslive"
+description = "GStreamer MPEG-TS Live sources"
+repository.workspace = true
+version.workspace = true
+authors = ["Edward Hervey <edward@centricular.com>"]
+edition.workspace = true
+license = "MPL-2.0"
+rust-version.workspace = true
+
+[dependencies]
+gst.workspace = true
+bitstream-io = "4"
+anyhow = "1"
+smallvec = "1"
+
+[dev-dependencies]
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[lib]
+name = "gstmpegtslive"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[features]
+static = []
+capi = []
+doc = ["gst/v1_18"]
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-base-1.0, gobject-2.0, glib-2.0, gmodule-2.0"
+

@@ -1,0 +1,8 @@
+target
+*~
+*.bk
+*.swp
+.helix
+.vscode
+builddir
+.meson-subproject-wrap-hash.txt

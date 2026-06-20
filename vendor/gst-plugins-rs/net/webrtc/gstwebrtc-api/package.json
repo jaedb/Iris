@@ -1,0 +1,73 @@
+{
+  "name": "gstwebrtc-api",
+  "version": "3.0.0",
+  "description": "Javascript API to integrate GStreamer WebRTC streams (webrtcsrc/webrtcsink) in a web browser",
+  "keywords": [
+    "webrtc",
+    "multimedia",
+    "realtime",
+    "gstreamer",
+    "audio",
+    "video"
+  ],
+  "homepage": "https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs/-/tree/main/net/webrtc/gstwebrtc-api",
+  "bugs": {
+    "url": "https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs/-/issues"
+  },
+  "license": "MPL-2.0",
+  "author": {
+    "name": "Loïc Le Page",
+    "email": "llepage@igalia.com",
+    "url": "https://www.igalia.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs.git",
+    "directory": "net/webrtc/gstwebrtc-api"
+  },
+  "type": "module",
+  "main": "./dist/gstwebrtc-api-3.0.0.min.js",
+  "module": "./dist/gstwebrtc-api-3.0.0.esm.js",
+  "types": "./types/index.d.ts",
+  "files": [
+    "dist/",
+    "docs/",
+    "src/",
+    "test/",
+    "types/",
+    "index.html",
+    "LICENSE-MPL-2.0",
+    "webpack.config.cjs"
+  ],
+  "devDependencies": {
+    "@eslint/eslintrc": "3.2.0",
+    "@eslint/js": "9.20.0",
+    "chai": "4.3.8",
+    "eslint": "9.20.1",
+    "eslint-plugin-jsdoc": "50.6.1",
+    "globals": "16.0.0",
+    "html-webpack-plugin": "5.5.3",
+    "jsdoc": "4.0.4",
+    "jsdoc-tsimport-plugin": "1.0.5",
+    "mocha": "10.2.0",
+    "rimraf": "5.0.1",
+    "terser-webpack-plugin": "5.3.9",
+    "typescript": "5.7.3",
+    "webpack": "5.88.2",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "4.15.1"
+  },
+  "dependencies": {
+    "webrtc-adapter": "8.2.3"
+  },
+  "scripts": {
+    "check": "eslint src",
+    "format": "eslint --fix --fix-type layout src",
+    "build": "rimraf dist && webpack",
+    "docs": "rimraf docs && jsdoc src/*.js -d docs/ -p package.json -R README.md -c jsdoc.conf.json",
+    "make": "npm run check && npm run build && npm run docs",
+    "test": "mocha --node-env=test --exit",
+    "prepack": "npm run test && npm run make",
+    "start": "webpack serve"
+  }
+}

@@ -1,0 +1,19 @@
+// Extracted from: Spotify 1.2.52.442 (windows)
+
+syntax = "proto2";
+
+package spotify.cosmos_util.proto;
+
+option java_multiple_files = true;
+option optimize_for = CODE_SIZE;
+option java_package = "com.spotify.cosmos.util.proto";
+
+enum PlayabilityRestriction {
+    UNKNOWN = 0;
+    NO_RESTRICTION = 1;
+    EXPLICIT_CONTENT = 2;
+    AGE_RESTRICTED = 3;
+    NOT_IN_CATALOGUE = 4;
+    NOT_AVAILABLE_OFFLINE = 5;
+    PREMIUM_ONLY = 6;
+}

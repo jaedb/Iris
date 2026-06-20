@@ -1,0 +1,4 @@
+build/
+.externalNativeBuild/
+assets/
+gst-android-build/

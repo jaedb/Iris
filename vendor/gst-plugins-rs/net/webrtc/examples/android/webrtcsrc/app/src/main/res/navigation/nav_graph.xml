@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/ProducerListFragment">
+
+    <fragment
+        android:id="@+id/ProducerListFragment"
+        android:name="org.freedesktop.gstreamer.examples.webrtcsrc.ProducerListFragment"
+        android:label="@string/producer_list_label"
+        tools:layout="@layout/producer_list_fragment">
+
+        <action
+            android:id="@+id/startConsumer"
+            app:destination="@id/ConsumerFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/ConsumerFragment"
+        android:name="org.freedesktop.gstreamer.examples.webrtcsrc.ConsumerFragment"
+        android:label="@string/consumer_label"
+        tools:layout="@layout/consumer_fragment">
+
+        <argument
+            android:name="producerId"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/getBackToProducerList"
+            app:destination="@id/ProducerListFragment" />
+    </fragment>
+</navigation>

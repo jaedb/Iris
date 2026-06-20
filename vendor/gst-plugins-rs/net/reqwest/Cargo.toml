@@ -1,0 +1,54 @@
+[package]
+name = "gst-plugin-reqwest"
+version.workspace = true
+authors = ["Sebastian Dröge <sebastian@centricular.com>"]
+repository.workspace = true
+license = "MIT OR Apache-2.0"
+description = "GStreamer reqwest HTTP Source Plugin"
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+url = "2.1"
+reqwest = { version = "0.12", default-features = false, features = ["charset", "http2", "system-proxy", "rustls-tls", "cookies", "gzip", "rustls-tls-native-roots"] }
+rustls = { version = "0.23", default-features = false, features = ["std", "ring"] }
+futures = "0.3"
+headers = "0.4"
+mime = "0.3"
+gst.workspace = true
+gst-base.workspace = true
+tokio = { version = "1.0", default-features = false, features = ["time", "rt-multi-thread"] }
+
+[dev-dependencies]
+hyper = { version = "1.0", features = ["server"] }
+http-body-util = "0.1.1"
+bytes = "1.0"
+pin-project-lite = "0.2"
+gst.workspace = true
+
+[lib]
+name = "gstreqwest"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+static = []
+capi = []
+doc = ["gst/v1_18"]
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-base-1.0, gobject-2.0, glib-2.0, gmodule-2.0"

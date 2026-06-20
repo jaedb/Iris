@@ -1,93 +1,115 @@
 # custom-mopidy
 
+Mopidy + Mopidy-Spotify build chain for the Raspberry Pi 5 / k3s cluster
+(namespace `snapserver`), with the actual Spotify implementation kept as
+locally editable, vendored source rather than a black-box dependency.
 
+## Why this looks the way it does
 
-## Getting started
+Mopidy-Spotify 5.x no longer uses libspotify/pyspotify. Spotify playback
+goes through a GStreamer element, `spotifyaudiosrc`, implemented in Rust
+in [gst-plugins-rs](https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs)
+(`audio/spotify`), which is itself built on top of
+[librespot](https://github.com/librespot-org/librespot)
+(`librespot-core`/`-metadata`/`-audio`/`-playback`/`-oauth`).
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Both are vendored here so they can be modified directly:
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- `vendor/gst-plugins-rs` — the `spotify-logging` fork/branch from
+  `gitlab.freedesktop.org/kingosticks/gst-plugins-rs`, pinned at commit
+  `3aab0473`. This is the same baseline the Mopidy project's own
+  [gst-plugins-rs-build](https://github.com/mopidy/gst-plugins-rs-build)
+  publishes prebuilt `.deb`s from — "better logging" than mainline.
+- `vendor/librespot` — upstream `librespot` at tag `v0.8.0` (the version
+  `audio/spotify`'s `Cargo.toml` depends on).
 
-## Add your files
+`vendor/gst-plugins-rs/Cargo.toml` has a `[patch.crates-io]` section
+redirecting `librespot-core`/`-oauth`/`-protocol`/`-metadata`/`-audio`/
+`-playback` to `../librespot/...`, so editing anything under
+`vendor/librespot` takes effect the next time the plugin is built — no
+need to touch version strings or republish a crate.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+Mopidy itself and Mopidy-Spotify (the Python backend that drives
+`spotifyaudiosrc` and handles config/search/browsing) are **not**
+vendored — they're installed from PyPI in the final image. Only the
+Rust/librespot side was in scope for local development.
+
+## Build chain
 
 ```
-cd existing_repo
-git remote add origin http://gitlab.lerchenberg-net.de/nicolai/custom-mopidy.git
-git branch -M main
-git push -uf origin main
+┌─────────────────────────┐
+│ rust-cross-builder stage│  debian:trixie-slim, native amd64 (NO QEMU)
+│  - gcc-aarch64-linux-gnu │  cargo build --release \
+│  - rustup target add     │    --target aarch64-unknown-linux-gnu \
+│    aarch64-unknown-linux-gnu  --package gst-plugin-spotify
+└───────────┬──────────────┘
+            │ libgstspotify.so (AArch64 ELF)
+            ▼
+┌─────────────────────────┐
+│ final stage              │  debian:trixie-slim, linux/arm64 (QEMU is fine
+│  - gstreamer runtime      │  here - just unpacking apt/pip packages)
+│  - pip install Mopidy,    │
+│    Mopidy-Spotify, ...    │
+└───────────────────────────┘
 ```
 
-## Integrate with your tools
+The Rust build deliberately runs **natively on the amd64 build host**
+via cross-compilation (`gcc-aarch64-linux-gnu` linker + Rust's
+`aarch64-unknown-linux-gnu` target), not under QEMU emulation. QEMU user-mode
+emulation can use multiple host cores (each parallel `cargo` job is its own
+emulated process, and MTTCG lets one multi-threaded process span cores too),
+but every core pays a per-instruction translation penalty - measured at
+roughly 2.5 minutes natively for this plugin's full dependency tree
+(librespot + gstreamer-rs + tokio stack), where emulated compilation would be
+substantially slower per core. Only the final stage (apt/dpkg/pip, no
+compilation) runs under QEMU, which is cheap.
 
-- [ ] [Set up project integrations](http://gitlab.lerchenberg-net.de/nicolai/custom-mopidy/-/settings/integrations)
+`debian:trixie-slim` is required for both stages' *output* — `trixie` is
+the first Debian release with the 64-bit-time_t glib ABI
+(`libglib2.0-0t64`), which is what current `gst-plugins-rs` builds link
+against. This is unrelated to the Pi5 nodes' host OS (Debian 12/bookworm
+on the kernel side) — only the container's own userland matters here, not
+the host.
 
-## Collaborate with your team
+## Build & push
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+```sh
+# one-off, if the "multi-arch" buildx builder doesn't exist yet:
+make bootstrap-builder
 
-## Test and Deploy
+make push            # builds for linux/arm64 and pushes to k8s1:31320/mopidy_stable:latest
+make deploy           # optional: force-restart instead of waiting for keel's poll interval
+```
 
-Use the built-in continuous integration in GitLab.
+`REGISTRY`, `IMAGE`, `TAG` and `BUILDER` are all overridable, e.g.
+`make push TAG=dev`.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+The `mopidy*` Deployments in namespace `snapserver` already run with
+`keel.sh/policy: force` + `keel.sh/trigger: poll`, so pushing `:latest`
+gets picked up and rolled out automatically without `make deploy`.
 
-***
+## Updating the vendored sources
 
-# Editing this README
+```sh
+# re-vendor gst-plugins-rs at a newer commit on the same fork/branch
+rm -rf vendor/gst-plugins-rs
+git clone --branch spotify-logging https://gitlab.freedesktop.org/kingosticks/gst-plugins-rs.git vendor/gst-plugins-rs
+rm -rf vendor/gst-plugins-rs/.git
+# then re-apply the [patch.crates-io] block at the bottom of vendor/gst-plugins-rs/Cargo.toml
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+# re-vendor librespot at a newer tag
+rm -rf vendor/librespot
+git clone --depth 1 --branch vX.Y.Z https://github.com/librespot-org/librespot.git vendor/librespot
+rm -rf vendor/librespot/.git
+```
 
-## Suggestions for a good README
+## Known gaps / not yet addressed
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- The deployed `mopidy.conf` (see `mopidy1-config` ConfigMap) has `[m3u]`
+  and `[file]` sections, but `Mopidy-M3U` is abandoned upstream
+  (Python 2-only on PyPI) and `Mopidy-File` was never published as a
+  separate package — neither is installed in the final image. Needs a
+  decision on whether to drop those sections, find a maintained fork, or
+  reimplement minimally.
+- `k8s/mopidy1-deployment.yaml` is a trimmed mirror of the live
+  Deployment as a starting point; `mopidy2`-`mopidy5` aren't captured yet.

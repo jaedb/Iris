@@ -1,0 +1,53 @@
+[package]
+name = "gst-plugin-elevenlabs"
+version.workspace = true
+authors = ["Mathieu Duponchelle <mathieu@centricular.com>"]
+repository.workspace = true
+license = "MPL-2.0"
+description = "GStreamer ElevenLabs plugin"
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+futures = "0.3"
+gst = { workspace = true, features = ["v1_20"] }
+gst-base.workspace = true
+gst-audio = { workspace = true, features = ["v1_16"] }
+tokio = { version = "1", features = [ "full" ] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+reqwest = { version = "0.12", default-features = false, features = ["charset", "http2", "system-proxy", "rustls-tls", "rustls-tls-native-roots", "multipart"] }
+rustls = { version = "0.23", default-features = false, features = ["std", "ring"] }
+signalsmith-stretch = { version = "0.1.2", optional = true }
+bytes = "1"
+hound = "3"
+
+[lib]
+name = "gstelevenlabs"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+gst-plugin-version-helper.workspace = true
+
+[features]
+default = []
+static = []
+capi = []
+doc = ["gst/v1_18"]
+signalsmith_stretch = ["dep:signalsmith-stretch"]
+
+[package.metadata.capi]
+min_version = "0.9.21"
+
+[package.metadata.capi.header]
+enabled = false
+
+[package.metadata.capi.library]
+install_subdir = "gstreamer-1.0"
+versioning = false
+import_library = false
+
+[package.metadata.capi.pkg_config]
+requires_private = "gstreamer-1.0, gstreamer-base-1.0, gstreamer-audio-1.0, gobject-2.0, glib-2.0, gmodule-2.0"

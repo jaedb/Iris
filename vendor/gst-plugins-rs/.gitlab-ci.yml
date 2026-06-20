@@ -1,0 +1,449 @@
+.templates_sha: &templates_sha c6aeb16f86e32525fa630fb99c66c4f3e62fc3cb
+
+include:
+  - project: 'freedesktop/ci-templates'
+    ref: *templates_sha
+    file: '/templates/debian.yml'
+
+  - project: 'gstreamer/gstreamer-rs'
+    ref: main
+    file: '/ci/images_template.yml'
+
+  - project: 'gstreamer/gstreamer'
+    ref: main
+    file: '/.gitlab-image-tags.yml'
+
+variables:
+  FDO_UPSTREAM_REPO: gstreamer/gstreamer-rs
+
+  # We use GStreamer image to build the documentation as it is the simplest way
+  # to ensure that we are testing against the same thing as GStreamer itself.
+  # The tag name is included above from the main repo.
+  GSTREAMER_DOC_IMAGE: "registry.freedesktop.org/gstreamer/gstreamer/amd64/fedora:$FEDORA_TAG-main"
+  # Use the gstreamer image to trigger the cerbero job, same as the monorepo
+  WINDOWS_BASE: "registry.freedesktop.org/gstreamer/gstreamer-rs/windows"
+  WINDOWS_RUST_MINIMUM_IMAGE: "$WINDOWS_BASE:$GST_RS_IMG_WINDOWS_TAG-main-$GST_RS_MSRV"
+  WINDOWS_RUST_STABLE_IMAGE: "$WINDOWS_BASE:$GST_RS_IMG_WINDOWS_TAG-main-$GST_RS_STABLE"
+
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+    # don't create a pipeline if its a commit pipeline, on a branch and that branch has
+    # open merge requests (bc we will get a MR build instead)
+    - if: $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH
+
+default:
+  interruptible: true
+  # Auto-retry jobs in case of infra failures
+  retry:
+    max: 1
+    when:
+      - 'runner_system_failure'
+      - 'stuck_or_timeout_failure'
+      - 'scheduler_failure'
+      - 'api_failure'
+
+stages:
+  - "trigger"
+  - "lint"
+  - "test"
+  - "extras"
+  - "integration"
+
+# This is an empty job that is used to trigger the pipeline.
+trigger:
+  image: alpine:latest
+  stage: 'trigger'
+  variables:
+    GIT_STRATEGY: none
+  tags: [ 'placeholder-job' ]
+  script:
+    - echo "Trigger job done, now running the pipeline."
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    # If the MR is assigned to the Merge bot, trigger the pipeline automatically
+    - if: '$CI_MERGE_REQUEST_ASSIGNEES == "gstreamer-merge-bot"'
+    # Require explicit action to trigger tests post merge
+    - if: '$CI_PROJECT_NAMESPACE == "gstreamer" && $CI_COMMIT_BRANCH == "main"'
+      when: 'manual'
+    # When the assignee isn't the merge bot, require an explicit action to trigger the pipeline
+    # to avoid wasting CI resources
+    - if: '$CI_MERGE_REQUEST_ASSIGNEES != "gstreamer-merge-bot"'
+      when: 'manual'
+      allow_failure: false
+
+.debian:12:
+  variables:
+    SODIUM_USE_PKG_CONFIG: "true"
+  after_script:
+    - rm -rf target
+  before_script:
+    - source ./ci/env.sh
+    - mkdir .cargo && echo -e "[net]\ngit-fetch-with-cli = true" > .cargo/config.toml
+
+.debian:12-stable:
+  extends: .debian:12
+  variables:
+    RUST_VERSION: '$GST_RS_STABLE'
+  image: "registry.freedesktop.org/gstreamer/gstreamer-rs/debian/trixie-slim:$GST_RS_STABLE-$GST_RS_IMG_TAG"
+
+.debian:12-msrv:
+  extends: .debian:12
+  variables:
+    RUST_VERSION: '$GST_RS_MSRV'
+  image: "registry.freedesktop.org/gstreamer/gstreamer-rs/debian/trixie-slim:$GST_RS_MSRV-$GST_RS_IMG_TAG"
+
+.debian:12-nightly:
+  extends: .debian:12
+  variables:
+    RUST_VERSION: 'nightly'
+  image: "registry.freedesktop.org/gstreamer/gstreamer-rs/debian/trixie-slim:nightly-$GST_RS_IMG_TAG"
+
+.cargo test:
+  stage: "test"
+  variables:
+    # csound-sys only looks at /usr/lib and /usr/local top levels
+    CSOUND_LIB_DIR: '/usr/lib/x86_64-linux-gnu/'
+    RUST_BACKTRACE: 'full'
+  script:
+    - ./ci/run-cargo-test.sh
+  artifacts:
+    reports:
+      junit: "junit_reports/*.xml"
+
+test msrv:
+  extends:
+    - '.cargo test'
+    - '.debian:12-msrv'
+  needs: [ "trigger" ]
+
+test stable:
+  extends:
+    - '.cargo test'
+    - '.debian:12-stable'
+  needs: [ "trigger" ]
+
+test nightly:
+  allow_failure: true
+  extends:
+    - '.cargo test'
+    - '.debian:12-nightly'
+  needs: [ "trigger" ]
+
+.meson:
+  extends: .debian:12-stable
+  variables:
+    # csound-sys only looks at /usr/lib and /usr/local top levels
+    CSOUND_LIB_DIR: '/usr/lib/x86_64-linux-gnu/'
+
+meson shared:
+  extends: .meson
+  needs: [ "trigger" ]
+  variables:
+    CI_ARTIFACTS_URL: "${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/"
+  script:
+    # Remove cmake because the meson cmake dependency resolver is broken
+    - apt purge cmake -y
+    - meson build --default-library=both --prefix=$(pwd)/install --fatal-meson-warnings
+    - ninja -C build install
+    - ./ci/check-installed.py install
+    - ninja -C build docs/gst_plugins_cache.json
+    - ci/check-documentation-diff.py
+  artifacts:
+    when: always
+    expire_in: "7 days"
+    paths:
+    - plugins-cache-diffs/
+    - 'build/meson-logs/'
+
+meson static:
+  extends: .meson
+  needs: [ "trigger" ]
+  script:
+    # Remove cmake because the meson cmake dependency resolver is broken
+    - apt purge cmake -y
+    - meson build --default-library=static --prefix=$(pwd)/install -Dsodium-source=built-in
+    - ninja -C build install
+    - ./ci/generate-static-test.py test-static-link-all
+    - cd test-static-link-all
+    - PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$(pwd)/../install/lib/x86_64-linux-gnu/pkgconfig:$(pwd)/../install/lib/x86_64-linux-gnu/gstreamer-1.0/pkgconfig  meson build
+    - ninja -C build
+    - ./build/test-gst-static
+  artifacts:
+    when: always
+    expire_in: "7 days"
+    paths:
+    - 'build/meson-logs/'
+    - "test-static-link-all/build/meson-logs"
+
+# Check that the gstreamer documentation keeps working
+documentation:
+  image: $GSTREAMER_DOC_IMAGE
+  stage: 'integration'
+  variables:
+    MESON_ARGS: >
+      -Ddoc=enabled
+      -Dpython=disabled
+      -Dlibav=disabled
+      -Dlibnice=disabled
+      -Ddevtools=disabled
+      -Dges=disabled
+      -Dsharp=disabled
+      -Dgst-examples=disabled
+      -Drs=enabled
+      -Dgst-plugins-rs:sodium-source=system
+      -Dgst-docs:fatal_warnings=true
+      -Dorc=disabled
+  script:
+    - export PATH=/usr/local/cargo/bin/:/usr/local/bin/:$PATH
+    - export RUSTUP_HOME='/usr/local/rustup'
+    - P=$(pwd)
+    - cd ..
+    - rm -rf gstreamer
+    - git clone --depth 1 https://gitlab.freedesktop.org/gstreamer/gstreamer.git --branch main
+    - cd gstreamer
+    - ln -s $P subprojects/gst-plugins-rs
+    - meson build $MESON_ARGS
+    - ./gst-env.py ninja -C build subprojects/gst-docs/GStreamer-doc
+    - mv build/subprojects/gst-docs/GStreamer-doc/html $P/documentation/
+  artifacts:
+    expire_in: '7 days'
+    when: always
+    paths:
+      - documentation/
+  needs: []
+  rules:
+    # Run job if the MR is assigned to the Merge bot or it a post-merge pipeline on main branch
+    - if: '$CI_MERGE_REQUEST_ASSIGNEES == "gstreamer-merge-bot"'
+      when: 'always'
+    - if: '$CI_PROJECT_NAMESPACE == "gstreamer" && $CI_COMMIT_BRANCH == "main"'
+      when: 'always'
+    # Require explicit action to trigger otherwise
+    - if: '$CI_PROJECT_NAMESPACE != "gstreamer" || $CI_COMMIT_BRANCH != "main"'
+      when: 'manual'
+
+# build gst-plugins-rs as a gst-build subproject
+# Disabled because of https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs/-/issues/262
+#gst-build:
+#  extends: .meson
+#  rules:
+#    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+#    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+#      when: 'manual'
+#      allow_failure: true
+#  variables:
+#    MESON_ARGS: >
+#      -Domx=disabled
+#      -Dpython=disabled
+#      -Dlibav=disabled
+#      -Dlibnice=disabled
+#      -Dugly=disabled
+#      -Dbad=disabled
+#      -Ddevtools=disabled
+#      -Dges=disabled
+#      -Drtsp_server=disabled
+#      -Dvaapi=disabled
+#      -Dsharp=disabled
+#      -Dgst-examples=disabled
+#      -Drs=enabled
+#      -Dgst-plugins-rs:sodium-source=system
+#  script:
+#    - P=$(pwd)
+#    - cd ..
+#    - rm -rf gstreamer
+#    - git clone --depth 1 https://gitlab.freedesktop.org/gstreamer/gstreamer.git --branch main
+#    - cd gstreamer
+#    - ln -s $P subprojects/gst-plugins-rs
+#    - meson build $MESON_ARGS
+#    - ninja -C build
+#    # Check static Rust plugins can be linked into gst-full
+#    - meson build-gst-full --default-library=static $MESON_ARGS
+#    - ninja -C build-gst-full
+#    - meson devenv -C build-gst-full ./gst-inspect-1.0 rsaudiofx
+#  artifacts:
+#    expire_in: '7 days'
+#    when: always
+#    paths:
+#      - 'build/meson-logs/'
+#      - 'build-gst-full/meson-logs/'
+
+.msvc2019 build:
+  stage: 'test'
+  needs:
+    - 'trigger'
+  tags:
+    - 'docker'
+    - 'windows'
+    - '2022'
+    - "gstreamer-windows"
+  before_script:
+    - New-Item -Force -Path ".cargo" -ItemType "directory"
+    - $git_config="[net]`ngit-fetch-with-cli = true`n"
+    - $git_config | out-file -encoding utf8 .cargo/config.toml
+    - Get-Content -Path .cargo/config.toml
+  script:
+    # Set the code page to UTF-8
+    - chcp 65001
+
+    # We need to build each crate separately to choose that can build on windows
+    - cmd.exe /C "C:\BuildTools\Common7\Tools\VsDevCmd.bat -host_arch=amd64 -arch=amd64 &&
+      powershell ./ci/run_windows_tests.ps1"
+
+    - |
+      if (!$?) {
+        Write-Host "Tests Failed!"
+        Exit 1
+      }
+
+test windows msrv:
+  extends: '.msvc2019 build'
+  image: $WINDOWS_RUST_MINIMUM_IMAGE
+  when: 'manual'
+  variables:
+    RUST_VERSION: !reference [variables, "GST_RS_MSRV"]
+
+test windows stable:
+  extends: '.msvc2019 build'
+  image: "$WINDOWS_RUST_STABLE_IMAGE"
+  variables:
+    RUST_VERSION: !reference [variables, "GST_RS_STABLE"]
+
+rustfmt:
+  extends: '.debian:12-stable'
+  stage: "lint"
+  tags: [ 'priority:medium' ]
+  needs: []
+  script:
+    - cargo fmt --version
+    - cargo fmt -- --color=always --check
+
+gstwebrtc-api lint:
+  image: node:lts
+  stage: "lint"
+  tags: [ 'priority:medium' ]
+  needs: []
+  script:
+    - cd net/webrtc/gstwebrtc-api
+    - npm install
+    - npm run check
+
+check commits:
+  extends: '.debian:12-stable'
+  stage: "lint"
+  tags: [ 'priority:medium' ]
+  needs: []
+  script:
+    - ci-fairy check-commits --textwidth 0 --no-signed-off-by
+    - ci/check-for-symlinks.sh
+    - ci/check-meson-version.sh
+
+check readme:
+  extends: '.debian:12-stable'
+  stage: "lint"
+  tags: [ 'priority:medium' ]
+  needs: []
+  script:
+    - ci/check-readme-against-plugins-list.py
+
+clippy:
+  extends: '.debian:12-stable'
+  needs:
+  - "trigger"
+  - "test stable"
+  stage: 'extras'
+  variables:
+    CLIPPY_LINTS: -D warnings -W unknown-lints
+    # csound-sys only looks at /usr/lib and /usr/local top levels
+    CSOUND_LIB_DIR: '/usr/lib/x86_64-linux-gnu/'
+  script:
+    - ./ci/run-clippy.sh
+
+deny:
+  extends: .debian:12-stable
+  stage: 'extras'
+  needs:
+  - "trigger"
+  - "test stable"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  script:
+    - cargo update --color=always
+    - cargo deny --color=always --workspace --all-features check all
+
+outdated:
+  extends: '.debian:12-stable'
+  allow_failure: true
+  needs:
+  - "trigger"
+  - "test stable"
+  stage: 'extras'
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  script:
+    - cargo update --color=always
+    - cargo outdated --color=always --root-deps-only  --exit-code 1 -v
+
+coverage:
+  allow_failure: true
+  extends:
+    - '.debian:12-stable'
+  needs:
+  - "trigger"
+  - "test stable"
+  stage: 'extras'
+  variables:
+    RUSTFLAGS: "-Cinstrument-coverage"
+    LLVM_PROFILE_FILE: "gst-plugins-rs-%p-%m.profraw"
+    # csound-sys only looks at /usr/lib and /usr/local top levels
+    CSOUND_LIB_DIR: '/usr/lib/x86_64-linux-gnu/'
+  script:
+    - CARGO_FLAGS="-j${FDO_CI_CONCURRENT:-$(nproc)} --locked --color=always --all"
+
+    - cargo nextest run --profile=ci --no-tests=pass $CARGO_FLAGS --all-features --exclude gst-plugin-gtk4
+
+    - new_report_dir="$CI_PROJECT_DIR/junit_reports"
+    - mkdir -p "$new_report_dir"
+    - mv "$CI_PROJECT_DIR/target/nextest/ci/junit.xml" "$new_report_dir/coverage-junit.xml"
+
+    # generate html report
+    - mkdir -p coverage
+    - grcov . --binary-path ./target/debug/ -s . -t html,cobertura --branch --ignore-not-existing --ignore "*target*" --ignore "*/build.rs" -o ./coverage/
+    # output coverage summary for gitlab parsing.
+    # TODO: use grcov once https://github.com/mozilla/grcov/issues/556 is fixed
+    - grep "%" coverage/html/index.html | head -1 || true
+  artifacts:
+    paths:
+      - 'coverage'
+    reports:
+      junit: "junit_reports/*.xml"
+      coverage_report:
+        coverage_format: cobertura
+        path: "coverage/cobertura.xml"
+
+cerbero trigger:
+  image: python:alpine
+  needs: [ "trigger" ]
+  timeout: '4h'
+  tags:
+    - placeholder-job
+  variables:
+    # We will build this cerbero branch in the cerbero trigger CI
+    CERBERO_UPSTREAM_BRANCH: 'main'
+  script:
+    - pip install python-gitlab
+    - python ci/cerbero/trigger_cerbero_pipeline.py
+  rules:
+    # Never run post merge
+    - if: '$CI_PROJECT_NAMESPACE == "gstreamer"'
+      when: never
+    - changes:
+        paths:
+          - ".gitlab-ci.yml"
+          - "Cargo.toml"
+          - "Cargo.lock"
+          - "**/Cargo.toml"
+          - "**/*.rs"
+          - "**/*.c"

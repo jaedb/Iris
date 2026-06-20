@@ -1,0 +1,149 @@
+// Extracted from: Spotify 1.2.52.442 (windows)
+
+syntax = "proto3";
+
+package spotify.offline.proto;
+
+import "google/protobuf/any.proto";
+import "extension_kind.proto";
+import "resource_type.proto";
+
+option optimize_for = CODE_SIZE;
+
+message PluginRegistry {
+    message Entry {
+        string id = 1;
+        repeated LinkType supported_link_types = 2;
+        ResourceType resource_type = 3;
+        repeated extendedmetadata.ExtensionKind extension_kinds = 4;
+    }
+
+    enum LinkType {
+        EMPTY = 0;
+        TRACK = 1;
+        EPISODE = 2;
+    }
+
+    repeated Entry plugins = 1;
+}
+
+message PluginInit {
+    string id = 1;
+}
+
+message TargetFormat {
+    int32 bitrate = 1;
+}
+
+message Metadata {
+    message Header {
+        int32 status_code = 1;
+        bool is_empty = 2;
+    }
+
+    Header header = 1;
+    google.protobuf.Any extension_data = 2;
+}
+
+message IdentifyCommand {
+    message Header {
+        TargetFormat target_format = 1;
+    }
+
+    message Query {
+        message MetadataEntry {
+            int32 key = 1;
+            Metadata value = 2;
+        }
+
+        string link = 1;
+        repeated MetadataEntry metadata = 2;
+    }
+
+    Header header = 3;
+    repeated Query query = 4;
+}
+
+message IdentifyResponse {
+    message Result {
+        enum Status {
+            UNKNOWN = 0;
+            MISSING = 1;
+            COMPLETE = 2;
+            NOT_APPLICABLE = 3;
+        }
+
+        Status status = 1;
+        int64 estimated_file_size = 2;
+    }
+
+    map<string, Result> results = 1;
+}
+
+message DownloadCommand {
+    message MetadataEntry {
+        int32 key = 1;
+        Metadata value = 2;
+    }
+
+    string link = 1;
+    TargetFormat target_format = 2;
+    repeated MetadataEntry metadata = 3;
+}
+
+message DownloadResponse {
+    enum Error {
+        OK = 0;
+        TEMPORARY_ERROR = 1;
+        PERMANENT_ERROR = 2;
+        DISK_FULL = 3;
+    }
+
+    string link = 1;
+    bool complete = 2;
+    int64 file_size = 3;
+    int64 bytes_downloaded = 4;
+    Error error = 5;
+}
+
+message StopDownloadCommand {
+    string link = 1;
+}
+
+message StopDownloadResponse {
+}
+
+message RemoveCommand {
+    message Header {
+    }
+
+    message Query {
+        string link = 1;
+    }
+
+    Header header = 2;
+    repeated Query query = 3;
+}
+
+message RemoveResponse {
+}
+
+message PluginCommand {
+    string id = 1;
+    oneof command {
+        IdentifyCommand identify = 2;
+        DownloadCommand download = 3;
+        RemoveCommand remove = 4;
+        StopDownloadCommand stop_download = 5;
+    }
+}
+
+message PluginResponse {
+    string id = 1;
+    oneof response {
+        IdentifyResponse identify = 2;
+        DownloadResponse download = 3;
+        RemoveResponse remove = 4;
+        StopDownloadResponse stop_download = 5;
+    }
+}

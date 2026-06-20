@@ -1,0 +1,12 @@
+// Extracted from: Spotify 1.2.52.442 (windows)
+
+syntax = "proto2";
+
+package spotify.player.proto.state_restore;
+
+option optimize_for = CODE_SIZE;
+
+message ExplicitContentRules {
+    required bool filter_explicit_content = 1;
+    required bool filter_age_restricted_content = 2;
+}
