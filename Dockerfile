@@ -70,20 +70,39 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         python3-gi \
         gir1.2-glib-2.0 \
         gir1.2-gstreamer-1.0 \
+        gir1.2-gst-plugins-base-1.0 \
         gstreamer1.0-plugins-base \
         gstreamer1.0-plugins-good \
         gstreamer1.0-plugins-bad \
         gstreamer1.0-tools
 
-# Mopidy core + extensions used by mopidy.conf (m3u/local/file/http are
-# separate extensions again as of Mopidy 4.x, not bundled in core).
+# Mopidy core + extensions used by mopidy.conf.
+#
+# Mopidy is deliberately pinned to 3.4.2, NOT the current 4.x: Mopidy 4
+# rewrote its models around pydantic and deleted the old
+# mopidy.models.serialize.ModelJSONEncoder class entirely, which the
+# current Mopidy-Iris (3.70.0) still imports directly - Iris fails to even
+# load on Mopidy 4 as of this writing, it's an upstream incompatibility,
+# not something fixable here. Mopidy-Spotify is correspondingly pinned to
+# 5.0.0a3, the last alpha that supports Mopidy 3.4+ - the final 5.0.0
+# release requires Mopidy>=4.0.0. This exact combination (Mopidy 3.4.2 +
+# Mopidy-Spotify 5.0.0a3) is what's already deployed in production
+# (confirmed via `pip show` on the running pods), so it's a known-working
+# baseline; we're only replacing libgstspotify.so itself with one built
+# from current librespot/gst-plugins-rs sources.
+#
+# setuptools<81 is required: Mopidy-Iris and Mopidy-YouTube both still
+# `from pkg_resources import ...`, which setuptools 81+ no longer bundles
+# (it's slated for full removal). Without this pin, Iris itself fails to
+# load at startup.
 RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m pip install --break-system-packages \
-        Mopidy \
-        Mopidy-Spotify \
-        Mopidy-Local \
+        "setuptools<81" \
+        "Mopidy==3.4.2" \
+        "Mopidy-Spotify==5.0.0a3" \
+        "Mopidy-Local==3.2.1" \
+        "Mopidy-InternetArchive==3.1.2" \
         Mopidy-Iris \
-        Mopidy-InternetArchive \
         Mopidy-YouTube
 
 COPY --from=rust-cross-builder /tmp/libgstspotify.so /usr/lib/aarch64-linux-gnu/gstreamer-1.0/libgstspotify.so
