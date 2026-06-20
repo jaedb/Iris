@@ -2,6 +2,13 @@
 # the "fhem" host). Shared by all mopidy*-config ConfigMaps' [iris]
 # spotify_authorization_url.
 #
+# Spotify requires Redirect URIs to use https:// (or a loopback literal),
+# so this is served over TLS using a leaf cert from the internal CA set up
+# in k8s/internal-ca.yaml + k8s/auth-server-certificate.yaml - not a
+# publicly trusted one, since this hostname is LAN-only. Import
+# internal-ca.crt (exported per k8s/internal-ca.yaml's instructions) into
+# your browsers/devices once, or you'll get a cert warning.
+#
 # Prerequisite: create the spotify-auth Secret first (see
 # k8s/auth-server-secret.example.yaml for the kubectl command - do not
 # apply that file directly, it only has placeholder values).
@@ -31,8 +38,8 @@ spec:
           image: k8s1:31320/spotify-auth:latest
           imagePullPolicy: Always
           ports:
-            - name: http
-              containerPort: 80
+            - name: https
+              containerPort: 443
               protocol: TCP
           env:
             - name: SPOTIFY_CLIENT_ID
@@ -46,7 +53,15 @@ spec:
                   name: spotify-auth
                   key: client-secret
             - name: SPOTIFY_REDIRECT_URI
-              value: http://spotify-auth/auth_spotify.php
+              value: https://spotify-auth/auth_spotify.php
+          volumeMounts:
+            - name: tls
+              mountPath: /etc/tls
+              readOnly: true
+      volumes:
+        - name: tls
+          secret:
+            secretName: spotify-auth-tls
 ---
 apiVersion: v1
 kind: Service
@@ -58,7 +73,7 @@ spec:
   selector:
     run: spotify-auth
   ports:
-    - name: http
-      port: 80
-      targetPort: 80
+    - name: https
+      port: 443
+      targetPort: 443
       protocol: TCP
