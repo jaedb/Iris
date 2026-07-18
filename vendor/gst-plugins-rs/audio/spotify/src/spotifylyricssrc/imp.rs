@@ -318,7 +318,7 @@ impl SpotifyLyricsSrc {
             };
 
             let session = common.connect_session(src.clone(), &CAT).await?;
-            let track_id = SpotifyId::from_base62(&common.track_uri()?.to_id()?);
+            let track_id = SpotifyId::from_base62(&common.track_uri()?.to_id());
 
             (session, track_id)
         };
