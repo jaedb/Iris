@@ -15,7 +15,9 @@ GST_UPSTREAM_URL        := https://github.com/kingosticks/gst-plugins-rs.git
 GST_UPSTREAM_BRANCH     := spotify-logging
 
 .PHONY: build push deploy bootstrap-builder sync \
-        init-upstreams update-librespot update-gst-plugins-rs
+        init-upstreams update-librespot update-gst-plugins-rs \
+        integrate-librespot integrate-gst-plugins-rs \
+        apply-patches save-patches
 
 # Pull the latest committed code from GitLab before building.
 # --ff-only refuses to proceed if local and remote have diverged, so you
@@ -48,19 +50,22 @@ deploy:
 # ---------------------------------------------------------------------------
 # Upstream vendor management
 #
-# Upstream clones live in sibling directories (outside this repo) to avoid
-# the nested-git-repo problem that would arise if they lived inside vendor/.
-# vendor/librespot/.upstream-ref and vendor/gst-plugins-rs/.upstream-ref
-# record the tag / branch each vendor tree was last synced from.
+# Local modifications to vendor/ are stored as patch files in patches/:
+#   patches/librespot/player.patch
+#   patches/gst-plugins-rs/spotifylyricssrc-imp.patch
 #
-# Typical update workflow:
-#   make update-librespot          # see what changed upstream
-#   # review the diff, then integrate manually:
-#   rsync -av --exclude='.git' --exclude='target' \
-#         $(LIBRESPOT_UPSTREAM_DIR)/ vendor/librespot/
-#   # re-apply local patches (player.rs etc.), then:
-#   echo v0.X.Y > vendor/librespot/.upstream-ref
-#   git add vendor/librespot && git commit -m "Update librespot to vX.Y"
+# Patches are applied with patch -p1 from inside the vendor directory, so
+# paths in the .patch files are relative to the vendor root (e.g.
+# playback/src/player.rs, not vendor/librespot/playback/src/player.rs).
+#
+# Full update workflow for one vendor:
+#   make update-librespot          # 1. review new upstream commits + file diffs
+#   make integrate-librespot       # 2. rsync upstream + apply patches
+#   # resolve any patch conflicts, then:
+#   echo vX.Y.Z > vendor/librespot/.upstream-ref
+#   git add vendor/librespot patches/ && git commit -m "Update librespot to vX.Y.Z"
+#   make save-patches              # 3. regenerate .patch files from new state
+#   git add patches/ && git commit --amend --no-edit
 # ---------------------------------------------------------------------------
 
 # Clone upstream repos on first run; pull on subsequent runs.
@@ -90,11 +95,11 @@ update-librespot: init-upstreams
 	diff -rq --exclude='.git' --exclude='target' \
 		$(LIBRESPOT_UPSTREAM_DIR) vendor/librespot || true; \
 	echo ""; \
-	echo "Upstream HEAD: $$(git -C $(LIBRESPOT_UPSTREAM_DIR) rev-parse HEAD)"
+	echo "Upstream HEAD: $$(git -C $(LIBRESPOT_UPSTREAM_DIR) rev-parse HEAD)"; \
+	echo ""; \
+	echo "To integrate: make integrate-librespot"
 
 # Show commits added upstream to gst-plugins-rs since the vendored ref.
-# .upstream-ref holds either a branch name (initial) or a commit SHA (after
-# first update). After syncing, update the file with the new upstream SHA.
 update-gst-plugins-rs: init-upstreams
 	@BASE=$$(cat vendor/gst-plugins-rs/.upstream-ref); \
 	echo "=== Recent upstream gst-plugins-rs commits (ref: $$BASE) ==="; \
@@ -105,7 +110,52 @@ update-gst-plugins-rs: init-upstreams
 	diff -rq --exclude='.git' --exclude='target' \
 		$(GST_UPSTREAM_DIR) vendor/gst-plugins-rs || true; \
 	echo ""; \
-	echo "Upstream HEAD: $$(git -C $(GST_UPSTREAM_DIR) rev-parse HEAD)"
+	echo "Upstream HEAD: $$(git -C $(GST_UPSTREAM_DIR) rev-parse HEAD)"; \
+	echo ""; \
+	echo "To integrate: make integrate-gst-plugins-rs"
+
+# Overwrite vendor/librespot with upstream HEAD, then re-apply local patches.
+integrate-librespot: init-upstreams
+	rsync -av --exclude='.git' --exclude='target' \
+		$(LIBRESPOT_UPSTREAM_DIR)/ vendor/librespot/
+	@echo ""; echo "=== Applying local patches ==="
+	cd vendor/librespot && patch -p1 --fuzz=3 -i ../../patches/librespot/player.patch
+	@echo ""; echo "Done. Next steps:"
+	@echo "  echo <new-tag> > vendor/librespot/.upstream-ref"
+	@echo "  git add vendor/librespot && git commit -m 'Update librespot to vX.Y'"
+	@echo "  make save-patches && git add patches/ && git commit --amend --no-edit"
+
+# Overwrite vendor/gst-plugins-rs with upstream HEAD, then re-apply local patches.
+integrate-gst-plugins-rs: init-upstreams
+	rsync -av --exclude='.git' --exclude='target' \
+		$(GST_UPSTREAM_DIR)/ vendor/gst-plugins-rs/
+	@echo ""; echo "=== Applying local patches ==="
+	cd vendor/gst-plugins-rs && patch -p1 --fuzz=3 \
+		-i ../../patches/gst-plugins-rs/spotifylyricssrc-imp.patch
+	@echo ""; echo "Done. Next steps:"
+	@echo "  git -C $(GST_UPSTREAM_DIR) rev-parse HEAD > vendor/gst-plugins-rs/.upstream-ref"
+	@echo "  git add vendor/gst-plugins-rs && git commit -m 'Update gst-plugins-rs'"
+	@echo "  make save-patches && git add patches/ && git commit --amend --no-edit"
+
+# Apply all local patches to both vendor dirs (e.g. after a bare rsync).
+apply-patches:
+	cd vendor/librespot    && patch -p1 --fuzz=3 -i ../../patches/librespot/player.patch
+	cd vendor/gst-plugins-rs && patch -p1 --fuzz=3 \
+		-i ../../patches/gst-plugins-rs/spotifylyricssrc-imp.patch
+
+# Regenerate patch files from the current vendor state vs upstream HEAD.
+# Run this after manually resolving patch conflicts following an integrate.
+save-patches: init-upstreams
+	@mkdir -p patches/librespot patches/gst-plugins-rs
+	diff -u $(LIBRESPOT_UPSTREAM_DIR)/playback/src/player.rs \
+	        vendor/librespot/playback/src/player.rs \
+	  | sed 's|^--- .*|--- a/playback/src/player.rs|; s|^+++ .*|+++ b/playback/src/player.rs|' \
+	  > patches/librespot/player.patch || true
+	diff -u "$(GST_UPSTREAM_DIR)/audio/spotify/src/spotifylyricssrc/imp.rs" \
+	        "vendor/gst-plugins-rs/audio/spotify/src/spotifylyricssrc/imp.rs" \
+	  | sed 's|^--- .*|--- a/audio/spotify/src/spotifylyricssrc/imp.rs|; s|^+++ .*|+++ b/audio/spotify/src/spotifylyricssrc/imp.rs|' \
+	  > patches/gst-plugins-rs/spotifylyricssrc-imp.patch || true
+	@echo "Patches updated in patches/."
 
 # ---------------------------------------------------------------------------
 # One-off: create the buildx builder with QEMU arm64 emulation if it
