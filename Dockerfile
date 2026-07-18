@@ -23,17 +23,27 @@
 #   docker buildx build --builder multi-arch --platform linux/arm64 \
 #     -t k8s1:31320/mopidy_stable:latest --push .
 
-FROM --platform=$BUILDPLATFORM debian:trixie-slim AS rust-cross-builder
+# Stage 1 of 2 for Rust cross-compilation: install the toolchain.
+# Separated from the cargo build stage so that apt/rustup layers are only
+# re-run when the toolchain definition itself changes, not when sources change.
+# Cache mounts keep apt package downloads across builds even on cold layer cache.
+FROM --platform=$BUILDPLATFORM debian:trixie-slim AS rust-toolchain
 ARG TARGETARCH
-RUN dpkg --add-architecture ${TARGETARCH} && apt-get update && apt-get install -y --no-install-recommends \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    dpkg --add-architecture ${TARGETARCH} \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
         build-essential pkg-config curl ca-certificates clang git \
         gcc-aarch64-linux-gnu \
         libgstreamer1.0-dev:${TARGETARCH} \
-        libgstreamer-plugins-base1.0-dev:${TARGETARCH} \
-    && rm -rf /var/lib/apt/lists/*
+        libgstreamer-plugins-base1.0-dev:${TARGETARCH}
 RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.86.0 --profile minimal
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup target add aarch64-unknown-linux-gnu
+
+# Stage 2 of 2: compile the Spotify GStreamer plugin against the vendored sources.
+FROM rust-toolchain AS rust-cross-builder
 ENV PKG_CONFIG_ALLOW_CROSS=1 \
     PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig \
     CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \

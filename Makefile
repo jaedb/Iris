@@ -3,6 +3,9 @@ IMAGE       ?= mopidy_stable
 TAG         ?= latest
 BUILDER     ?= multi-arch
 NAMESPACE   ?= snapserver
+# Build-cache image stored alongside the main image in the registry.
+# Persists layer cache across builder-container restarts.
+CACHE_REF   ?= $(REGISTRY)/$(IMAGE):buildcache
 
 # Upstream clone locations — kept outside this repo to avoid nested-git conflicts.
 LIBRESPOT_UPSTREAM_DIR  ?= ../librespot-upstream
@@ -25,10 +28,14 @@ sync:
 # QEMU-backed builder.
 build: sync
 	docker buildx build --builder $(BUILDER) --platform linux/arm64 \
+		--cache-from type=registry,ref=$(CACHE_REF) \
+		--cache-to   type=registry,ref=$(CACHE_REF),mode=max \
 		-t $(REGISTRY)/$(IMAGE):$(TAG) --load .
 
 push: sync
 	docker buildx build --builder $(BUILDER) --platform linux/arm64 \
+		--cache-from type=registry,ref=$(CACHE_REF) \
+		--cache-to   type=registry,ref=$(CACHE_REF),mode=max \
 		-t $(REGISTRY)/$(IMAGE):$(TAG) --push .
 
 # keel.sh is already watching the mopidy* deployments in namespace
