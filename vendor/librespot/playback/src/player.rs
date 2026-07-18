@@ -28,7 +28,7 @@ use crate::{
     audio_backend::Sink,
     config::{Bitrate, NormalisationMethod, NormalisationType, PlayerConfig},
     convert::Converter,
-    core::{Error, Session, SpotifyId, SpotifyUri, util::SeqGenerator},
+    core::{Error, FileId, Session, SpotifyId, SpotifyUri, util::SeqGenerator},
     decoder::{AudioDecoder, AudioPacket, AudioPacketPosition, SymphoniaDecoder},
     local_file::{LocalFileLookup, create_local_file_lookup},
     metadata::audio::{AudioFileFormat, AudioFiles, AudioItem},
@@ -54,44 +54,93 @@ use std::io::Write;
 // project just the fields an external display needs into our own struct.
 #[derive(Serialize)]
 struct NowPlaying<'a> {
+    file_id: String,
+    format: String,
     uri: &'a str,
     name: &'a str,
     duration_ms: u32,
+    bytes_per_second: usize,
+    is_explicit: bool,
+    language: &'a [String],
+    // Present for Track and Local types; empty for episodes
     artists: Vec<&'a str>,
     album: Option<&'a str>,
+    // Present for Track only
+    album_artists: Vec<&'a str>,
+    popularity: Option<u8>,
+    track_number: Option<u32>,
+    disc_number: Option<u32>,
+    // Present for Episode only
+    show_name: Option<&'a str>,
 }
 
-// One shared, append-only log (not one file per track - that would collide
-// with the AudioKey disk-persist cache's per-file_id naming above, and
-// would never let an external display just tail "what's playing now").
-const NOW_PLAYING_LOG: &str = "/var/lib/mopidy/cache/nowplaying.jsonl";
-
-fn append_track_json(audio_item: &AudioItem) {
-    let (artists, album) = match &audio_item.unique_fields {
-        UniqueFields::Track { artists, album, .. } => (
-            artists.iter().map(|a| a.name.as_str()).collect(),
-            Some(album.as_str()),
-        ),
-        _ => (Vec::new(), None),
-    };
+fn append_track_json(file_id: FileId, format: AudioFileFormat, bytes_per_second: usize, audio_item: &AudioItem) {
+    let (artists, album, album_artists, popularity, track_number, disc_number, show_name) =
+        match &audio_item.unique_fields {
+            UniqueFields::Track {
+                artists,
+                album,
+                album_artists,
+                popularity,
+                number,
+                disc_number,
+            } => (
+                artists.iter().map(|a| a.name.as_str()).collect::<Vec<_>>(),
+                Some(album.as_str()),
+                album_artists.iter().map(|a| a.as_str()).collect::<Vec<_>>(),
+                Some(*popularity),
+                Some(*number),
+                Some(*disc_number),
+                None,
+            ),
+            UniqueFields::Episode { show_name, .. } => (
+                Vec::new(),
+                None,
+                Vec::new(),
+                None,
+                None,
+                None,
+                Some(show_name.as_str()),
+            ),
+            UniqueFields::Local { artists, album, .. } => (
+                artists.as_deref().map(|s| vec![s]).unwrap_or_default(),
+                album.as_deref(),
+                Vec::new(),
+                None,
+                None,
+                None,
+                None,
+            ),
+        };
 
     let info = NowPlaying {
+        file_id: file_id.to_string(),
+        format: format!("{format:?}"),
         uri: &audio_item.uri,
         name: &audio_item.name,
         duration_ms: audio_item.duration_ms,
+        bytes_per_second,
+        is_explicit: audio_item.is_explicit,
+        language: &audio_item.language,
         artists,
         album,
+        album_artists,
+        popularity,
+        track_number,
+        disc_number,
+        show_name,
     };
 
+    let now_playing_log = format!("/var/lib/mopidy/cache/{file_id}.jsonl");
     let file = OpenOptions::new()
         .create(true)
         .append(true)
-        .open(NOW_PLAYING_LOG);
+        .open(&now_playing_log);
 
     let mut file = match file {
         Ok(file) => file,
         Err(e) => {
-            warn!("Unable to open {NOW_PLAYING_LOG} for now-playing log: {e}");
+            warn!("Unable to open {now_playing_log} for now-playing log: {e}");
             return;
         }
     };
@@ -1288,6 +1337,7 @@ impl PlayerTrackLoader {
             let is_explicit = audio_item.is_explicit;
 
             info!("<{}> ({} ms) loaded", audio_item.name, duration_ms);
+            append_track_json(file_id, format, bytes_per_second, &audio_item);
 
             return Some(PlayerLoadedTrackData {
                 decoder,
@@ -1962,7 +2012,6 @@ impl PlayerInternal {
         let audio_item = Box::new(loaded_track.audio_item.clone());
 
         self.send_event(PlayerEvent::TrackChanged { audio_item });
-        append_track_json(&loaded_track.audio_item);
         let position_ms = loaded_track.stream_position_ms;
 
         let mut config = self.config.clone();
