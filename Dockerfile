@@ -101,19 +101,21 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # baseline; we're only replacing libgstspotify.so itself with one built
 # from current librespot/gst-plugins-rs sources.
 #
-# setuptools<81 is required: Mopidy-Iris and Mopidy-YouTube both still
-# `from pkg_resources import ...`, which setuptools 81+ no longer bundles
-# (it's slated for full removal). Without this pin, Iris itself fails to
-# load at startup.
+# setuptools<81 is required: Mopidy-Iris still does
+# `from pkg_resources import ...`, which setuptools 81+ no longer bundles.
+# Without this pin, Iris fails to load at startup.
+#
+# Mopidy-Local and Mopidy-YouTube are intentionally absent:
+# - Mopidy-Local 3.2.1 imports `imghdr`, removed from Python 3.13.
+# - Mopidy-YouTube has the same compat issue and is unused here.
+# Both would fail at startup on debian:trixie-slim (Python 3.13).
 RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m pip install --break-system-packages \
         "setuptools<81" \
         "Mopidy==3.4.2" \
         "Mopidy-Spotify==5.0.0a3" \
-        "Mopidy-Local==3.2.1" \
         "Mopidy-InternetArchive==3.1.2" \
-        Mopidy-Iris \
-        Mopidy-YouTube
+        Mopidy-Iris
 
 COPY --from=rust-cross-builder /tmp/libgstspotify.so /usr/lib/aarch64-linux-gnu/gstreamer-1.0/libgstspotify.so
 RUN gst-inspect-1.0 spotifyaudiosrc >/dev/null
