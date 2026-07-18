@@ -59,6 +59,11 @@ thiserror = "2"
 tokio = { version = "1", features = ["rt-multi-thread", "sync"] }
 zerocopy = { version = "0.8", features = ["derive"] }
 
+# Local patches: audio-key disk cache + per-track metadata JSONL log
+disk-persist = "0.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
 # Backends
 alsa = { version = "0.10", optional = true }
 jack = { version = "0.13", optional = true }

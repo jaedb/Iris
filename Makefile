@@ -120,6 +120,7 @@ integrate-librespot: init-upstreams
 		$(LIBRESPOT_UPSTREAM_DIR)/ vendor/librespot/
 	@echo ""; echo "=== Applying local patches ==="
 	cd vendor/librespot && patch -p1 --fuzz=3 -i ../../patches/librespot/player.patch
+	cd vendor/librespot && patch -p1 --fuzz=3 -i ../../patches/librespot/playback-Cargo.patch
 	@echo ""; echo "Done. Next steps:"
 	@echo "  echo <new-tag> > vendor/librespot/.upstream-ref"
 	@echo "  git add vendor/librespot && git commit -m 'Update librespot to vX.Y'"
@@ -139,7 +140,8 @@ integrate-gst-plugins-rs: init-upstreams
 
 # Apply all local patches to both vendor dirs (e.g. after a bare rsync).
 apply-patches:
-	cd vendor/librespot    && patch -p1 --fuzz=3 -i ../../patches/librespot/player.patch
+	cd vendor/librespot && patch -p1 --fuzz=3 -i ../../patches/librespot/player.patch
+	cd vendor/librespot && patch -p1 --fuzz=3 -i ../../patches/librespot/playback-Cargo.patch
 	cd vendor/gst-plugins-rs && patch -p1 --fuzz=3 \
 		-i ../../patches/gst-plugins-rs/spotifylyricssrc-imp.patch
 
@@ -151,6 +153,10 @@ save-patches: init-upstreams
 	        vendor/librespot/playback/src/player.rs \
 	  | sed 's|^--- .*|--- a/playback/src/player.rs|; s|^+++ .*|+++ b/playback/src/player.rs|' \
 	  > patches/librespot/player.patch || true
+	diff -u $(LIBRESPOT_UPSTREAM_DIR)/playback/Cargo.toml \
+	        vendor/librespot/playback/Cargo.toml \
+	  | sed 's|^--- .*|--- a/playback/Cargo.toml|; s|^+++ .*|+++ b/playback/Cargo.toml|' \
+	  > patches/librespot/playback-Cargo.patch || true
 	diff -u "$(GST_UPSTREAM_DIR)/audio/spotify/src/spotifylyricssrc/imp.rs" \
 	        "vendor/gst-plugins-rs/audio/spotify/src/spotifylyricssrc/imp.rs" \
 	  | sed 's|^--- .*|--- a/audio/spotify/src/spotifylyricssrc/imp.rs|; s|^+++ .*|+++ b/audio/spotify/src/spotifylyricssrc/imp.rs|' \
