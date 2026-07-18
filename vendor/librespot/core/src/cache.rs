@@ -1,3 +1,5 @@
+#[cfg(unix)]
+use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
 use std::{
     cmp::Reverse,
     collections::HashMap,
@@ -315,10 +317,14 @@ impl Cache {
 
         // This closure is just convencience to enable the question mark operator
         let read = || -> Result<Credentials, Error> {
-            let mut file = File::open(location)?;
-            let mut contents = String::new();
-            file.read_to_string(&mut contents)?;
-            Ok(serde_json::from_str(&contents)?)
+            let file = File::open(location)?;
+            #[cfg(unix)]
+            if file.metadata()?.mode() & 0o004 != 0 {
+                warn!(
+                    "credential file {location:?} is currently world readable, consider using  chmod 600 {location:?} to fix this"
+                )
+            }
+            Ok(serde_json::from_reader(file)?)
         };
 
         match read() {
@@ -336,10 +342,15 @@ impl Cache {
 
     pub fn save_credentials(&self, cred: &Credentials) {
         if let Some(location) = &self.credentials_location {
-            let result = File::create(location).and_then(|mut file| {
-                let data = serde_json::to_string(cred)?;
-                write!(file, "{data}")
-            });
+            let mut file = File::options();
+            #[cfg(unix)]
+            let file = file.mode(0o600);
+            let result = file
+                .create(true)
+                .write(true)
+                .truncate(true)
+                .open(location)
+                .and_then(|file| Ok(serde_json::to_writer(file, cred)?));
 
             if let Err(e) = result {
                 warn!("Cannot save credentials to cache: {e}")
@@ -378,17 +389,12 @@ impl Cache {
     }
 
     pub fn file_path(&self, file: FileId) -> Option<PathBuf> {
-        match file.to_base16() {
-            Ok(name) => self.audio_location.as_ref().map(|location| {
-                let mut path = location.join(&name[0..2]);
-                path.push(&name[2..]);
-                path
-            }),
-            Err(e) => {
-                warn!("Invalid FileId: {e}");
-                None
-            }
-        }
+        self.audio_location.as_ref().map(|location| {
+            let name = file.to_base16();
+            let mut path = location.join(&name[0..2]);
+            path.push(&name[2..]);
+            path
+        })
     }
 
     pub fn file(&self, file: FileId) -> Option<File> {

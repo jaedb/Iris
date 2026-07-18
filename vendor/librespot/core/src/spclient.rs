@@ -422,7 +422,7 @@ impl SpClient {
         let mut headers = headers.unwrap_or_default();
         headers.insert(ACCEPT, HeaderValue::from_static("application/json"));
 
-        self.request(method, endpoint, Some(headers), body.map(|s| s.as_bytes()))
+        self.request(method, endpoint, Some(headers), body.map(str::as_bytes))
             .await
     }
 
@@ -595,7 +595,7 @@ impl SpClient {
     pub async fn get_metadata(&self, kind: ExtensionKind, id: &SpotifyUri) -> SpClientResult {
         let req = BatchedEntityRequest {
             entity_request: vec![EntityRequest {
-                entity_uri: id.to_uri()?,
+                entity_uri: id.to_uri(),
                 query: vec![ExtensionQuery {
                     extension_kind: EnumOrUnknown::new(kind),
                     ..Default::default()
@@ -645,7 +645,7 @@ impl SpClient {
     }
 
     pub async fn get_lyrics(&self, track_id: &SpotifyId) -> SpClientResult {
-        let endpoint = format!("/color-lyrics/v2/track/{}", track_id.to_base62()?);
+        let endpoint = format!("/color-lyrics/v2/track/{}", track_id.to_base62());
 
         self.request_as_json(&Method::GET, &endpoint, None, None)
             .await
@@ -658,7 +658,7 @@ impl SpClient {
     ) -> SpClientResult {
         let endpoint = format!(
             "/color-lyrics/v2/track/{}/image/spotify:image:{}",
-            track_id.to_base62()?,
+            track_id.to_base62(),
             image_id
         );
 
@@ -667,7 +667,7 @@ impl SpClient {
     }
 
     pub async fn get_playlist(&self, playlist_id: &SpotifyId) -> SpClientResult {
-        let endpoint = format!("/playlist/v2/playlist/{}", playlist_id.to_base62()?);
+        let endpoint = format!("/playlist/v2/playlist/{}", playlist_id.to_base62());
 
         self.request(&Method::GET, &endpoint, None, None).await
     }
@@ -716,7 +716,7 @@ impl SpClient {
     pub async fn get_radio_for_track(&self, track_uri: &SpotifyUri) -> SpClientResult {
         let endpoint = format!(
             "/inspiredby-mix/v2/seed_to_playlist/{}?response-format=json",
-            track_uri.to_uri()?
+            track_uri.to_uri()
         );
 
         self.request_as_json(&Method::GET, &endpoint, None, None)
@@ -749,8 +749,8 @@ impl SpClient {
 
         let previous_track_str = previous_tracks
             .iter()
-            .map(|track| track.to_base62())
-            .collect::<Result<Vec<_>, _>>()?
+            .map(SpotifyId::to_base62)
+            .collect::<Vec<_>>()
             .join(",");
         // better than checking `previous_tracks.len() > 0` because the `filter_map` could still return 0 items
         if !previous_track_str.is_empty() {
@@ -773,7 +773,7 @@ impl SpClient {
     pub async fn get_audio_storage(&self, file_id: &FileId) -> SpClientResult {
         let endpoint = format!(
             "/storage-resolve/files/audio/interactive/{}",
-            file_id.to_base16()?
+            file_id.to_base16()
         );
         self.request(&Method::GET, &endpoint, None, None).await
     }
@@ -819,7 +819,7 @@ impl SpClient {
             .get_user_attribute(ATTRIBUTE)
             .ok_or_else(|| SpClientError::Attribute(ATTRIBUTE.to_string()))?;
 
-        let mut url = template.replace("{id}", &preview_id.to_base16()?);
+        let mut url = template.replace("{id}", &preview_id.to_base16());
         let separator = match url.find('?') {
             Some(_) => "&",
             None => "?",
@@ -837,7 +837,7 @@ impl SpClient {
             .get_user_attribute(ATTRIBUTE)
             .ok_or_else(|| SpClientError::Attribute(ATTRIBUTE.to_string()))?;
 
-        let url = template.replace("{file_id}", &file_id.to_base16()?);
+        let url = template.replace("{file_id}", &file_id.to_base16());
 
         self.request_url(&url).await
     }
@@ -848,7 +848,7 @@ impl SpClient {
             .session()
             .get_user_attribute(ATTRIBUTE)
             .ok_or_else(|| SpClientError::Attribute(ATTRIBUTE.to_string()))?;
-        let url = template.replace("{file_id}", &image_id.to_base16()?);
+        let url = template.replace("{file_id}", &image_id.to_base16());
 
         self.request_url(&url).await
     }
@@ -952,7 +952,7 @@ impl SpClient {
             &Method::POST,
             &endpoint,
             None,
-            body.as_deref().map(|s| s.as_bytes()),
+            body.as_deref().map(str::as_bytes),
             &NO_METRICS_AND_SALT,
         )
         .await

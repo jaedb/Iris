@@ -1,7 +1,3 @@
-use disk_persist::DiskPersist;
-use serde::{Deserialize, Serialize};
-use librespot_core::audio_key::AudioKey;
-use std::path::PathBuf;
 use std::{
     collections::HashMap,
     fmt, fs,
@@ -28,7 +24,7 @@ use crate::{
     audio_backend::Sink,
     config::{Bitrate, NormalisationMethod, NormalisationType, PlayerConfig},
     convert::Converter,
-    core::{Error, FileId, Session, SpotifyId, SpotifyUri, util::SeqGenerator},
+    core::{Error, Session, SpotifyId, SpotifyUri, util::SeqGenerator},
     decoder::{AudioDecoder, AudioPacket, AudioPacketPosition, SymphoniaDecoder},
     local_file::{LocalFileLookup, create_local_file_lookup},
     metadata::audio::{AudioFileFormat, AudioFiles, AudioItem},
@@ -46,110 +42,6 @@ use tokio::sync::{mpsc, oneshot};
 
 use crate::SAMPLES_PER_SECOND;
 
-use std::fs::OpenOptions;
-use std::io::Write;
-
-// AudioItem itself doesn't derive Serialize (it's not designed as a wire
-// format, and several of its fields - e.g. Tracks - don't either), so we
-// project just the fields an external display needs into our own struct.
-#[derive(Serialize)]
-struct NowPlaying<'a> {
-    file_id: String,
-    format: String,
-    uri: &'a str,
-    name: &'a str,
-    duration_ms: u32,
-    bytes_per_second: usize,
-    is_explicit: bool,
-    language: &'a [String],
-    // Present for Track and Local types; empty for episodes
-    artists: Vec<&'a str>,
-    album: Option<&'a str>,
-    // Present for Track only
-    album_artists: Vec<&'a str>,
-    popularity: Option<u8>,
-    track_number: Option<u32>,
-    disc_number: Option<u32>,
-    // Present for Episode only
-    show_name: Option<&'a str>,
-}
-
-fn append_track_json(file_id: FileId, format: AudioFileFormat, bytes_per_second: usize, audio_item: &AudioItem) {
-    let (artists, album, album_artists, popularity, track_number, disc_number, show_name) =
-        match &audio_item.unique_fields {
-            UniqueFields::Track {
-                artists,
-                album,
-                album_artists,
-                popularity,
-                number,
-                disc_number,
-            } => (
-                artists.iter().map(|a| a.name.as_str()).collect::<Vec<_>>(),
-                Some(album.as_str()),
-                album_artists.iter().map(|a| a.as_str()).collect::<Vec<_>>(),
-                Some(*popularity),
-                Some(*number),
-                Some(*disc_number),
-                None,
-            ),
-            UniqueFields::Episode { show_name, .. } => (
-                Vec::new(),
-                None,
-                Vec::new(),
-                None,
-                None,
-                None,
-                Some(show_name.as_str()),
-            ),
-            UniqueFields::Local { artists, album, .. } => (
-                artists.as_deref().map(|s| vec![s]).unwrap_or_default(),
-                album.as_deref(),
-                Vec::new(),
-                None,
-                None,
-                None,
-                None,
-            ),
-        };
-
-    let info = NowPlaying {
-        file_id: file_id.to_string(),
-        format: format!("{format:?}"),
-        uri: &audio_item.uri,
-        name: &audio_item.name,
-        duration_ms: audio_item.duration_ms,
-        bytes_per_second,
-        is_explicit: audio_item.is_explicit,
-        language: &audio_item.language,
-        artists,
-        album,
-        album_artists,
-        popularity,
-        track_number,
-        disc_number,
-        show_name,
-    };
-
-    let now_playing_log = format!("/var/lib/mopidy/cache/{file_id}.jsonl");
-    let file = OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&now_playing_log);
-
-    let mut file = match file {
-        Ok(file) => file,
-        Err(e) => {
-            warn!("Unable to open {now_playing_log} for now-playing log: {e}");
-            return;
-        }
-    };
-
-    if let Err(e) = writeln!(file, "{}", serde_json::to_string(&info).unwrap()) {
-        warn!("Unable to write now-playing log entry: {e}");
-    }
-}
-
 const PRELOAD_NEXT_TRACK_BEFORE_END_DURATION_MS: u32 = 30000;
 pub const DB_VOLTAGE_RATIO: f64 = 20.0;
 pub const PCM_AT_0DBFS: f64 = 1.0;
@@ -162,10 +54,6 @@ const LOAD_HANDLES_POISON_MSG: &str = "load handles mutex should not be poisoned
 
 pub type PlayerResult = Result<(), Error>;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct DataSer{
-    key: [u8; 16],
-}
 pub struct Player {
     commands: Option<mpsc::UnboundedSender<PlayerCommand>>,
     thread_handle: Option<thread::JoinHandle<()>>,
@@ -250,6 +138,19 @@ enum PlayerCommand {
         track: bool,
     },
     EmitAutoPlayChangedEvent(bool),
+    EmitSetQueueEvent {
+        context_uri: String,
+        current_track: Option<QueueTrack>,
+        next_tracks: Vec<QueueTrack>,
+        prev_tracks: Vec<QueueTrack>,
+    },
+}
+
+/// Represents a track in the queue with its URI and provider.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct QueueTrack {
+    pub uri: String,
+    pub provider: String,
 }
 
 #[derive(Debug, Clone)]
@@ -359,6 +260,13 @@ pub enum PlayerEvent {
     },
     FilterExplicitContentChanged {
         filter: bool,
+    },
+    /// Fired when the queue is set or context is loaded with its track list.
+    SetQueue {
+        context_uri: String,
+        current_track: Option<QueueTrack>,
+        next_tracks: Vec<QueueTrack>,
+        prev_tracks: Vec<QueueTrack>,
     },
 }
 
@@ -759,6 +667,21 @@ impl Player {
     pub fn emit_auto_play_changed_event(&self, auto_play: bool) {
         self.command(PlayerCommand::EmitAutoPlayChangedEvent(auto_play));
     }
+
+    pub fn emit_set_queue_event(
+        &self,
+        context_uri: String,
+        current_track: Option<QueueTrack>,
+        next_tracks: Vec<QueueTrack>,
+        prev_tracks: Vec<QueueTrack>,
+    ) {
+        self.command(PlayerCommand::EmitSetQueueEvent {
+            context_uri,
+            current_track,
+            next_tracks,
+            prev_tracks,
+        });
+    }
 }
 
 impl Drop for Player {
@@ -1100,10 +1023,7 @@ impl PlayerTrackLoader {
             Ok(audio) => match self.find_available_alternative(audio).await {
                 Some(audio) => audio,
                 None => {
-                    warn!(
-                        "spotify:track:<{}> is not available",
-                        track_id.to_base62().unwrap_or_default()
-                    );
+                    warn!("spotify:track:<{}> is not available", track_id.to_base62());
                     return None;
                 }
             },
@@ -1185,34 +1105,9 @@ impl PlayerTrackLoader {
 
             let stream_loader_controller = encrypted_file.get_stream_loader_controller().ok()?;
 
-            let key: Option<AudioKey>;
-            let ext_path = PathBuf::from(&format!("/var/lib/mopidy/cache/{}.ext", file_id.to_string()));
-            let persist: DiskPersist<DataSer> = DiskPersist::init_with_path(ext_path).unwrap();
-            key = match persist.read().unwrap() {
-                    Some(inner) => {
-                                info!("Extended cache used");
-                                Some(librespot_core::audio_key::AudioKey(inner.key))
-                                },
-                    None => match self.session.audio_key().request(track_id, file_id).await {
-                                Ok(ikey) => {
-                                                info!("Storing Extended cache");
-                                                let dataser = DataSer {
-                                                        key: ikey.0
-                                                };
-                                                persist.write(&dataser).unwrap();
-                                                Some(ikey)
-                                           },
-                                Err(e) => {
-                                        warn!("Unable to load key, continuing without decryption: {}", e);
-                                        None
-                                },
-                        }
-            };
-
             // Not all audio files are encrypted. If we can't get a key, try loading the track
             // without decryption. If the file was encrypted after all, the decoder will fail
             // parsing and bail out, so we should be safe from outputting ear-piercing noise.
-            /*
             let key = match self.session.audio_key().request(track_id, file_id).await {
                 Ok(key) => Some(key),
                 Err(e) => {
@@ -1220,7 +1115,6 @@ impl PlayerTrackLoader {
                     None
                 }
             };
-            */
 
             let mut decrypted_file = AudioDecrypt::new(key, encrypted_file);
 
@@ -1337,7 +1231,6 @@ impl PlayerTrackLoader {
             let is_explicit = audio_item.is_explicit;
 
             info!("<{}> ({} ms) loaded", audio_item.name, duration_ms);
-            append_track_json(file_id, format, bytes_per_second, &audio_item);
 
             return Some(PlayerLoadedTrackData {
                 decoder,
@@ -1429,7 +1322,7 @@ impl PlayerTrackLoader {
             is_explicit: false,
             audio_item: AudioItem {
                 duration_ms: duration.as_millis() as u32,
-                uri: track_uri.to_uri().unwrap_or_default(),
+                uri: track_uri.to_uri(),
                 track_id: track_uri,
                 files: Default::default(),
                 name,
@@ -2012,6 +1905,7 @@ impl PlayerInternal {
         let audio_item = Box::new(loaded_track.audio_item.clone());
 
         self.send_event(PlayerEvent::TrackChanged { audio_item });
+
         let position_ms = loaded_track.stream_position_ms;
 
         let mut config = self.config.clone();
@@ -2476,6 +2370,18 @@ impl PlayerInternal {
                 self.auto_normalise_as_album = setting
             }
 
+            PlayerCommand::EmitSetQueueEvent {
+                context_uri,
+                current_track,
+                next_tracks,
+                prev_tracks,
+            } => self.send_event(PlayerEvent::SetQueue {
+                context_uri,
+                current_track,
+                next_tracks,
+                prev_tracks,
+            }),
+
             PlayerCommand::EmitFilterExplicitContentChangedEvent(filter) => {
                 self.send_event(PlayerEvent::FilterExplicitContentChanged { filter });
 
@@ -2676,6 +2582,17 @@ impl fmt::Debug for PlayerCommand {
             PlayerCommand::EmitAutoPlayChangedEvent(auto_play) => f
                 .debug_tuple("EmitAutoPlayChangedEvent")
                 .field(&auto_play)
+                .finish(),
+            PlayerCommand::EmitSetQueueEvent {
+                context_uri,
+                next_tracks,
+                prev_tracks,
+                ..
+            } => f
+                .debug_tuple("EmitSetQueueEvent")
+                .field(&context_uri)
+                .field(&next_tracks.len())
+                .field(&prev_tracks.len())
                 .finish(),
         }
     }

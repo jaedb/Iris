@@ -87,7 +87,7 @@ impl SpotifyUri {
 
     /// Gets the ID of this URI. The resource ID is the component of the URI that identifies
     /// the resource after its type label. If `self` is a named ID, the user will be omitted.
-    pub fn to_id(&self) -> Result<String, Error> {
+    pub fn to_id(&self) -> String {
         match &self {
             SpotifyUri::Album { id }
             | SpotifyUri::Artist { id }
@@ -102,11 +102,9 @@ impl SpotifyUri {
                 duration,
             } => {
                 let duration_secs = duration.as_secs();
-                Ok(format!(
-                    "{artist}:{album_title}:{track_title}:{duration_secs}"
-                ))
+                format!("{artist}:{album_title}:{track_title}:{duration_secs}")
             }
-            SpotifyUri::Unknown { id, .. } => Ok(id.clone()),
+            SpotifyUri::Unknown { id, .. } => id.clone(),
         }
     }
 
@@ -205,18 +203,18 @@ impl SpotifyUri {
     /// `spotify:user:{user}:{type}:{id}`.
     ///
     /// [Spotify URI]: https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids
-    pub fn to_uri(&self) -> Result<String, Error> {
+    pub fn to_uri(&self) -> String {
         let item_type = self.item_type();
-        let name = self.to_id()?;
 
         if let SpotifyUri::Playlist {
             id,
             user: Some(user),
         } = self
         {
-            Ok(format!("spotify:user:{user}:{item_type}:{id}"))
+            format!("spotify:user:{user}:{item_type}:{id}")
         } else {
-            Ok(format!("spotify:{item_type}:{name}"))
+            let name = self.to_id();
+            format!("spotify:{item_type}:{name}")
         }
     }
 
@@ -226,22 +224,20 @@ impl SpotifyUri {
     /// Deprecated: not all IDs can be represented in Base62, so this function has been renamed to
     /// [SpotifyUri::to_id], which this implementation forwards to.
     #[deprecated(since = "0.8.0", note = "use to_name instead")]
-    pub fn to_base62(&self) -> Result<String, Error> {
+    pub fn to_base62(&self) -> String {
         self.to_id()
     }
 }
 
 impl fmt::Debug for SpotifyUri {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_tuple("SpotifyUri")
-            .field(&self.to_uri().unwrap_or_else(|_| "invalid uri".into()))
-            .finish()
+        f.debug_tuple("SpotifyUri").field(&self.to_uri()).finish()
     }
 }
 
 impl fmt::Display for SpotifyUri {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(&self.to_uri().unwrap_or_else(|_| "invalid uri".into()))
+        f.write_str(&self.to_uri())
     }
 }
 
@@ -313,7 +309,7 @@ impl TryFrom<&protocol::playlist4_external::MetaItem> for SpotifyUri {
     fn try_from(item: &protocol::playlist4_external::MetaItem) -> Result<Self, Self::Error> {
         Ok(Self::Unknown {
             kind: "MetaItem".into(),
-            id: SpotifyId::try_from(item.revision())?.to_base62()?,
+            id: SpotifyId::try_from(item.revision())?.to_base62(),
         })
     }
 }
@@ -326,7 +322,7 @@ impl TryFrom<&protocol::playlist4_external::SelectedListContent> for SpotifyUri 
     ) -> Result<Self, Self::Error> {
         Ok(Self::Unknown {
             kind: "SelectedListContent".into(),
-            id: SpotifyId::try_from(playlist.revision())?.to_base62()?,
+            id: SpotifyId::try_from(playlist.revision())?.to_base62(),
         })
     }
 }
@@ -488,7 +484,7 @@ mod tests {
     #[test]
     fn to_id() {
         for c in &CONV_VALID {
-            assert_eq!(c.parsed.to_id().unwrap(), c.base62);
+            assert_eq!(c.parsed.to_id(), c.base62);
         }
     }
 
@@ -599,7 +595,7 @@ mod tests {
     #[test]
     fn to_uri() {
         for c in &CONV_VALID {
-            assert_eq!(c.parsed.to_uri().unwrap(), c.uri);
+            assert_eq!(c.parsed.to_uri(), c.uri);
         }
     }
 
@@ -610,6 +606,6 @@ mod tests {
         let actual =
             SpotifyUri::from_uri("spotify:user:spotify:playlist:37i9dQZF1DWSw8liJZcPOI").unwrap();
 
-        assert_eq!(actual.to_uri().unwrap(), string);
+        assert_eq!(actual.to_uri(), string);
     }
 }

@@ -87,7 +87,7 @@ impl AudioItem {
                     return Err(Error::unavailable(MetadataError::ExplicitContentFiltered));
                 }
 
-                let uri_string = uri.to_uri()?;
+                let uri_string = uri.to_uri();
                 let album = track.album.name;
 
                 let album_artists = track
@@ -156,7 +156,7 @@ impl AudioItem {
                     return Err(Error::unavailable(MetadataError::ExplicitContentFiltered));
                 }
 
-                let uri_string = uri.to_uri()?;
+                let uri_string = uri.to_uri();
 
                 let covers = get_covers(episode.covers, image_url);
 
@@ -194,7 +194,7 @@ impl AudioItem {
 fn get_covers(covers: Images, image_url: String) -> Vec<CoverImage> {
     let mut covers = covers;
 
-    covers.sort_by(|a, b| b.width.cmp(&a.width));
+    covers.sort_by_key(|a| std::cmp::Reverse(a.width));
 
     covers
         .iter()

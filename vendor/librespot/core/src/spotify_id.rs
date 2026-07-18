@@ -29,11 +29,9 @@ impl From<SpotifyIdError> for Error {
 pub type SpotifyIdResult = Result<SpotifyId, Error>;
 
 const BASE62_DIGITS: &[u8; 62] = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const BASE16_DIGITS: &[u8; 16] = b"0123456789abcdef";
 
 impl SpotifyId {
     const SIZE: usize = 16;
-    const SIZE_BASE16: usize = 32;
     const SIZE_BASE62: usize = 22;
 
     /// Parses a base16 (hex) encoded [Spotify ID] into a `SpotifyId`.
@@ -45,20 +43,9 @@ impl SpotifyId {
         if src.len() != 32 {
             return Err(SpotifyIdError::InvalidId.into());
         }
-        let mut dst: u128 = 0;
+        let id = u128::from_str_radix(src, 16).map_err(|_| SpotifyIdError::InvalidId)?;
 
-        for c in src.as_bytes() {
-            let p = match c {
-                b'0'..=b'9' => c - b'0',
-                b'a'..=b'f' => c - b'a' + 10,
-                _ => return Err(SpotifyIdError::InvalidId.into()),
-            } as u128;
-
-            dst <<= 4;
-            dst += p;
-        }
-
-        Ok(Self { id: dst })
+        Ok(Self { id })
     }
 
     /// Parses a base62 encoded [Spotify ID] into a `u128`.
@@ -99,11 +86,10 @@ impl SpotifyId {
         }
     }
 
-    /// Returns the `SpotifyId` as a base16 (hex) encoded, `SpotifyId::SIZE_BASE16` (32)
-    /// character long `String`.
+    /// Returns the `SpotifyId` as a base16 (hex) encoded, 32-character long `String`.
     #[allow(clippy::wrong_self_convention)]
-    pub fn to_base16(&self) -> Result<String, Error> {
-        to_base16(&self.to_raw(), &mut [0u8; Self::SIZE_BASE16])
+    pub fn to_base16(&self) -> String {
+        format!("{:032x}", self.id)
     }
 
     /// Returns the `SpotifyId` as a [canonically] base62 encoded, `SpotifyId::SIZE_BASE62` (22)
@@ -111,7 +97,7 @@ impl SpotifyId {
     ///
     /// [canonically]: https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids
     #[allow(clippy::wrong_self_convention)]
-    pub fn to_base62(&self) -> Result<String, Error> {
+    pub fn to_base62(&self) -> String {
         let mut dst = [0u8; 22];
         let mut i = 0;
         let n = self.id;
@@ -143,13 +129,12 @@ impl SpotifyId {
             }
         }
 
-        for b in &mut dst {
-            *b = BASE62_DIGITS[*b as usize];
+        let mut s = String::with_capacity(dst.len());
+        for &b in dst.iter().rev() {
+            s.push(BASE62_DIGITS[b as usize] as char);
         }
 
-        dst.reverse();
-
-        String::from_utf8(dst.to_vec()).map_err(|_| SpotifyIdError::InvalidId.into())
+        s
     }
 
     /// Returns a copy of the `SpotifyId` as an array of `SpotifyId::SIZE` (16) bytes in
@@ -162,15 +147,13 @@ impl SpotifyId {
 
 impl fmt::Debug for SpotifyId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_tuple("SpotifyId")
-            .field(&self.to_base62().unwrap_or_else(|_| "invalid uri".into()))
-            .finish()
+        f.debug_tuple("SpotifyId").field(&self.to_base62()).finish()
     }
 }
 
 impl fmt::Display for SpotifyId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(&self.to_base62().unwrap_or_else(|_| "invalid uri".into()))
+        f.write_str(&self.to_base62())
     }
 }
 
@@ -217,17 +200,6 @@ impl TryFrom<&SpotifyUri> for SpotifyId {
             }
         }
     }
-}
-
-pub fn to_base16(src: &[u8], buf: &mut [u8]) -> Result<String, Error> {
-    let mut i = 0;
-    for v in src {
-        buf[i] = BASE16_DIGITS[(v >> 4) as usize];
-        buf[i + 1] = BASE16_DIGITS[(v & 0x0f) as usize];
-        i += 2;
-    }
-
-    String::from_utf8(buf.to_vec()).map_err(|_| SpotifyIdError::InvalidId.into())
 }
 
 #[cfg(test)]
@@ -350,7 +322,7 @@ mod tests {
         for c in &CONV_VALID {
             let id = SpotifyId { id: c.id };
 
-            assert_eq!(id.to_base62().unwrap(), c.base62);
+            assert_eq!(id.to_base62(), c.base62);
         }
     }
 
@@ -370,7 +342,7 @@ mod tests {
         for c in &CONV_VALID {
             let id = SpotifyId { id: c.id };
 
-            assert_eq!(id.to_base16().unwrap(), c.base16);
+            assert_eq!(id.to_base16(), c.base16);
         }
     }
 
