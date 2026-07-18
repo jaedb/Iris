@@ -4,16 +4,22 @@ TAG         ?= latest
 BUILDER     ?= multi-arch
 NAMESPACE   ?= snapserver
 
-.PHONY: build push deploy bootstrap-builder
+.PHONY: build push deploy bootstrap-builder sync
+
+# Pull the latest committed code from GitLab before building.
+# --ff-only refuses to proceed if local and remote have diverged, so you
+# won't silently build a merged state you didn't intend.
+sync:
+	git pull --ff-only origin main
 
 # Build for the Pi5 cluster's arm64 nodes. The Rust cross-compile stage
 # runs natively (no emulation); only the final stage (apt/pip) needs the
 # QEMU-backed builder.
-build:
+build: sync
 	docker buildx build --builder $(BUILDER) --platform linux/arm64 \
 		-t $(REGISTRY)/$(IMAGE):$(TAG) --load .
 
-push:
+push: sync
 	docker buildx build --builder $(BUILDER) --platform linux/arm64 \
 		-t $(REGISTRY)/$(IMAGE):$(TAG) --push .
 
