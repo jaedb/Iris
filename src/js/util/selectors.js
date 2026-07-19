@@ -291,7 +291,7 @@ const makeSortSelector = (key, defaultField = 'sort_id') => createSelector(
 const getSortSelector = (state, key, defaultField = 'sort_id') => {
   const result = state.ui.sort[key];
   return [
-    result?.field || defaultField,
+    result !== undefined ? result.field : defaultField,
     result?.reverse || false,
   ];
 };
