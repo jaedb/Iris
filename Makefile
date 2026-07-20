@@ -14,9 +14,16 @@ GST_UPSTREAM_DIR        ?= ../gst-plugins-rs-upstream
 GST_UPSTREAM_URL        := https://github.com/kingosticks/gst-plugins-rs.git
 GST_UPSTREAM_BRANCH     := spotify-logging
 
+# Our own Iris fork (github.com/FlatterAtMainz/Iris), already cloned as a
+# sibling checkout. Unlike librespot/gst-plugins-rs, there's no separate
+# patches/ layer for it: it's our fork, so local changes live directly in
+# its own git history rather than as patch files here.
+IRIS_UPSTREAM_DIR       ?= ../Iris
+IRIS_UPSTREAM_URL       := https://github.com/FlatterAtMainz/Iris.git
+
 .PHONY: build push deploy bootstrap-builder sync \
-        init-upstreams update-librespot update-gst-plugins-rs \
-        integrate-librespot integrate-gst-plugins-rs \
+        init-upstreams update-librespot update-gst-plugins-rs update-iris \
+        integrate-librespot integrate-gst-plugins-rs integrate-iris \
         apply-patches save-patches
 
 # Pull the latest committed code from GitLab before building.
@@ -84,6 +91,13 @@ init-upstreams:
 		echo "Fetching gst-plugins-rs upstream…"; \
 		git -C $(GST_UPSTREAM_DIR) fetch origin; \
 	fi
+	@if [ ! -d $(IRIS_UPSTREAM_DIR)/.git ]; then \
+		echo "Cloning Iris fork…"; \
+		git clone $(IRIS_UPSTREAM_URL) $(IRIS_UPSTREAM_DIR); \
+	else \
+		echo "Fetching Iris fork…"; \
+		git -C $(IRIS_UPSTREAM_DIR) fetch origin; \
+	fi
 
 # Show commits added upstream to librespot since the vendored ref (tag or SHA).
 update-librespot: init-upstreams
@@ -114,6 +128,20 @@ update-gst-plugins-rs: init-upstreams
 	echo ""; \
 	echo "To integrate: make integrate-gst-plugins-rs"
 
+# Show commits added on our Iris fork since the vendored ref.
+update-iris: init-upstreams
+	@BASE=$$(cat vendor/iris/.upstream-ref); \
+	echo "=== New Iris fork commits since $$BASE ==="; \
+	git -C $(IRIS_UPSTREAM_DIR) log $$BASE..HEAD --oneline; \
+	echo ""; \
+	echo "=== Files that differ between vendor and fork HEAD ==="; \
+	diff -rq --exclude='.git' --exclude='node_modules' --exclude='.coverage' \
+		$(IRIS_UPSTREAM_DIR) vendor/iris || true; \
+	echo ""; \
+	echo "Fork HEAD: $$(git -C $(IRIS_UPSTREAM_DIR) rev-parse HEAD)"; \
+	echo ""; \
+	echo "To integrate: make integrate-iris"
+
 # Overwrite vendor/librespot with upstream HEAD, then re-apply local patches.
 integrate-librespot: init-upstreams
 	rsync -av --exclude='.git' --exclude='target' \
@@ -137,6 +165,15 @@ integrate-gst-plugins-rs: init-upstreams
 	@echo "  git -C $(GST_UPSTREAM_DIR) rev-parse HEAD > vendor/gst-plugins-rs/.upstream-ref"
 	@echo "  git add vendor/gst-plugins-rs && git commit -m 'Update gst-plugins-rs'"
 	@echo "  make save-patches && git add patches/ && git commit --amend --no-edit"
+
+# Overwrite vendor/iris with the fork's current HEAD. No patches to
+# re-apply — it's our own fork, so changes are committed there directly.
+integrate-iris: init-upstreams
+	rsync -av --exclude='.git' --exclude='node_modules' --exclude='.coverage' \
+		$(IRIS_UPSTREAM_DIR)/ vendor/iris/
+	git -C $(IRIS_UPSTREAM_DIR) rev-parse HEAD > vendor/iris/.upstream-ref
+	@echo ""; echo "Done. Next steps:"
+	@echo "  git add vendor/iris && git commit -m 'Update Iris fork'"
 
 # Apply all local patches to both vendor dirs (e.g. after a bare rsync).
 apply-patches:

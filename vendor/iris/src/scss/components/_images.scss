@@ -1,0 +1,153 @@
+
+
+.thumbnail {
+	position: relative;
+	z-index: 1;
+	perspective: 100px;
+	width: 100%;
+	max-width: 300px;
+
+	&__placeholder.icon {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-0.5em, -0.5em);
+		opacity: 0.05;
+		font-size: 4rem;
+		line-height: 1em;
+		width: 1em;
+		z-index: 1;
+	}
+
+	.loader {
+		position: absolute;
+		top: calc(50% - 60px);
+		left: calc(50% - 60px);
+		z-index: 9;
+	}
+
+	&--loading {
+		.thumbnail__image:before {
+			content: '';
+			display: block;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			z-index: 8;
+			background-color: rgba(0, 0, 0, 0.75);
+
+			@include theme('light') {
+				background-color: rgba(255, 255, 255, 0.75);
+			}
+		}
+	}
+
+	&__image {
+		@include animate(0.1s);
+		position: relative;
+		overflow: hidden;
+		z-index: 2;
+		width: 100%;
+		padding-bottom: 100%;
+		background-repeat: no-repeat;
+		background-color: rgba(128, 128, 128, 0.15);
+		background-position: 50% 50%;
+		background-size: cover;
+		border-radius: 3px;
+
+		&--use-image-tag {
+			padding-bottom: 0;
+		}
+
+		&--glow {
+			@include responsive($bp_medium) {
+				display: none;
+			}
+			@include responsive(null, $bp_medium) {
+				@include blur(10px);
+				position: absolute;
+				z-index: 1;
+				top: 30%;
+				right: 30px;
+				left: 30px;
+				padding-bottom: 70%;
+				width: auto;
+				height: auto;
+				opacity: 0.3;
+				transform: translateZ(0px) rotateX(4deg);
+				mix-blend-mode: multiply;
+			}
+		}
+	}
+
+	&__actions {
+		@include animate();
+		position: absolute;
+		display: flex;
+		opacity: 0;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 2;
+		transform: translateY(-3px);
+
+		&__item {
+			@include animate();
+			display: inline-flex;
+			z-index: 3;
+			width: 4.2rem;
+			height: 4.2rem;
+			align-items: center;
+			justify-content: center;
+			border-radius: 100%;
+			background: rgba(0,0,0,0.4);
+			font-size: 2rem;
+			cursor: pointer;
+			color: colour('white');
+			border: 0 !important;
+			text-decoration: none !important;
+			margin: 0 5px;
+
+			&:hover {
+				background: colour('black');
+			}
+		}
+	}
+
+	&--small {
+		max-width: 50px;
+
+		.thumbnail__placeholder.icon {
+			font-size: 2rem;
+		}
+	}
+
+	&--fill {
+		max-width: none;
+	}
+
+	&--circle {
+		.thumbnail {
+			&__image {
+				border-radius: 50%;
+			}
+		}
+	}
+
+	&:hover {
+		.thumbnail__actions {
+			opacity: 1;
+			transform: translateY(0px);
+		}
+	}
+}
+
+.playback-controls {
+	z-index: 3;
+}

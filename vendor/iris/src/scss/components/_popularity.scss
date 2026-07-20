@@ -1,0 +1,29 @@
+
+.popularity {
+	&-bars {
+		display: inline-block;
+		margin: 0.15em -2px;
+		vertical-align: top;
+
+		.bar {
+			display: inline-block;
+			width: 2px;
+			height: 0.5em;
+			margin: 0.25em 1px;
+			background: colour('light_grey');
+			opacity: 0.2;
+
+			&.filled {
+				opacity: 1;
+			}
+
+			@include theme('light') {
+				background: colour('darkest_grey');
+			}
+		}
+	}
+
+	&-value {
+		display: none;
+	}
+}

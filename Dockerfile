@@ -57,6 +57,23 @@ RUN --mount=type=cache,target=/root/.cargo/registry \
     cargo build --release --target aarch64-unknown-linux-gnu --package gst-plugin-spotify \
     && cp target/aarch64-unknown-linux-gnu/release/libgstspotify.so /tmp/libgstspotify.so
 
+# Build our Iris fork (vendor/iris, github.com/FlatterAtMainz/Iris) instead
+# of pulling the stock Mopidy-Iris package from PyPI. The wheel it produces
+# is architecture-independent (frontend assets + pure-Python package), so
+# this runs natively on the amd64 build host, same rationale as the Rust
+# toolchain stage above.
+FROM --platform=$BUILDPLATFORM node:18-slim AS iris-builder
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+        python3 python3-pip python3-venv
+COPY vendor/iris /iris
+WORKDIR /iris
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci && npm run prod
+RUN python3 -m pip install --break-system-packages build \
+    && python3 -m build --wheel --no-isolation -o /dist
+
 FROM debian:trixie-slim AS final
 ARG TZ=Europe/Berlin
 ENV TZ=${TZ} \
@@ -103,7 +120,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 #
 # setuptools<81 is required: Mopidy-Iris still does
 # `from pkg_resources import ...`, which setuptools 81+ no longer bundles.
-# Without this pin, Iris fails to load at startup.
+# Without this pin, Iris fails to load at startup. This applies equally to
+# our Iris fork below, which hasn't touched that import.
 #
 # Mopidy-Local and Mopidy-YouTube are intentionally absent:
 # - Mopidy-Local 3.2.1 imports `imghdr`, removed from Python 3.13.
@@ -114,8 +132,14 @@ RUN --mount=type=cache,target=/root/.cache/pip \
         "setuptools<81" \
         "Mopidy==3.4.2" \
         "Mopidy-Spotify==5.0.0a3" \
-        "Mopidy-InternetArchive==3.1.2" \
-        Mopidy-Iris
+        "Mopidy-InternetArchive==3.1.2"
+
+# Our Iris fork (vendor/iris), built by the iris-builder stage above, in
+# place of the stock Mopidy-Iris PyPI package.
+COPY --from=iris-builder /dist/*.whl /tmp/
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python3 -m pip install --break-system-packages /tmp/*.whl \
+    && rm -f /tmp/*.whl
 
 COPY --from=rust-cross-builder /tmp/libgstspotify.so /usr/lib/aarch64-linux-gnu/gstreamer-1.0/libgstspotify.so
 RUN gst-inspect-1.0 spotifyaudiosrc >/dev/null

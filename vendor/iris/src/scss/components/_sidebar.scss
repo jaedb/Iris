@@ -1,0 +1,211 @@
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 96;
+  width: 220px;
+  overflow: hidden;
+  color: colour('white');
+  box-sizing: border-box;
+  transform-style: preserve-3d;
+
+  &__liner {
+    overflow-y: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    box-sizing: border-box;
+    z-index: 2;
+    overflow-y: auto;
+  }
+
+  &__menu {
+    z-index: 2;
+    position: relative;
+    padding-top: 20px;
+    line-height: 1em;
+
+    &__item {
+      font-family: $font-family-alt;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: colour('white');
+      text-decoration: none;
+      display: flex;
+      padding: 0.75em 0.85em;
+      margin: 0 1.1em;
+      border-radius: 3px;
+      line-break: after-white-space;
+
+      @include theme('dark') {
+        @include gradient_overlay(3px);
+      }
+
+      @include theme('light') {
+        @include animate();
+        color: colour('darkest_grey');
+        font-weight: 600;
+      }
+
+      .icon {
+        padding-right: 8px;
+        font-size: 1em;
+      }
+
+      .status {
+        margin-left: auto;
+
+        .icon {
+          padding-right: 0;
+          padding-left: 8px;
+        }
+      }
+
+      &--submenu {
+        font-size: 1rem;
+        padding: 0.6em 0.7em;
+        font-weight: 400 !important;
+        margin: 0 1.1em 0 3em;
+
+        &:before {
+          display: none;
+        }
+
+        &.sidebar__menu__item {
+          color: colour('mid_grey');
+
+          &:before,
+          &:after {
+            display: none;
+          }
+
+          @include theme('light') {
+            color: colour('soft_grey');
+          }
+
+          &.active {
+            background: transparent !important;
+            color: colour('turquoise') !important;
+          }
+        }
+      }
+
+      &--active {
+        background: colour('turquoise');
+        color: colour('white') !important;
+
+        .status {
+          .icon {
+            color: colour('white') !important;
+          }
+        }
+
+        &:before {
+          opacity: 0.15;
+        }
+      }
+
+      &[disabled] {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      &:hover:not([disabled]) {
+        &:before {
+          opacity: 0.15;
+        }
+
+        @include theme('light') {
+          color: lighten(colour('darkest_grey'), 20%);
+        }
+      }
+
+      &:focus:not([disabled]):not(.sidebar__menu__item--active) {
+        background: rgba(128, 128, 128, 0.25);
+      }
+
+      &:active {
+        @include noanimate();
+        transform: translate(1px, 1px);
+      }
+    }
+
+    &__section {
+      padding-bottom: 25px;
+
+      &__title {
+        display: block;
+        padding: 0 26px 5px 26px;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: colour('middle_grey');
+      }
+    }
+  }
+
+  .close {
+    @include click_feedback();
+    display: none;
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    padding: 10px;
+    display: inline-block;
+    z-index: 99;
+    font-size: 1.2rem;
+
+    @include theme('light') {
+      color: colour('darkest_grey');
+    }
+  }
+
+  @include responsive($bp_medium) {
+    @include animate(0.15s);
+    width: 250px;
+    left: auto;
+    right: -250px;
+    padding-bottom: 0;
+    position: fixed;
+    z-index: 100;
+
+    @include theme('light') {
+      background: lighten(colour('faint_grey'), 2%);
+    }
+
+    @include theme('dark') {
+      background: colour('darkest_grey');
+    }
+
+    .sidebar-open & {
+      -ms-transform: translate(-250px, 0);
+      -webkit-transform: translate(-250px, 0);
+      transform: translate(-250px, 0);
+    }
+
+    &__liner {
+      bottom: 0 !important;
+      padding-bottom: 30px;
+    }
+
+    .thumbnail {
+      display: none;
+    }
+
+    .close {
+      display: block;
+    }
+
+    &__menu {
+      &__section {
+        padding-bottom: 10px;
+
+        &__title {
+          padding-bottom: 2px;
+        }
+      }
+    }
+  }
+}
