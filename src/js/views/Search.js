@@ -29,7 +29,7 @@ const Search = () => {
     providersString,
   } = useSearchQuery();
   const [sortField, sortReverse] = useSelector(
-    (state) => getSortSelector(state, SORT_KEY, 'name'),
+    (state) => getSortSelector(state, SORT_KEY, null),
   );
 
   useEffect(() => {

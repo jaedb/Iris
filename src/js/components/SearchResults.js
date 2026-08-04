@@ -19,7 +19,7 @@ const SearchResults = ({
   const { term, providers } = useSearchQuery();
   const encodedProviders = providers.join(',').replace(/:/g,'');
   const [sortField, sortReverse] = useSelector(
-    (state) => getSortSelector(state, SORT_KEY, 'name'),
+    (state) => getSortSelector(state, SORT_KEY, null),
   );
   const searchResultsSelector = makeSearchResultsSelector(providers, term, type);
   const rawResults = useSelector(searchResultsSelector);
