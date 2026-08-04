@@ -1036,7 +1036,7 @@ const MopidyMiddleware = (function () {
         // (which is a blocking request), but not so many that it locks the Mopidy server.
         // It allows a window of opportunity for other requests to complete before we proceed to
         // the next batch.
-        const batchSize = 5;
+        const batchSize = 1000;
         const batches = chunk(action.uris, batchSize);
 
         // This is our process iterator
