@@ -73,7 +73,7 @@ const CoreMiddleware = (function () {
           if (action.data.xhr && action.data.xhr.responseText) {
             try {
               const xhr_response = JSON.parse(action.data.xhr.responseText);
-              if (xhr_response.error && xhr_response.error.message) {
+              if (xhr_response.error?.message) {
                 description = xhr_response.error.message;
               }
             } catch (e) {
