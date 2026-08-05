@@ -1,0 +1,72 @@
+include:
+  - project: 'cluster/ci-templates'
+    ref: main
+    file: 'kaniko-build.yml'
+  - project: 'cluster/ci-templates'
+    ref: main
+    file: 'kubectl-deploy.yml'
+
+build-mopidy:
+  extends: .kaniko-build
+  variables:
+    IMAGE_NAME: mopidy_stable
+    # Belt-and-suspenders with the Dockerfile's own ARG TARGETARCH=arm64
+    # default - see Dockerfile's top-of-file comment for why this needs
+    # to be explicit under Kaniko rather than assumed.
+    EXTRA_KANIKO_ARGS: "--build-arg TARGETARCH=arm64"
+    # A from-scratch librespot + gst-plugins-rs Rust build is heavier than
+    # this cluster's other images - Kaniko's cache mounts are local to
+    # each job's pod (a fresh one every run), so there's no cross-run
+    # cache benefit, only within a single build's own layer reordering.
+    KUBERNETES_CPU_REQUEST: "1500m"
+    KUBERNETES_MEMORY_REQUEST: "2Gi"
+
+build-auth-server:
+  extends: .kaniko-build
+  variables:
+    IMAGE_NAME: spotify-auth
+    CONTEXT: auth-server
+
+# keel.sh (force/poll) already watches mopidy1-4 and snapserver, but not
+# audio-exporter - matching what `make deploy` in the Makefile already did
+# (mopidy1-4 only), for an immediate rollout instead of waiting out keel's
+# poll interval. Not extended to audio-exporter/snapserver here either;
+# if that's wanted, add jobs for them the same way rather than assuming
+# this list should just grow to match every Deployment on this image.
+deploy-mopidy1:
+  extends: .kubectl-deploy
+  needs: [build-mopidy]
+  variables:
+    NAMESPACE: snapserver
+    DEPLOYMENT: mopidy1
+
+deploy-mopidy2:
+  extends: .kubectl-deploy
+  needs: [build-mopidy]
+  variables:
+    NAMESPACE: snapserver
+    DEPLOYMENT: mopidy2
+
+deploy-mopidy3:
+  extends: .kubectl-deploy
+  needs: [build-mopidy]
+  variables:
+    NAMESPACE: snapserver
+    DEPLOYMENT: mopidy3
+
+deploy-mopidy4:
+  extends: .kubectl-deploy
+  needs: [build-mopidy]
+  variables:
+    NAMESPACE: snapserver
+    DEPLOYMENT: mopidy4
+
+# spotify-auth has no keel.sh annotation at all (unlike the mopidy*
+# Deployments), so without this job a new build would never roll out on
+# its own.
+deploy-auth-server:
+  extends: .kubectl-deploy
+  needs: [build-auth-server]
+  variables:
+    NAMESPACE: snapserver
+    DEPLOYMENT: spotify-auth

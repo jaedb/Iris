@@ -7,55 +7,104 @@
 # basis the Mopidy project itself currently builds from) so its
 # audio/spotify plugin can be modified locally.
 #
-# That plugin is compiled in a dedicated cross-compilation stage that
-# runs NATIVELY on the amd64 build host (no QEMU) using the
-# gcc-aarch64-linux-gnu cross toolchain + a Rust aarch64-unknown-linux-gnu
-# target. Compiling Rust under QEMU emulation works but is roughly an
-# order of magnitude slower per core (instruction-by-instruction
-# translation), so true cross-compilation is used instead - this mirrors
-# what the upstream build images at github.com/mopidy/gst-plugins-rs-build
-# do.
+# That plugin is compiled in a dedicated Rust build stage that always
+# runs NATIVELY, never under QEMU emulation - compiling Rust under QEMU
+# works but is roughly an order of magnitude slower per core
+# (instruction-by-instruction translation). What "native" means depends
+# on where the build actually runs, detected at RUN-time (dpkg
+# --print-architecture vs TARGETARCH), not assumed in advance:
+#
+# - On this cluster's CI (GitLab Runner's Kubernetes executor, arm64
+#   nodes only): a plain native arm64 build, no cross toolchain at all.
+# - Building from an amd64 dev machine via `docker buildx` instead: the
+#   original cross-compilation path - gcc-aarch64-linux-gnu + a Rust
+#   aarch64-unknown-linux-gnu target, mirroring what the upstream build
+#   images at github.com/mopidy/gst-plugins-rs-build do.
 #
 # Only the final stage needs to actually be arm64 (it just unpacks .deb
-# packages and pip wheels, which QEMU emulates cheaply), so the overall
-# build is:
+# packages and pip wheels, which QEMU emulates cheaply if needed at all).
+# Manual build from an amd64 machine:
 #
 #   docker buildx build --builder multi-arch --platform linux/arm64 \
 #     -t k8s1:31320/mopidy_stable:latest --push .
+#
+# CI (this cluster) builds natively via Kaniko instead - see .gitlab-ci.yml.
 
-# Stage 1 of 2 for Rust cross-compilation: install the toolchain.
+# Stage 1 of 2 for Rust compilation: install the toolchain.
 # Separated from the cargo build stage so that apt/rustup layers are only
 # re-run when the toolchain definition itself changes, not when sources change.
 # Cache mounts keep apt package downloads across builds even on cold layer cache.
+#
+# --platform=$BUILDPLATFORM only actually does anything under `docker
+# buildx` - Kaniko (what this cluster's GitLab CI runner uses, since the
+# Kubernetes executor has no privileged/DinD access for a real Docker
+# daemon) ignores it entirely and always builds as its own pod's real
+# host architecture. That's fine and not a bug to route around: every
+# node in this cluster is arm64, so a Kaniko build here already *is* a
+# native arm64 build with no BUILDPLATFORM pin needed. The distinction
+# that actually matters is computed at RUN-time below (dpkg
+# --print-architecture, i.e. "what am I actually running as right now"),
+# which gives the right answer regardless of whether it's Kaniko (always
+# reports the pod's real arch) or buildx from an amd64 dev machine
+# (reports amd64 in this pinned stage, thanks to --platform=$BUILDPLATFORM
+# still being honored there).
 FROM --platform=$BUILDPLATFORM debian:trixie-slim AS rust-toolchain
-ARG TARGETARCH
+# Defaults to arm64 (this project's only real target) so a Kaniko
+# build - which, unlike buildx, does not auto-populate this from a
+# --platform flag - still gets a correct, non-empty value even
+# without an explicit --build-arg. CI passes one explicitly anyway
+# (see .gitlab-ci.yml) - this default is a backstop, not the primary
+# mechanism.
+ARG TARGETARCH=arm64
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
-    dpkg --add-architecture ${TARGETARCH} \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        build-essential pkg-config curl ca-certificates clang git \
-        gcc-aarch64-linux-gnu \
-        libgstreamer1.0-dev:${TARGETARCH} \
-        libgstreamer-plugins-base1.0-dev:${TARGETARCH}
+    set -eu; \
+    HOST_ARCH="$(dpkg --print-architecture)"; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        build-essential pkg-config curl ca-certificates clang git; \
+    if [ "${HOST_ARCH}" = "${TARGETARCH}" ]; then \
+        echo "Host (${HOST_ARCH}) already matches target (${TARGETARCH}) - native build, no cross toolchain"; \
+        apt-get install -y --no-install-recommends \
+            libgstreamer1.0-dev \
+            libgstreamer-plugins-base1.0-dev; \
+    else \
+        echo "Cross-compiling for ${TARGETARCH} from ${HOST_ARCH}"; \
+        dpkg --add-architecture "${TARGETARCH}"; \
+        apt-get update; \
+        apt-get install -y --no-install-recommends \
+            gcc-aarch64-linux-gnu \
+            "libgstreamer1.0-dev:${TARGETARCH}" \
+            "libgstreamer-plugins-base1.0-dev:${TARGETARCH}"; \
+    fi
 RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.86.0 --profile minimal
 ENV PATH="/root/.cargo/bin:${PATH}"
-RUN rustup target add aarch64-unknown-linux-gnu
+RUN set -eu; \
+    if [ "$(dpkg --print-architecture)" != "${TARGETARCH}" ]; then \
+        rustup target add aarch64-unknown-linux-gnu; \
+    fi
 
 # Stage 2 of 2: compile the Spotify GStreamer plugin against the vendored sources.
 FROM rust-toolchain AS rust-cross-builder
-ENV PKG_CONFIG_ALLOW_CROSS=1 \
-    PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig \
-    CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
-    CC_aarch64_unknown_linux_gnu=aarch64-linux-gnu-gcc
+ARG TARGETARCH=arm64
 
 COPY vendor/librespot /librespot
 COPY vendor/gst-plugins-rs /src
 WORKDIR /src
 RUN --mount=type=cache,target=/root/.cargo/registry \
     --mount=type=cache,target=/src/target \
-    cargo build --release --target aarch64-unknown-linux-gnu --package gst-plugin-spotify \
-    && cp target/aarch64-unknown-linux-gnu/release/libgstspotify.so /tmp/libgstspotify.so
+    set -eu; \
+    if [ "$(dpkg --print-architecture)" = "${TARGETARCH}" ]; then \
+        cargo build --release --package gst-plugin-spotify; \
+        cp target/release/libgstspotify.so /tmp/libgstspotify.so; \
+    else \
+        export PKG_CONFIG_ALLOW_CROSS=1; \
+        export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig; \
+        export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc; \
+        export CC_aarch64_unknown_linux_gnu=aarch64-linux-gnu-gcc; \
+        cargo build --release --target aarch64-unknown-linux-gnu --package gst-plugin-spotify; \
+        cp target/aarch64-unknown-linux-gnu/release/libgstspotify.so /tmp/libgstspotify.so; \
+    fi
 
 # Build our Iris fork (vendor/iris, github.com/FlatterAtMainz/Iris) instead
 # of pulling the stock Mopidy-Iris package from PyPI. The wheel it produces

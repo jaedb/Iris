@@ -64,32 +64,44 @@ editable sources.
 ## Build chain
 
 ```
-┌─────────────────────────┐
-│ rust-cross-builder stage│  debian:trixie-slim, native amd64 (NO QEMU)
-│  - gcc-aarch64-linux-gnu │  cargo build --release \
-│  - rustup target add     │    --target aarch64-unknown-linux-gnu \
-│    aarch64-unknown-linux-gnu  --package gst-plugin-spotify
-└───────────┬──────────────┘
-            │ libgstspotify.so (AArch64 ELF)
-            ▼
-┌─────────────────────────┐
-│ final stage              │  debian:trixie-slim, linux/arm64 (QEMU is fine
-│  - gstreamer runtime      │  here - just unpacking apt/pip packages)
-│  - pip install Mopidy,    │
-│    Mopidy-Spotify, ...    │
-└───────────────────────────┘
+┌──────────────────────────┐   ┌──────────────────────────┐
+│ rust-toolchain/           │   │ iris-builder stage        │
+│ rust-cross-builder stages │   │  - node:18-slim            │
+│  - native on this arch, or│   │  - npm ci && npm run prod   │
+│    cross-compiled to arm64│   │  - python -m build --wheel  │
+│    from an amd64 host      │   └───────────┬──────────────┘
+│  cargo build --release \   │               │ Iris wheel (arch-independent)
+│    [--target aarch64-...]  │               │
+│    --package gst-plugin-   │               │
+│    spotify                 │               │
+└───────────┬────────────────┘               │
+            │ libgstspotify.so (AArch64 ELF)   │
+            ▼                                 ▼
+┌─────────────────────────────────────────────────┐
+│ final stage                                       │  debian:trixie-slim,
+│  - gstreamer runtime                               │  linux/arm64 (QEMU is
+│  - pip install Mopidy, Mopidy-Spotify, ...          │  fine here - just
+│  - pip install the Iris wheel from iris-builder      │  unpacking apt/pip
+└───────────────────────────────────────────────────┘  packages)
 ```
 
-The Rust build deliberately runs **natively on the amd64 build host**
-via cross-compilation (`gcc-aarch64-linux-gnu` linker + Rust's
-`aarch64-unknown-linux-gnu` target), not under QEMU emulation. QEMU user-mode
-emulation can use multiple host cores (each parallel `cargo` job is its own
-emulated process, and MTTCG lets one multi-threaded process span cores too),
-but every core pays a per-instruction translation penalty - measured at
-roughly 2.5 minutes natively for this plugin's full dependency tree
-(librespot + gstreamer-rs + tokio stack), where emulated compilation would be
-substantially slower per core. Only the final stage (apt/dpkg/pip, no
-compilation) runs under QEMU, which is cheap.
+The Rust build only ever compiles natively - never under QEMU emulation,
+which works but is roughly an order of magnitude slower per core
+(instruction-by-instruction translation) than true native compilation,
+measured at roughly 2.5 minutes natively for this plugin's full dependency
+tree (librespot + gstreamer-rs + tokio stack). What "native" means
+depends on where the build actually runs - see the Dockerfile's top
+comment and "Build & push" below: this cluster's CI builds it natively on
+arm64 (every node here is arm64), a manual build from an amd64 dev
+machine instead cross-compiles (`gcc-aarch64-linux-gnu` + Rust's
+`aarch64-unknown-linux-gnu` target) rather than running under QEMU. Only
+the final stage (apt/dpkg/pip, no compilation) ever runs under QEMU
+emulation, if at all, which is cheap regardless.
+
+`iris-builder` (`npm run prod` + a Python wheel build) produces an
+architecture-independent artifact either way - a frontend JS bundle plus
+pure-Python source has no native code to get "wrong" the way the Rust
+plugin does, so it doesn't need the same native-vs-cross distinction.
 
 `debian:trixie-slim` is required for both stages' *output* — `trixie` is
 the first Debian release with the 64-bit-time_t glib ABI
@@ -99,6 +111,20 @@ on the kernel side) — only the container's own userland matters here, not
 the host.
 
 ## Build & push
+
+`.gitlab-ci.yml` builds both images (`mopidy_stable` and `spotify-auth`)
+and force-restarts `mopidy1`-`4` and `spotify-auth` on every push to
+`main`, via
+[cluster/ci-templates](https://gitlab.lerchenberg-net.de/cluster/ci-templates).
+Uses [Kaniko](https://gitlab.lerchenberg-net.de/cluster/ci-templates), not
+`docker buildx` — the GitLab Runner's Kubernetes executor has no
+privileged/DinD access. Since every node in this cluster is arm64, that
+build is already native (no QEMU) with no cross-compilation needed at
+all — see the Dockerfile's own top comment for how the Rust build stage
+detects this at run-time rather than assuming it.
+
+Manual equivalent (from an amd64 machine, still using the original
+cross-compilation path via `docker buildx`):
 
 ```sh
 # one-off, if the "multi-arch" buildx builder doesn't exist yet:
@@ -113,7 +139,10 @@ make deploy           # optional: force-restart instead of waiting for keel's po
 
 The `mopidy*` Deployments in namespace `snapserver` already run with
 `keel.sh/policy: force` + `keel.sh/trigger: poll`, so pushing `:latest`
-gets picked up and rolled out automatically without `make deploy`.
+gets picked up and rolled out automatically without `make deploy` (or
+CI's `deploy-*` jobs) — those exist for an immediate rollout instead of
+waiting out keel's poll interval. `spotify-auth` has no keel annotation
+at all, so its CI deploy job is the only thing that rolls it out.
 
 ## Updating the vendored sources
 
