@@ -123,6 +123,22 @@ build is already native (no QEMU) with no cross-compilation needed at
 all — see the Dockerfile's own top comment for how the Rust build stage
 detects this at run-time rather than assuming it.
 
+`build-mopidy` has a 30m job `timeout` (the project/runner default is 1h).
+Twice now (2026-08-05) the job has hung with its log stream dying
+("context deadline exceeded" from the GitLab Runner's Kubernetes
+executor, no build-side error) rather than actually failing — the first
+time coincided with a kubelet restart on `k8s6`, the second time no
+node's `Ready` condition changed at all, so the cause looks more like
+general log-streaming flakiness on long-running jobs than a specific
+node issue. Without the timeout this silently ties up the runner for a
+full hour before GitLab notices; 30m still leaves headroom for a
+legitimately slow cold build (no cross-run Kaniko cache — see above —
+plus armv8/Pi CPUs), while failing fast on a repeat. If it recurs, the
+current workaround is a manual `docker buildx` build (below) — no
+further root-causing has been done since this needs node-level log
+access (`journalctl`/`dmesg`) that isn't available from a Kubernetes
+client alone.
+
 Manual equivalent (from an amd64 machine, still using the original
 cross-compilation path via `docker buildx`):
 
