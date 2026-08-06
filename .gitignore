@@ -1,3 +1,4 @@
 /vendor/gst-plugins-rs/target/
 /vendor/librespot/target/
 *.deb
+/upstream/

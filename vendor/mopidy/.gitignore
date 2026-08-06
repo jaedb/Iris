@@ -1,0 +1,11 @@
+*.egg-info/
+/*.lock
+/.*_cache/
+/.coverage
+/.tox/
+/.venv/
+/build/
+/dist/
+/site/
+__pycache__/
+mopidy.log*

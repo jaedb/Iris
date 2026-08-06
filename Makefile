@@ -7,23 +7,32 @@ NAMESPACE   ?= snapserver
 # Persists layer cache across builder-container restarts.
 CACHE_REF   ?= $(REGISTRY)/$(IMAGE):buildcache
 
-# Upstream clone locations — kept outside this repo to avoid nested-git conflicts.
-LIBRESPOT_UPSTREAM_DIR  ?= ../librespot-upstream
+# Upstream clone locations, nested under upstream/ (gitignored — each is its
+# own git checkout, kept out of this repo's own history).
+LIBRESPOT_UPSTREAM_DIR  ?= upstream/librespot
 LIBRESPOT_UPSTREAM_URL  := https://github.com/librespot-org/librespot.git
-GST_UPSTREAM_DIR        ?= ../gst-plugins-rs-upstream
+GST_UPSTREAM_DIR        ?= upstream/gst-plugins-rs
 GST_UPSTREAM_URL        := https://github.com/kingosticks/gst-plugins-rs.git
 GST_UPSTREAM_BRANCH     := spotify-logging
 
-# Our own Iris fork (github.com/FlatterAtMainz/Iris), already cloned as a
-# sibling checkout. Unlike librespot/gst-plugins-rs, there's no separate
-# patches/ layer for it: it's our fork, so local changes live directly in
-# its own git history rather than as patch files here.
-IRIS_UPSTREAM_DIR       ?= ../Iris
+# Our own Iris fork (github.com/FlatterAtMainz/Iris), already cloned.
+# Unlike librespot/gst-plugins-rs, there's no separate patches/ layer for
+# it: it's our fork, so local changes live directly in its own git history
+# rather than as patch files here.
+IRIS_UPSTREAM_DIR       ?= upstream/iris
 IRIS_UPSTREAM_URL       := https://github.com/FlatterAtMainz/Iris.git
 
+# Our own Mopidy fork (github.com/FlatterAtMainz/mopidy), already cloned
+# with both `origin` (upstream mopidy/mopidy) and `fork` remotes. Same
+# pattern as Iris: our stream_error auto-recovery fix lives directly in
+# its git history rather than as a patch file here. Vendored from branch
+# stream-error-fix-v4.0.1, based on the v4.0.1 release tag.
+MOPIDY_UPSTREAM_DIR     ?= upstream/mopidy
+MOPIDY_UPSTREAM_URL     := https://github.com/mopidy/mopidy.git
+
 .PHONY: build push deploy bootstrap-builder sync \
-        init-upstreams update-librespot update-gst-plugins-rs update-iris \
-        integrate-librespot integrate-gst-plugins-rs integrate-iris \
+        init-upstreams update-librespot update-gst-plugins-rs update-iris update-mopidy \
+        integrate-librespot integrate-gst-plugins-rs integrate-iris integrate-mopidy \
         apply-patches save-patches
 
 # Pull the latest committed code from GitLab before building.
@@ -98,6 +107,15 @@ init-upstreams:
 		echo "Fetching Iris fork…"; \
 		git -C $(IRIS_UPSTREAM_DIR) fetch origin; \
 	fi
+	@if [ ! -d $(MOPIDY_UPSTREAM_DIR)/.git ]; then \
+		echo "Mopidy fork checkout not found at $(MOPIDY_UPSTREAM_DIR)."; \
+		echo "This one has two remotes (origin=mopidy/mopidy, fork=FlatterAtMainz/mopidy)"; \
+		echo "and isn't a plain clone — set it up manually, then re-run."; \
+	else \
+		echo "Fetching Mopidy fork…"; \
+		git -C $(MOPIDY_UPSTREAM_DIR) fetch origin; \
+		git -C $(MOPIDY_UPSTREAM_DIR) fetch fork; \
+	fi
 
 # Show commits added upstream to librespot since the vendored ref (tag or SHA).
 update-librespot: init-upstreams
@@ -142,6 +160,20 @@ update-iris: init-upstreams
 	echo ""; \
 	echo "To integrate: make integrate-iris"
 
+# Show commits added on our Mopidy fork's vendored branch since the vendored ref.
+update-mopidy: init-upstreams
+	@BASE=$$(cat vendor/mopidy/.upstream-ref); \
+	echo "=== New Mopidy fork commits since $$BASE ==="; \
+	git -C $(MOPIDY_UPSTREAM_DIR) log $$BASE..HEAD --oneline; \
+	echo ""; \
+	echo "=== Files that differ between vendor and fork HEAD ==="; \
+	diff -rq --exclude='.git' --exclude='.tox' --exclude='*.egg-info' \
+		$(MOPIDY_UPSTREAM_DIR) vendor/mopidy || true; \
+	echo ""; \
+	echo "Fork HEAD: $$(git -C $(MOPIDY_UPSTREAM_DIR) rev-parse HEAD)"; \
+	echo ""; \
+	echo "To integrate: make integrate-mopidy"
+
 # Overwrite vendor/librespot with upstream HEAD, then re-apply local patches.
 integrate-librespot: init-upstreams
 	rsync -av --exclude='.git' --exclude='target' \
@@ -174,6 +206,16 @@ integrate-iris: init-upstreams
 	git -C $(IRIS_UPSTREAM_DIR) rev-parse HEAD > vendor/iris/.upstream-ref
 	@echo ""; echo "Done. Next steps:"
 	@echo "  git add vendor/iris && git commit -m 'Update Iris fork'"
+
+# Overwrite vendor/mopidy with the fork's current HEAD (branch
+# stream-error-fix-v4.0.1). No patches to re-apply — it's our own fork, so
+# changes are committed there directly.
+integrate-mopidy: init-upstreams
+	rsync -av --exclude='.git' --exclude='.tox' --exclude='*.egg-info' \
+		$(MOPIDY_UPSTREAM_DIR)/ vendor/mopidy/
+	git -C $(MOPIDY_UPSTREAM_DIR) rev-parse HEAD > vendor/mopidy/.upstream-ref
+	@echo ""; echo "Done. Next steps:"
+	@echo "  git add vendor/mopidy && git commit -m 'Vendor Mopidy 4.0.1 with stream_error recovery'"
 
 # Apply all local patches to both vendor dirs (e.g. after a bare rsync).
 apply-patches:

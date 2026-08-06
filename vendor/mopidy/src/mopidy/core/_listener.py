@@ -1,0 +1,203 @@
+from __future__ import annotations
+
+from typing import Any, Literal, override
+
+from mopidy import listener
+from mopidy.models import Playlist, TlTrack
+from mopidy.types import DurationMs, Percentage, PlaybackState, Uri
+
+type CoreEvent = Literal[
+    "track_playback_paused",
+    "track_playback_resumed",
+    "track_playback_started",
+    "track_playback_ended",
+    "playback_state_changed",
+    "tracklist_changed",
+    "playlists_loaded",
+    "playlist_changed",
+    "playlist_deleted",
+    "options_changed",
+    "volume_changed",
+    "mute_changed",
+    "seeked",
+    "stream_title_changed",
+]
+
+# A union of all possible data types for the core events. This is used to create
+# Pydantic TypeAdapter's to serialize the events to JSON.
+type CoreEventData = (
+    DurationMs | Percentage | PlaybackState | Playlist | TlTrack | Uri | bool | str
+)
+
+
+class CoreListener(listener.Listener):
+    """Marker interface for recipients of events sent by the core actor.
+
+    Any Pykka actor that mixes in this class will receive calls to the methods
+    defined here when the corresponding events happen in the core actor. This
+    interface is used both for looking up what actors to notify of the events,
+    and for providing default implementations for those listeners that are not
+    interested in all events.
+    """
+
+    @staticmethod
+    def send(event: CoreEvent, **kwargs: Any) -> None:
+        """Helper to allow calling of core listener events."""
+        listener.send(CoreListener, event, **kwargs)
+
+    @override
+    def on_event(
+        self,
+        event: CoreEvent,
+        **kwargs: CoreEventData,
+    ) -> None:
+        """Called on all events.
+
+        *MAY* be implemented by actor. By default, this method forwards the
+        event to the specific event methods.
+
+        Args:
+            event: The event name.
+            kwargs: Any other arguments to the specific event handlers.
+        """
+        # Just delegate to parent, entry mostly for docs.
+        super().on_event(event, **kwargs)
+
+    def track_playback_paused(
+        self,
+        tl_track: TlTrack,
+        time_position: DurationMs,
+    ) -> None:
+        """Called whenever track playback is paused.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            tl_track: The track that was playing when playback paused.
+            time_position: The time position in milliseconds.
+        """
+
+    def track_playback_resumed(
+        self,
+        tl_track: TlTrack,
+        time_position: DurationMs,
+    ) -> None:
+        """Called whenever track playback is resumed.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            tl_track: The track that was playing when playback resumed.
+            time_position: The time position in milliseconds.
+        """
+
+    def track_playback_started(self, tl_track: TlTrack) -> None:
+        """Called whenever a new track starts playing.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            tl_track: The track that just started playing.
+        """
+
+    def track_playback_ended(
+        self,
+        tl_track: TlTrack,
+        time_position: DurationMs,
+    ) -> None:
+        """Called whenever playback of a track ends.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            tl_track: The track that was played before playback stopped.
+            time_position: The time position in milliseconds.
+        """
+
+    def playback_state_changed(
+        self,
+        old_state: PlaybackState,
+        new_state: PlaybackState,
+    ) -> None:
+        """Called whenever playback state is changed.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            old_state: The state before the change.
+            new_state: The state after the change.
+        """
+
+    def tracklist_changed(self) -> None:
+        """Called whenever the tracklist is changed.
+
+        *MAY* be implemented by actor.
+        """
+
+    def playlists_loaded(self) -> None:
+        """Called when playlists are loaded or refreshed.
+
+        *MAY* be implemented by actor.
+        """
+
+    def playlist_changed(self, playlist: Playlist) -> None:
+        """Called whenever a playlist is changed.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            playlist: The changed playlist.
+        """
+
+    def playlist_deleted(self, uri: Uri) -> None:
+        """Called whenever a playlist is deleted.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            uri: The URI of the deleted playlist.
+        """
+
+    def options_changed(self) -> None:
+        """Called whenever an option is changed.
+
+        *MAY* be implemented by actor.
+        """
+
+    def volume_changed(self, volume: Percentage) -> None:
+        """Called whenever the volume is changed.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            volume: The new volume in the range [0..100].
+        """
+
+    def mute_changed(self, mute: bool) -> None:
+        """Called whenever the mute state is changed.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            mute: The new mute state.
+        """
+
+    def seeked(self, time_position: DurationMs) -> None:
+        """Called whenever the time position changes by an unexpected amount.
+
+        For example, at seek to a new time position.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            time_position: The position that was seeked to in milliseconds.
+        """
+
+    def stream_title_changed(self, title: str) -> None:
+        """Called whenever the currently playing stream title changes.
+
+        *MAY* be implemented by actor.
+
+        Args:
+            title: The new stream title.
+        """
