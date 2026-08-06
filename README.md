@@ -29,12 +29,12 @@ redirecting `librespot-core`/`-oauth`/`-protocol`/`-metadata`/`-audio`/
 `vendor/librespot` takes effect the next time the plugin is built — no
 need to touch version strings or republish a crate.
 
-Mopidy itself and Mopidy-Spotify (the Python backend that drives
-`spotifyaudiosrc` and handles config/search/browsing) are **not**
-vendored — they're installed from PyPI in the final image, pinned to
-`Mopidy==3.4.2` / `Mopidy-Spotify==5.0.0a3` (see "Why Mopidy 3.4.2, not
-4.x" below). Only the Rust/librespot side was in scope for local
-development.
+Mopidy-Spotify (the Python backend that drives `spotifyaudiosrc` and
+handles config/search/browsing) is **not** vendored — it's installed from
+PyPI in the final image, pinned to `Mopidy-Spotify==5.0.0`. Mopidy itself
+*is* vendored (`vendor/mopidy`, our `FlatterAtMainz/mopidy` fork, branch
+`stream-error-fix-v4.0.1`) — see "Why Mopidy 4.0.1, and why it's
+vendored" below.
 
 `vendor/librespot/audio/src/fetch/mod.rs` carries one backported patch:
 librespot's CDN fetch accepted whatever URL `storage-resolve` returned
@@ -46,20 +46,29 @@ worked fine; the audio fetch itself didn't). Fixed by backporting
 [librespot-org/librespot#1722](https://github.com/librespot-org/librespot/pull/1722)
 (open, unmerged upstream as of 2026-06-19).
 
-### Why Mopidy 3.4.2, not 4.x
+### Why Mopidy 4.0.1, and why it's vendored
 
-Mopidy 4 rewrote its models around pydantic and deleted
-`mopidy.models.serialize.ModelJSONEncoder` entirely. The current
-Mopidy-Iris (3.70.0) still imports that class directly, so Iris fails to
-even load its extension on Mopidy 4 - confirmed by testing, not just
-reading changelogs. `Mopidy-Spotify` correspondingly has to stay on
-`5.0.0a3` (the last alpha supporting `Mopidy>=3.4.0`; the final 5.0.0
-requires `Mopidy>=4.0.0`), and `Mopidy-Local`/`Mopidy-InternetArchive` are
-pinned to their last Mopidy-3-compatible releases (`3.2.1` / `3.1.2`).
-This whole combination matches what's already running in production
-(verified via `pip show` on the live pods) - we're not introducing a new
-stack, just replacing `libgstspotify.so` with one built from current,
-editable sources.
+This image originally pinned Mopidy at `3.4.2`: Mopidy 4 rewrote its
+models around pydantic and deleted
+`mopidy.models.serialize.ModelJSONEncoder` entirely, and stock Mopidy-Iris
+(3.70.0) imported that class directly, so Iris failed to even load its
+extension on Mopidy 4 - confirmed by testing, not just reading
+changelogs. That blocker is gone: `vendor/iris` now carries the upstream
+[jaedb/Iris fix](https://github.com/jaedb/Iris/pull/1003), which branches
+serialization on a `MOPIDY_V4` feature check instead of the removed
+class. With Iris fixed, there was no reason left to stay on 3.4.2 -
+`Mopidy-Spotify` and `Mopidy-InternetArchive` are bumped to their current
+stable releases (`5.0.0` / `4.0.1`), the first of each that require
+`Mopidy>=4.0.0`.
+
+Mopidy itself is built from `vendor/mopidy` (our `FlatterAtMainz/mopidy`
+fork, branch `stream-error-fix-v4.0.1`) rather than pip-installed from
+PyPI, because it carries one local patch: a GStreamer stream error (e.g.
+a broken `tcpclientsink` connection to snapserver) used to just stop
+playback with `mopidy.core`'s state left stale, so clients like Iris kept
+reporting "playing" with no audio actually flowing. `AudioListener` now
+emits a `stream_error` event that `core.playback` uses to retry the
+current track a few times before giving up and stopping for real.
 
 ## Build chain
 
@@ -80,7 +89,7 @@ editable sources.
 ┌─────────────────────────────────────────────────┐
 │ final stage                                       │  debian:trixie-slim,
 │  - gstreamer runtime                               │  linux/arm64 (QEMU is
-│  - pip install Mopidy, Mopidy-Spotify, ...          │  fine here - just
+│  - pip install vendor/mopidy, Mopidy-Spotify, ...    │  fine here - just
 │  - pip install the Iris wheel from iris-builder      │  unpacking apt/pip
 └───────────────────────────────────────────────────┘  packages)
 ```
@@ -169,10 +178,9 @@ rm -rf vendor/librespot/.git
   currently-deployed production image (which runs Python 3.11). Needs
   either a small `imghdr` shim module or patching `mopidy_local/storage.py`
   to not need it.
-- `Mopidy==3.4.2` is bundled `m3u`/`file`/`stream`/`http`, so unlike an
-  earlier version of this README claimed, no separate `Mopidy-M3U`/
-  `Mopidy-File` packages are needed - that requirement was an artifact of
-  an earlier (abandoned) attempt to build on Mopidy 4 instead.
+- Mopidy bundles `m3u`/`file`/`stream`/`http` itself (true of both `3.4.2`
+  and the current `4.0.1`), so no separate `Mopidy-M3U`/`Mopidy-File`
+  packages are needed.
 - `Mopidy-Podcast`, `Mopidy-Mobile`, `Mopidy-Scrobbler`, `Mopidy-MPD` are
   present in production but not yet in this image.
 - `k8s/mopidy{1,2,3,4}-deployment.yaml` mirror the live Deployments;
