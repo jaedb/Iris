@@ -8,6 +8,21 @@ include:
 
 build-mopidy:
   extends: .kaniko-build
+  # Default runner/project timeout is 1h - way more than this job should
+  # ever legitimately need, so a hung log stream (e.g. the job pod's node
+  # becoming briefly unreachable - see 2026-08-05 incident on k8s6) burns
+  # a full hour before GitLab notices, instead of failing fast.
+  #
+  # 30m still gives real headroom for a genuinely slow cold build: Kaniko
+  # has no cross-run cache here (see below), so every run re-downloads and
+  # recompiles the whole librespot + gst-plugins-rs dependency tree from
+  # nothing, on armv8 (Raspberry Pi) CPUs - a manual buildx build of the
+  # same commit took ~2.5min for the Rust stage alone on a modern arm64
+  # Mac with warm caches, and Pi cores are meaningfully slower per-core,
+  # plus this adds cold toolchain install (apt + rustup) and the npm
+  # build for Iris on top. If this still trips on a legitimate slow build,
+  # raise it rather than assume another hang.
+  timeout: 30m
   variables:
     IMAGE_NAME: mopidy_stable
     # Belt-and-suspenders with the Dockerfile's own ARG TARGETARCH=arm64

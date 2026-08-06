@@ -8,17 +8,20 @@ export function handleException(message = '', data = {}, description = null, sho
   if (!message) {
     if (data.message) {
       message = data.message;
-    } else if (data.error.message) {
+    } else if (data.error?.message) {
       message = data.error.message;
     }
   }
   if (!description) {
     if (data.description) {
       description = data.description;
-    } else if (data.error && data.error.message) {
+    } else if (data.error?.message) {
       description = data.error.message;
-    } else if (data.error && data.error.description) {
+    } else if (data.error?.description) {
       description = data.error.description;
+    } else if (data.message && data.message !== message) {
+      // Covers plain Error/SyntaxError objects passed straight through as `data`
+      description = data.message;
     }
   }
 
