@@ -937,11 +937,24 @@ const PusherMiddleware = (function () {
             snapcast_updates.stream = action.config.snapcast_stream;
           }
 
+          // Connection details first: SNAPCAST_CONNECT reads host/port/ssl
+          // live from state at dispatch time, so they must already be
+          // correct before setEnabled(true) below can trigger a connect()
+          // that actually reaches the right server.
+          store.dispatch(snapcastActions.set(snapcast_updates));
+
+          // enabled goes through setEnabled(), not a plain set(), because
+          // only setEnabled's middleware actually calls connect()/
+          // disconnect() as a side effect (see SNAPCAST_SET_ENABLED in
+          // snapcast/middleware.js). App.js's own connect-on-boot effect
+          // only runs once, keyed on [isReady], and had already captured
+          // enabled=false (this seed's initialState default) by the time
+          // this async PUSHER_CONFIG response arrives - so a plain set()
+          // updated the flag but nothing ever dialled the connection.
           if (action.config.snapcast_enabled !== undefined) {
-            snapcast_updates.enabled = action.config.snapcast_enabled;
+            store.dispatch(snapcastActions.setEnabled(action.config.snapcast_enabled));
           }
 
-          store.dispatch(snapcastActions.set(snapcast_updates));
           store.dispatch(uiActions.set({ snapcast_config_seeded: true }));
         }
 
