@@ -1,0 +1,23 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    environment:
+      name: pypi
+      url: https://pypi.org/project/mopidy/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: hynek/build-and-inspect-python-package@v2
+        id: build
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ steps.build.outputs.artifact-name }}
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1

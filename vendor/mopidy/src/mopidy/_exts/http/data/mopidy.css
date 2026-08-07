@@ -1,0 +1,43 @@
+html {
+    background: #f8f8f8;
+    color: #555;
+    font-family: Geneva, Tahoma, Verdana, sans-serif;
+    line-height: 1.4em;
+}
+body {
+    max-width: 600px;
+    margin: 0 auto;
+}
+h1, h2 {
+    font-weight: 500;
+    line-height: 1.1em;
+}
+a {
+    color: #555;
+    text-decoration: none;
+    border-bottom: 1px dotted;
+}
+img {
+    border: 0;
+}
+
+.box {
+    background: white;
+    box-shadow: 0px 5px 5px #f0f0f0;
+    margin: 1em;
+    padding: 1em;
+}
+.box.focus {
+    background: #465158;
+    color: #e8ecef;
+}
+
+.box a {
+    color: #465158;
+}
+.box a:hover {
+    opacity: 0.8;
+}
+.box.focus a {
+    color: #e8ecef;
+}

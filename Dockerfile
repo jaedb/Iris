@@ -154,18 +154,34 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 # Mopidy core + extensions used by mopidy.conf.
 #
-# Mopidy is deliberately pinned to 3.4.2, NOT the current 4.x: Mopidy 4
-# rewrote its models around pydantic and deleted the old
-# mopidy.models.serialize.ModelJSONEncoder class entirely, which the
-# current Mopidy-Iris (3.70.0) still imports directly - Iris fails to even
-# load on Mopidy 4 as of this writing, it's an upstream incompatibility,
-# not something fixable here. Mopidy-Spotify is correspondingly pinned to
-# 5.0.0a3, the last alpha that supports Mopidy 3.4+ - the final 5.0.0
-# release requires Mopidy>=4.0.0. This exact combination (Mopidy 3.4.2 +
-# Mopidy-Spotify 5.0.0a3) is what's already deployed in production
-# (confirmed via `pip show` on the running pods), so it's a known-working
-# baseline; we're only replacing libgstspotify.so itself with one built
-# from current librespot/gst-plugins-rs sources.
+# Mopidy itself is built from vendor/mopidy instead of pip-installed: it's
+# our FlatterAtMainz/mopidy fork (branch stream-error-fix-v4.0.1, based on
+# the v4.0.1 release tag) with a stream_error auto-recovery patch - when a
+# GStreamer stream error stops audio (e.g. a broken tcpclientsink to
+# snapserver), core.playback now retries the current track a few times
+# instead of leaving Mopidy's state stuck on "playing" while nothing is
+# actually being sent downstream.
+#
+# 4.0.1 is used rather than bleeding-edge main because Mopidy-Spotify and
+# Mopidy-InternetArchive's own version pins below were only verified
+# against it; jumping to a newer Mopidy without re-checking would drop
+# that guarantee for no benefit here.
+#
+# This is what unblocked the move off the old 3.4.2 pin: Mopidy 4 rewrote
+# its models around pydantic and deleted the old
+# mopidy.models.serialize.ModelJSONEncoder class entirely, which stock
+# Mopidy-Iris (3.70.0) still imports directly and which broke Iris on
+# Mopidy 4. Our vendor/iris fork already carries the upstream jaedb/Iris
+# fix for this (branching serialization on a MOPIDY_V4 feature check), so
+# that blocker no longer applies. Mopidy-Spotify and Mopidy-InternetArchive
+# are bumped to their current stable releases (5.0.0 / 4.0.1), the first
+# versions that require Mopidy>=4.0.0 - diffed against the previously
+# pinned 5.0.0a3 to confirm the spotifyaudiosrc GStreamer property
+# interface our librespot/gst-plugins-rs patches rely on is unchanged.
+#
+# setuptools-scm can't infer a version from vendor/mopidy (COPY'd in
+# without its .git history), so SETUPTOOLS_SCM_PRETEND_VERSION_FOR_MOPIDY
+# pins it explicitly to match the vendored tag.
 #
 # setuptools<81 is required: Mopidy-Iris still does
 # `from pkg_resources import ...`, which setuptools 81+ no longer bundles.
@@ -176,12 +192,15 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # - Mopidy-Local 3.2.1 imports `imghdr`, removed from Python 3.13.
 # - Mopidy-YouTube has the same compat issue and is unused here.
 # Both would fail at startup on debian:trixie-slim (Python 3.13).
+COPY vendor/mopidy /tmp/mopidy-src
 RUN --mount=type=cache,target=/root/.cache/pip \
+    SETUPTOOLS_SCM_PRETEND_VERSION_FOR_MOPIDY=4.0.1 \
     python3 -m pip install --break-system-packages \
         "setuptools<81" \
-        "Mopidy==3.4.2" \
-        "Mopidy-Spotify==5.0.0a3" \
-        "Mopidy-InternetArchive==3.1.2"
+        /tmp/mopidy-src \
+        "Mopidy-Spotify==5.0.0" \
+        "Mopidy-InternetArchive==4.0.1" \
+    && rm -rf /tmp/mopidy-src
 
 # Our Iris fork (vendor/iris), built by the iris-builder stage above, in
 # place of the stock Mopidy-Iris PyPI package.
