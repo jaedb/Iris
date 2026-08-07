@@ -12,6 +12,7 @@ const pusherActions = require('./actions');
 const lastfmActions = require('../lastfm/actions');
 const geniusActions = require('../genius/actions');
 const spotifyActions = require('../spotify/actions');
+const snapcastActions = require('../snapcast/actions');
 const mopidyActions = require('../mopidy/actions');
 
 const PusherMiddleware = (function () {
@@ -872,7 +873,7 @@ const PusherMiddleware = (function () {
 
       case 'PUSHER_CONFIG': {
         // Set default country/locale (unless we've already been configured)
-        const { spotify } = store.getState();
+        const { spotify, snapcast } = store.getState();
         const spotify_updates = {};
         let spotify_updated = false;
 
@@ -902,6 +903,65 @@ const PusherMiddleware = (function () {
         store.dispatch(geniusActions.set({
           authorization_url: (action.config.genius_authorization_url ? action.config.genius_authorization_url : null),
         }));
+
+        // Preset snapcast connection details from server config, same as
+        // country/locale above: a one-time seed for browsers that haven't
+        // been configured yet, not a forced override of a value the user
+        // may have deliberately pointed elsewhere (e.g. a different
+        // snapcast server than this mopidy instance's own default).
+        const snapcast_updates = {};
+        let snapcast_updated = false;
+
+        if (!snapcast.host && action.config.snapcast_host) {
+          snapcast_updates.host = action.config.snapcast_host;
+          snapcast_updated = true;
+        }
+
+        if (snapcast.port === undefined && action.config.snapcast_port) {
+          snapcast_updates.port = action.config.snapcast_port;
+          snapcast_updated = true;
+        }
+
+        if (snapcast.ssl === undefined && action.config.snapcast_ssl !== undefined) {
+          snapcast_updates.ssl = action.config.snapcast_ssl;
+          snapcast_updated = true;
+        }
+
+        if (snapcast.stream === undefined && action.config.snapcast_stream) {
+          snapcast_updates.stream = action.config.snapcast_stream;
+          snapcast_updated = true;
+        }
+
+        if (snapcast.enabled === undefined && action.config.snapcast_enabled !== undefined) {
+          snapcast_updates.enabled = action.config.snapcast_enabled;
+          snapcast_updated = true;
+        }
+
+        if (snapcast_updated) {
+          store.dispatch(snapcastActions.set(snapcast_updates));
+        }
+
+        next(action);
+        break;
+      }
+
+      // Fires both on initial connect (PUSHER_GET_SHARED_CONFIG's response)
+      // and on every live 'shared_config_changed' broadcast, i.e. whenever
+      // anyone uses the "Share configuration" modal against this instance.
+      // Auto-apply a shared Spotify authorization the same way PUSHER_CONFIG
+      // seeds country/locale/snapcast above: only if this browser doesn't
+      // already have its own, so a browser that already went through its
+      // own OAuth flow (or imported a different one) is never overridden.
+      case 'PUSHER_SHARED_CONFIG': {
+        const { spotify } = store.getState();
+        const sharedSpotify = action.shared_config?.spotify;
+
+        if (sharedSpotify?.authorization && !spotify.authorization) {
+          store.dispatch(spotifyActions.importAuthorization(
+            sharedSpotify.authorization,
+            sharedSpotify.me,
+          ));
+        }
 
         next(action);
         break;

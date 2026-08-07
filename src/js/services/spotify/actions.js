@@ -309,10 +309,11 @@ export function tokenChanged(spotify_token) {
   };
 }
 
-export function importAuthorization(authorization) {
+export function importAuthorization(authorization, me) {
   return {
     type: 'SPOTIFY_IMPORT_AUTHORIZATION',
     authorization,
+    me,
   };
 }
 
