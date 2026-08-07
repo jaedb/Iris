@@ -11,6 +11,7 @@ import {
   titleCase,
 } from '../../util/helpers';
 import { ensureLoaded } from '../../util/library';
+import { humanizeError } from '../../util/errors';
 import {
   formatTracks,
   formatTrack,
@@ -70,14 +71,25 @@ const CoreMiddleware = (function () {
         // Construct meaningful message and description
         if (!description) {
           if (action.data.xhr && action.data.xhr.responseText) {
-            const xhr_response = JSON.parse(action.data.xhr.responseText);
-            if (xhr_response.error && xhr_response.error.message) {
-              description = xhr_response.error.message;
+            try {
+              const xhr_response = JSON.parse(action.data.xhr.responseText);
+              if (xhr_response.error?.message) {
+                description = xhr_response.error.message;
+              }
+            } catch (e) {
+              // Response wasn't JSON; fall through to the status line below
+            }
+            if (!description) {
+              description = `${action.data.xhr.status} ${action.data.xhr.statusText}`;
             }
           } else if (action.data.xhr) {
             description = `${action.data.xhr.status} ${action.data.xhr.statusText}`;
           }
         }
+
+        // Add plain-language context to descriptions that are otherwise just
+        // a bare exception message or HTTP status line
+        description = humanizeError(description, action.data);
 
         // Strip out non-essential store info
         delete exported_state.core.albums;

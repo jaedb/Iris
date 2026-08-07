@@ -12,6 +12,7 @@ const pusherActions = require('./actions');
 const lastfmActions = require('../lastfm/actions');
 const geniusActions = require('../genius/actions');
 const spotifyActions = require('../spotify/actions');
+const snapcastActions = require('../snapcast/actions');
 const mopidyActions = require('../mopidy/actions');
 
 const PusherMiddleware = (function () {
@@ -872,7 +873,7 @@ const PusherMiddleware = (function () {
 
       case 'PUSHER_CONFIG': {
         // Set default country/locale (unless we've already been configured)
-        const { spotify } = store.getState();
+        const { spotify, ui } = store.getState();
         const spotify_updates = {};
         let spotify_updated = false;
 
@@ -902,6 +903,82 @@ const PusherMiddleware = (function () {
         store.dispatch(geniusActions.set({
           authorization_url: (action.config.genius_authorization_url ? action.config.genius_authorization_url : null),
         }));
+
+        // Preset snapcast connection details from server config, same intent
+        // as country/locale above: a one-time seed for browsers that haven't
+        // been configured yet, not a forced override of a value the user
+        // may have deliberately pointed elsewhere (e.g. a different
+        // snapcast server than this mopidy instance's own default).
+        //
+        // Can't reuse the "is the current value still falsy/undefined" check
+        // country/locale use above: unlike spotify.country/locale (which
+        // truly start undefined), store/index.js's initialState hardcodes
+        // concrete snapcast defaults (host: 'localhost', port: '1780',
+        // enabled: false, ssl: false) - so those fields are never undefined,
+        // not even in a brand new browser, and a value-based guard would
+        // never fire. Track a dedicated one-time flag instead, the same
+        // pattern already used for ui.initial_setup_complete.
+        if (!ui.snapcast_config_seeded) {
+          const snapcast_updates = {};
+
+          if (action.config.snapcast_host) {
+            snapcast_updates.host = action.config.snapcast_host;
+          }
+
+          if (action.config.snapcast_port) {
+            snapcast_updates.port = action.config.snapcast_port;
+          }
+
+          if (action.config.snapcast_ssl !== undefined) {
+            snapcast_updates.ssl = action.config.snapcast_ssl;
+          }
+
+          if (action.config.snapcast_stream) {
+            snapcast_updates.stream = action.config.snapcast_stream;
+          }
+
+          // Connection details first: SNAPCAST_CONNECT reads host/port/ssl
+          // live from state at dispatch time, so they must already be
+          // correct before setEnabled(true) below can trigger a connect()
+          // that actually reaches the right server.
+          store.dispatch(snapcastActions.set(snapcast_updates));
+
+          // enabled goes through setEnabled(), not a plain set(), because
+          // only setEnabled's middleware actually calls connect()/
+          // disconnect() as a side effect (see SNAPCAST_SET_ENABLED in
+          // snapcast/middleware.js). App.js's own connect-on-boot effect
+          // only runs once, keyed on [isReady], and had already captured
+          // enabled=false (this seed's initialState default) by the time
+          // this async PUSHER_CONFIG response arrives - so a plain set()
+          // updated the flag but nothing ever dialled the connection.
+          if (action.config.snapcast_enabled !== undefined) {
+            store.dispatch(snapcastActions.setEnabled(action.config.snapcast_enabled));
+          }
+
+          store.dispatch(uiActions.set({ snapcast_config_seeded: true }));
+        }
+
+        next(action);
+        break;
+      }
+
+      // Fires both on initial connect (PUSHER_GET_SHARED_CONFIG's response)
+      // and on every live 'shared_config_changed' broadcast, i.e. whenever
+      // anyone uses the "Share configuration" modal against this instance.
+      // Auto-apply a shared Spotify authorization the same way PUSHER_CONFIG
+      // seeds country/locale/snapcast above: only if this browser doesn't
+      // already have its own, so a browser that already went through its
+      // own OAuth flow (or imported a different one) is never overridden.
+      case 'PUSHER_SHARED_CONFIG': {
+        const { spotify } = store.getState();
+        const sharedSpotify = action.shared_config?.spotify;
+
+        if (sharedSpotify?.authorization && !spotify.authorization) {
+          store.dispatch(spotifyActions.importAuthorization(
+            sharedSpotify.authorization,
+            sharedSpotify.me,
+          ));
+        }
 
         next(action);
         break;
