@@ -1,0 +1,115 @@
+.queue-view {
+
+  .current-track {
+    padding: 40px 0 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &__artwork {
+      text-align: right;
+      display: block;
+      z-index: 1;
+      width: 48%;
+      margin-right: 2%;
+
+      a {
+        border: 0 !important;
+        position: relative;
+      }
+
+      .thumbnail {
+        width: 35vh;
+        display: inline-block;
+
+        @include responsive(null, $bp_huge) {
+          max-width: none;
+        }
+      }
+    }
+
+    &__details {
+      width: 48%;
+      margin-left: 2%;
+    }
+
+    &__title {
+      font-size: 1.4rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    &__artists {
+      display: block;
+      font-size: 1.4rem;
+      opacity: 0.5;
+      position: relative;
+      z-index: 2;
+    }
+
+    &__added-from {
+      padding-top: 2rem;
+      display: flex;
+      align-items: center;
+
+      &__text {
+        border: 0 !important;
+        display: flex;
+
+        .links-sentence {
+          padding-left: 0.15em;
+        }
+      }
+
+      &__thumbnail {
+        border: 0 !important;
+        margin-right: 15px;
+
+        .thumbnail {
+          width: 30px;
+        }
+      }
+    }
+
+    &__queue-details {
+      padding-top: 2rem;
+    }
+
+    @include responsive($bp_medium) {
+      padding: 40px 0 20px;
+
+      &__artwork {
+        width: 28%;
+
+        .thumbnail {
+          width: 100%;
+        }
+      }
+
+      &__added-from {
+        display: none;
+      }
+    }
+
+    @include responsive($bp_small) {
+      display: block;
+      text-align: center;
+
+      &__artwork {
+        width: auto;
+        margin: 0 0 20px 0;
+        text-align: center;
+
+        .thumbnail {
+          width: 90%;
+          max-width: 30vh;
+        }
+      }
+
+      &__details {
+        width: auto;
+        margin: 0;
+      }
+    }
+  }
+}

@@ -1,6 +1,0 @@
-{
-  "action": "workflow_dispatch",
-  "inputs": {
-      "versionBump": "minor"
-  }
-}

@@ -1,0 +1,85 @@
+
+.filter-field {
+	font-size: 1rem;
+
+	form {
+		display: inline-block;
+		position: relative;
+	}
+
+	.icon {
+		position: absolute;
+		padding: 12px;
+		top: 0;
+		left: 0;
+	}
+
+	input {
+		@include animate();
+		width: 0;
+		padding-left: 25px;
+		border-color: transparent;
+	}
+
+	&:not(.active){
+		input {
+			cursor: pointer;
+			background: transparent !important;
+		}
+
+		.icon {
+			pointer-events: none;
+		}
+		
+		&:hover {
+			.icon {
+				color: colour('blue');
+			}
+		}
+	}
+
+	&.active {
+		input {
+			width: 150px;
+			padding-left: 35px;
+		}
+
+		.icon {
+			&:hover {
+				color: colour('red');
+				cursor: pointer;
+			}
+		}
+	}
+}
+
+#context-menu {
+	.filter-field {
+		display: block;
+
+		form {
+			display: block;
+			width: auto;
+			padding: 10px 0;
+			cursor: auto;
+
+			.icon {
+				display: none;
+			}
+
+			input {
+				padding: 6px 24px;
+				width: 100%;
+				box-sizing: border-box;
+				font-size: 1.2rem;
+				font-weight: 700;
+				background: transparent !important;
+				border-bottom: 2px solid rgba(128,128,128,0.25);
+
+				&:focus {
+					border-color: colour('white');
+				}
+			}
+		}
+	}
+}

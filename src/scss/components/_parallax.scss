@@ -1,0 +1,105 @@
+$parallax: 'parallax';
+
+.#{$parallax} {
+	position: absolute;
+	top: 0;
+	left: -225px;
+	right: -5px;
+	height: 100%;
+	z-index: -1;
+
+	/**
+	 * When we transform on the z-axis, z-index becomes irrelevant
+	 * to avoid the parallax sitting on top of our content and preventing
+	 * click behavior, we make the parallax a non-interactive element
+	 *
+	 * See: https://stackoverflow.com/questions/5472802/css-z-index-lost-after-webkit-transform-translate3d;
+	 **/
+	pointer-events: none;
+
+	&__layer {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 1;
+	}
+
+	&__image {
+		position: absolute;
+		top: -10px;
+		left: -10px;
+		bottom: -10px;
+		right: -10px;
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: 50% 30%;
+		opacity: 0;
+		z-index: 1;
+	}
+
+	&__overlay {
+		content: '';
+		display: block;
+		position: absolute;
+		bottom: -1px;
+		left: 0;
+		right: 0;
+		height: 100%;
+		background-image: linear-gradient(
+			rgba(24,24,24,0) 0%,
+			rgba(24,24,24,1) 95%
+		);
+		z-index: 2;
+	}
+
+	&--flexible-height {
+
+		/**
+		 * We need to apply the transform on the whole parallax. I think this is because
+		 * our 'frame' is the entire <main> element, rather than a fixed-height sub-element
+		 **/
+		transform: translateZ(-400px) scale(1.4);
+		transform-origin: top center;
+		overflow: hidden;
+	}
+
+	&--fixed-height {
+		.#{$parallax} {
+			&__image {
+				transform: translateZ(-400px) scale(1.4);
+				transform-origin: top center;
+			}
+		}
+	}
+
+	&--blur {
+		.#{$parallax} {
+			&__image {
+				@include blur();
+			}
+		}
+	}
+
+	&--loaded {
+		.#{$parallax} {
+			&__image {
+				opacity: 0.5;
+			}
+		}
+	}
+
+	@include theme('light') {
+		&__stage {
+			background-color: colour('faint_grey');
+		}
+
+		&__overlay {
+			background-image: linear-gradient(
+				rgba(244, 242, 240, 0) 0%,
+				rgba(244, 242, 240, 1) 95%
+			);
+		}
+	}
+}

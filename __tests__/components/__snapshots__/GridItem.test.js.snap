@@ -1,0 +1,269 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<GridItem /> should handle album 1`] = `
+<div
+  className="grid__item grid__item--album "
+  data-qa-file="GridItem"
+  data-qa-node="div"
+>
+  <a
+    className=" "
+    data-qa-file="Link"
+    data-qa-node="RouterLink"
+    href="/album/bG9jYWw6YWxidW06bWQ1OjY2ZmJlYTM1OTNiYTk2YTE1YTlkNDE4OGJlYmFiNTBi/Sirens%20of%20the%20Sea"
+    onClick={[Function]}
+    onContextMenu={[Function]}
+  >
+    <div
+      className="thumbnail thumbnail--loaded thumbnail--medium grid__item__thumbnail"
+      data-qa-file="Thumbnail"
+      data-qa-node="div"
+    >
+      <i
+        className="icon icon--material thumbnail__placeholder"
+        data-qa-file="Icon"
+        data-qa-node="i"
+      >
+        album
+      </i>
+      <div
+        className="thumbnail__image"
+        data-qa-file="Thumbnail"
+        data-qa-node="div"
+        style={
+          {
+            "backgroundImage": "url("/local/17338e740316f18dbb5e3331ac6be6c1-500x500.jpeg")",
+          }
+        }
+      />
+      <div
+        className="thumbnail__actions"
+        data-qa-file="Thumbnail"
+        data-qa-node="div"
+      />
+    </div>
+    <div
+      className="grid__item__name"
+      data-qa-file="GridItem"
+      data-qa-node="div"
+    >
+      <span
+        data-qa-file="GridItem"
+        data-qa-node="span"
+        title="Sirens of the Sea"
+      >
+        Sirens of the Sea
+      </span>
+    </div>
+    <div
+      className="grid__item__secondary"
+      data-qa-file="GridItem"
+      data-qa-node="div"
+    >
+      <ul
+        className="grid__item__secondary__content details"
+        data-qa-file="GridItem"
+        data-qa-node="ul"
+      >
+        <span
+          aria-hidden={true}
+          className="fa fa-folder icon icon--fontawesome source"
+          data-qa-file="Icon"
+          data-qa-node="FontAwesome"
+          type="fontawesome"
+        />
+        <li
+          data-qa-file="GridItem"
+          data-qa-node="li"
+        >
+          <span
+            className="undefined links-sentence"
+            data-qa-file="LinksSentence"
+            data-qa-node="span"
+          >
+            <span
+              data-qa-file="LinksSentence"
+              data-qa-node="span"
+            >
+              <span
+                data-qa-file="LinksSentence"
+                data-qa-node="span"
+              >
+                Above & Beyond
+              </span>
+            </span>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </a>
+</div>
+`;
+
+exports[`<GridItem /> should handle artist 1`] = `
+<div
+  className="grid__item grid__item--artist "
+  data-qa-file="GridItem"
+  data-qa-node="div"
+>
+  <a
+    className=" "
+    data-qa-file="Link"
+    data-qa-node="RouterLink"
+    href="/artist/bG9jYWw6YXJ0aXN0Om1kNTo0ZjZlNGY5NzllMmM0MGM1ZTZhZDE3MzU4MDRjMjliYw=="
+    onClick={[Function]}
+    onContextMenu={[Function]}
+  >
+    <div
+      className="thumbnail thumbnail--loaded thumbnail--medium grid__item__thumbnail"
+      data-qa-file="Thumbnail"
+      data-qa-node="div"
+    >
+      <i
+        className="icon icon--material thumbnail__placeholder"
+        data-qa-file="Icon"
+        data-qa-node="i"
+      >
+        perm_identity
+      </i>
+      <div
+        className="thumbnail__image"
+        data-qa-file="Thumbnail"
+        data-qa-node="div"
+        style={
+          {
+            "backgroundImage": "url("https://i.scdn.co/image/4dc7080ef509c36203a131a0eab8dd5e4800d7c2")",
+          }
+        }
+      />
+      <div
+        className="thumbnail__actions"
+        data-qa-file="Thumbnail"
+        data-qa-node="div"
+      />
+    </div>
+    <div
+      className="grid__item__name"
+      data-qa-file="GridItem"
+      data-qa-node="div"
+    >
+      <span
+        data-qa-file="GridItem"
+        data-qa-node="span"
+        title="Above & Beyond"
+      >
+        Above & Beyond
+      </span>
+    </div>
+    <div
+      className="grid__item__secondary"
+      data-qa-file="GridItem"
+      data-qa-node="div"
+    >
+      <ul
+        className="grid__item__secondary__content details"
+        data-qa-file="GridItem"
+        data-qa-node="ul"
+      >
+        <span
+          aria-hidden={true}
+          className="fa fa-folder icon icon--fontawesome source"
+          data-qa-file="Icon"
+          data-qa-node="FontAwesome"
+          type="fontawesome"
+        />
+        <li
+          data-qa-file="GridItem"
+          data-qa-node="li"
+        >
+          2 albums
+        </li>
+      </ul>
+    </div>
+  </a>
+</div>
+`;
+
+exports[`<GridItem /> should handle playlist 1`] = `
+<div
+  className="grid__item grid__item--playlist "
+  data-qa-file="GridItem"
+  data-qa-node="div"
+>
+  <a
+    className=" "
+    data-qa-file="Link"
+    data-qa-node="RouterLink"
+    href="/playlist/bTN1OkxvY2FsJTIwdGVzdGVyLm0zdTg=/Local%20tester"
+    onClick={[Function]}
+    onContextMenu={[Function]}
+  >
+    <div
+      className="thumbnail thumbnail--loaded thumbnail--medium grid__item__thumbnail"
+      data-qa-file="Thumbnail"
+      data-qa-node="div"
+    >
+      <i
+        className="icon icon--material thumbnail__placeholder"
+        data-qa-file="Icon"
+        data-qa-node="i"
+      >
+        queue_music
+      </i>
+      <div
+        className="thumbnail__image"
+        data-qa-file="Thumbnail"
+        data-qa-node="div"
+        style={
+          {
+            "backgroundImage": "url("null")",
+          }
+        }
+      />
+      <div
+        className="thumbnail__actions"
+        data-qa-file="Thumbnail"
+        data-qa-node="div"
+      />
+    </div>
+    <div
+      className="grid__item__name"
+      data-qa-file="GridItem"
+      data-qa-node="div"
+    >
+      <span
+        data-qa-file="GridItem"
+        data-qa-node="span"
+        title="Local tester"
+      >
+        Local tester
+      </span>
+    </div>
+    <div
+      className="grid__item__secondary"
+      data-qa-file="GridItem"
+      data-qa-node="div"
+    >
+      <ul
+        className="grid__item__secondary__content details"
+        data-qa-file="GridItem"
+        data-qa-node="ul"
+      >
+        <span
+          aria-hidden={true}
+          className="fa fa-folder icon icon--fontawesome source"
+          data-qa-file="Icon"
+          data-qa-node="FontAwesome"
+          type="fontawesome"
+        />
+        <li
+          data-qa-file="GridItem"
+          data-qa-node="li"
+        >
+          13 tracks
+        </li>
+      </ul>
+    </div>
+  </a>
+</div>
+`;

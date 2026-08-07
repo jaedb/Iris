@@ -1,0 +1,180 @@
+
+.notifications {
+	position: fixed;
+	bottom: 75px;
+	right: 15px;
+	z-index: 97;
+	pointer-events: none;
+	width: 300;
+
+	.notification {
+		@include fadein();
+		position: relative;
+		padding: 0.9rem 1rem;
+		margin: 0.5rem;
+		background: colour('soft_grey');
+		color: colour('white');
+		pointer-events: all;
+		border-radius: 3px;
+		font-size: 0.9rem;
+		min-width: 200px;
+
+		&__wrapper {
+			display: flex;
+			justify-content: flex-end;
+			flex-flow: row;
+		}
+
+		&__title {
+			padding-top: 0;
+		}
+
+		&__actions {
+			padding-top: 5px;
+
+			&__item {
+				margin-bottom: 0;
+				margin-top: 5px;
+				font-style: inherit !important;
+			}
+		}
+
+		a {
+			color: inherit;
+			&:hover {
+				opacity: 0.75;
+			}
+		}
+
+		ul {
+			padding: 4px 0 4px 20px;
+		}
+
+		&__content {
+			padding-right: 2rem;
+		}
+
+		&__description {
+			font-size: 0.85rem;
+			opacity: 0.5;
+			padding-top: 5px;
+			line-height: 1.1em;
+			word-break: break-word;
+		}
+
+		&__icon {
+			position: absolute;
+			top: 12px;
+			left: 15px;
+			font-size: 1.4rem;
+		}
+
+		&__close-button {
+			@include animate();
+			@include click_feedback();
+			position: absolute;
+			top: 0;
+			right: 0;
+			padding: 0.9rem;
+			opacity: 0.5;
+			cursor: pointer;
+
+			&:hover {
+				opacity: 1;
+			}
+		}
+
+		&--good,
+		&--success {
+			background: colour('green');
+		}
+
+		&--broadcast {
+			background: colour('yellow');
+			color: colour('black');
+		}
+
+		&--warning {
+			background: colour('orange');
+		}
+
+		&--bad,
+		&--error {
+			background: colour('red');
+		}
+
+		&--shortcut {
+			position: fixed;
+			top: 50vh;
+			left: 50vw;
+			height: 400px;
+			width: 400px;
+			margin: -200px 0 0 -200px;
+			background: colour('overlay_dark');
+			color: colour('white');
+			border-radius: 10px;
+			text-align: center;
+
+			.icon {
+				font-size: 200px;
+				line-height: 400px;
+			}
+
+			.notification__title {
+				position: absolute;
+				display: block;
+				bottom: 5%;
+				right: 0;
+				left: 0;
+				text-align: center;
+			}
+		}
+
+		&--process {
+			position: relative;
+			padding-right: 2rem;
+			padding-left: 3rem;
+			min-width: calc(200px - 3rem); 
+
+			&.cancelling {
+				opacity: 0.5 !important;
+				pointer-events: none;
+			}
+
+			.loader {
+				position: absolute;
+				top: 9px;
+				left: 9px;
+			}
+		}
+
+		&.closing,
+		&.finishing {
+			@include fadeout();
+		}
+	}
+
+	@include responsive($bp_medium){
+		bottom: 60px;
+		left: 10px;
+		right: 10px;
+		width: auto;
+
+		.notification {
+			&,
+			&--process {
+				min-width: 0px;
+				width: 100%;
+			}
+		}
+
+		.loading {
+			bottom: 20px;
+			right: 40px;
+		}
+
+		@include resolution(2){
+			bottom: 68px;
+		}
+	}
+}

@@ -1,0 +1,118 @@
+.search-view {
+  position: relative;
+
+  .search-form {
+    position: absolute;
+    top: 30px;
+    left: 90px;
+    right: 250px;
+
+    input {
+      @include feature_font();
+      padding: 6px 0 0 0;
+      width: 100%;
+      font-size: 3rem;
+      font-weight: 700;
+      height: 1em;
+      background: transparent;
+      border: 0;
+      border-bottom: 2px solid rgba(128,128,128,0.3);
+      border-radius: 0;
+      letter-spacing: -0.15rem;
+
+      /* handle Safari's ridiculous non-vertical centering */
+      &:not(:root:root) {
+        height: 4.6rem;
+        margin-top: -0.5rem;
+
+        @include responsive($bp_medium) {
+          height: 2.6rem;
+          margin-top: 0;
+        }
+      }
+
+      &:focus,
+      &:active {
+        border-color: colour('turquoise');
+        background: transparent;
+      }
+    }
+
+    &__reset {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 2rem;
+      padding: 1rem 0.25rem 0 0;
+      cursor: pointer;
+
+      &:hover {
+        color: colour('red');
+      }
+    }
+  }
+
+  .search-result-sections {
+    padding-bottom: 30px;
+
+    &__item {
+      width: 31%;
+      float: left;
+      margin-right: 3.5%;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      .button {
+        margin-top: 10px;
+      }
+    }
+  }
+
+  @include responsive($bp_huge) {
+    .search-result-sections {
+      .grid__item {
+        &:nth-child(1n + 5) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  @include responsive($bp_medium) {
+    header {
+      margin-bottom: 0;
+    }
+
+    .search-form {
+      top: 10px;
+      left: 40px;
+      right: 60px;
+
+      input {
+        font-size: 1.8rem;
+        height: 2.5rem;
+        letter-spacing: -0.08rem;
+      }
+      &__reset {
+        padding: 0.25rem 0 0 0;
+      }
+    }
+
+    .search-result-sections {
+      // padding: 10px 10px 0;
+
+      section {
+        width: auto;
+        float: none;
+        margin-right: 0;
+        padding-bottom: 20px;
+
+        .button {
+          display: none;
+        }
+      }
+    }
+  }
+}

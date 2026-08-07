@@ -1,0 +1,70 @@
+
+.grid-slider-wrapper {
+	padding-bottom: 10px;
+	position: relative;
+
+	.controls {
+		position: absolute;
+		top: -5px;
+		right: 0;
+
+		.icon {
+			display: inline-block;
+			padding: 8px;
+			margin-left: 2px;
+			cursor: pointer;
+			opacity: 0.5;
+			@include animate();
+
+			&[disabled] {
+				opacity: 0.2;
+				cursor: not-allowed;
+			}
+
+			&:hover {
+				opacity: 1;
+			}
+		}
+	}
+
+	.grid-slider {
+		position: relative;
+		overflow-x: hidden;
+		overflow-y: hidden;
+		height: 17vw;
+
+		.has-touch-events & {
+			overflow-x: scroll;
+		}
+
+		.liner {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 400%;
+			box-sizing: border-box;
+			@include animate();
+
+			.grid-item {
+				width: 4%;
+				margin: 0 0.5% !important;
+			}
+		}
+	}
+
+	@include responsive($bp_medium){
+		.grid-slider {
+			height: 23vw;
+		}
+	}
+
+	@include responsive(500px){
+		.grid-slider {
+			height: 40vw;
+
+			.liner {
+				width: 666.6667%;
+			}
+		}
+	}
+}

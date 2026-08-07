@@ -1,0 +1,89 @@
+
+$module: 'tooltip';
+
+.#{$module} {
+	position: relative;
+
+	&__content {
+		@include animate();
+		display: inline-block;
+		position: absolute;
+		bottom: 37px;
+		left: 1px;
+		right: auto;
+		opacity: 0;
+		padding: 8px 10px 6px;
+		border-radius: 3px;
+		pointer-events: none;
+		background: colour('white');
+		color: colour('black');
+		font-size: 11px;
+		z-index: 97;
+		white-space: nowrap;
+		text-align: left;
+		box-shadow: 1px 1px 6px rgba(0,0,0,0.4);
+
+		&:first-letter {
+			text-transform: uppercase;
+		}
+
+		&:after {
+			content: '';
+			display: block;
+			width: 6px;
+			height: 6px;
+			background: colour('white');
+			-ms-transform: rotate(45deg);
+			-webkit-transform: rotate(45deg);
+			transform: rotate(45deg);
+			position: absolute;
+			bottom: -3px;
+			left: 9px;
+		}
+
+		@include theme('light') {
+			background: colour('dark_grey');
+			color: colour('white');
+
+			&:after {
+				background: colour('dark_grey');
+			}
+		}
+	}
+
+	.touch &:not(.touchable) {
+		.#{$module}__content {
+			display: none;
+		}
+	}
+
+	&:hover {
+		.#{$module}__content {
+			opacity: 1;
+			bottom: 35px;
+		}
+	}
+
+	&--right {
+		.#{$module}__content {
+			left: auto;
+			right: -5px;
+
+			&:after {
+				right: 9px;
+				left: auto;
+			}
+		}
+	}
+
+	&--large {
+		.#{$module}__content {
+			padding: 8px 12px;
+			font-size: 12px;
+			line-height: 14px;
+			bottom: 50px;
+			white-space: wrap;
+			max-width: 200px;
+		}
+	}
+}

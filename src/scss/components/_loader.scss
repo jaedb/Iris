@@ -1,0 +1,108 @@
+h1,
+h2,
+h3,
+h4 {
+	.loader {
+		margin-left: 0.8rem;
+	}
+}
+
+.loader {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+
+	&__offline {
+		padding: 2rem;
+		color: colour('middle_grey');
+		text-align: center;
+		font-size: 1rem;
+
+		.icon {
+			display: block;
+			font-size: 3rem;
+			padding-bottom: 0.5rem;
+		}
+	}
+
+	&__progress-text {
+		text-align: center;
+		color: colour('middle_grey');
+		margin: -65px auto 0;
+		font-size: 0.82rem;
+	}
+
+	&__ring {
+		height: 120px;
+		width: 120px;
+		margin: 0 auto;
+		position: relative;
+
+		&__progress,
+		&__background,
+		&__foreground {
+			position: absolute;
+			transform-origin: 50% 50%;
+		}
+
+		&__progress {
+			@include animate();
+			transform: rotate(-90deg);
+			position: absolute;
+			stroke: rgba(128,128,128,0.25);
+		}
+		
+		&__background {
+			stroke: rgba(128,128,128,0.25);
+		}
+		
+		&__foreground {
+			@include spin();
+			stroke: colour('blue');
+		}
+	}
+
+	&--white {
+		.loader__ring {
+			&__progress {
+				stroke: rgb(128,128,128);
+			}
+			
+			&__background {
+				stroke: rgba(128,128,128,0.5);
+			}
+			
+			&__foreground {
+				stroke: colour('white');
+			}
+		}
+	}
+
+	&--body {
+		padding: 35vh 0;
+		text-align: center;
+	}
+
+	&--mini {
+		padding: 0;
+		display: inline-block;
+
+		.loader__ring {
+			width: 24px;
+			height: 24px;
+		}
+
+		.loader__offline {
+			display: none;
+		}
+	}
+
+	&--lazy {
+		padding: 20px;
+
+		.loader__spinner {
+			width: 40px;
+			height: 40px;
+		}
+	}
+}

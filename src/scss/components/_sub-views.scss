@@ -1,0 +1,31 @@
+.sub-views {
+  &__option {
+    @include feature_font();
+    @include animate();
+    color: colour('white');
+    display: inline-block;
+    margin-right: 25px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+
+    @include theme('light') {
+      color: colour('darkest_grey');
+    }
+
+    h4 {
+      margin: 8px 0 4px;
+    }
+
+    &--active,
+    &:hover {
+      text-decoration: underline 0.15em;
+    }
+  }
+
+  @include responsive($bp_medium) {
+    &__option {
+      margin-right: 15px;
+    }
+  }
+}

@@ -1,7 +1,1 @@
-.git
-upstream/
-vendor/librespot/target/
-vendor/gst-plugins-rs/target/
-vendor/iris/node_modules/
-*.deb
-.DS_Store
+node_modules
