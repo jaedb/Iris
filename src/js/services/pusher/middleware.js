@@ -873,7 +873,7 @@ const PusherMiddleware = (function () {
 
       case 'PUSHER_CONFIG': {
         // Set default country/locale (unless we've already been configured)
-        const { spotify, snapcast } = store.getState();
+        const { spotify, ui } = store.getState();
         const spotify_updates = {};
         let spotify_updated = false;
 
@@ -904,41 +904,45 @@ const PusherMiddleware = (function () {
           authorization_url: (action.config.genius_authorization_url ? action.config.genius_authorization_url : null),
         }));
 
-        // Preset snapcast connection details from server config, same as
-        // country/locale above: a one-time seed for browsers that haven't
+        // Preset snapcast connection details from server config, same intent
+        // as country/locale above: a one-time seed for browsers that haven't
         // been configured yet, not a forced override of a value the user
         // may have deliberately pointed elsewhere (e.g. a different
         // snapcast server than this mopidy instance's own default).
-        const snapcast_updates = {};
-        let snapcast_updated = false;
+        //
+        // Can't reuse the "is the current value still falsy/undefined" check
+        // country/locale use above: unlike spotify.country/locale (which
+        // truly start undefined), store/index.js's initialState hardcodes
+        // concrete snapcast defaults (host: 'localhost', port: '1780',
+        // enabled: false, ssl: false) - so those fields are never undefined,
+        // not even in a brand new browser, and a value-based guard would
+        // never fire. Track a dedicated one-time flag instead, the same
+        // pattern already used for ui.initial_setup_complete.
+        if (!ui.snapcast_config_seeded) {
+          const snapcast_updates = {};
 
-        if (!snapcast.host && action.config.snapcast_host) {
-          snapcast_updates.host = action.config.snapcast_host;
-          snapcast_updated = true;
-        }
+          if (action.config.snapcast_host) {
+            snapcast_updates.host = action.config.snapcast_host;
+          }
 
-        if (snapcast.port === undefined && action.config.snapcast_port) {
-          snapcast_updates.port = action.config.snapcast_port;
-          snapcast_updated = true;
-        }
+          if (action.config.snapcast_port) {
+            snapcast_updates.port = action.config.snapcast_port;
+          }
 
-        if (snapcast.ssl === undefined && action.config.snapcast_ssl !== undefined) {
-          snapcast_updates.ssl = action.config.snapcast_ssl;
-          snapcast_updated = true;
-        }
+          if (action.config.snapcast_ssl !== undefined) {
+            snapcast_updates.ssl = action.config.snapcast_ssl;
+          }
 
-        if (snapcast.stream === undefined && action.config.snapcast_stream) {
-          snapcast_updates.stream = action.config.snapcast_stream;
-          snapcast_updated = true;
-        }
+          if (action.config.snapcast_stream) {
+            snapcast_updates.stream = action.config.snapcast_stream;
+          }
 
-        if (snapcast.enabled === undefined && action.config.snapcast_enabled !== undefined) {
-          snapcast_updates.enabled = action.config.snapcast_enabled;
-          snapcast_updated = true;
-        }
+          if (action.config.snapcast_enabled !== undefined) {
+            snapcast_updates.enabled = action.config.snapcast_enabled;
+          }
 
-        if (snapcast_updated) {
           store.dispatch(snapcastActions.set(snapcast_updates));
+          store.dispatch(uiActions.set({ snapcast_config_seeded: true }));
         }
 
         next(action);
