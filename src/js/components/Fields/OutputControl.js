@@ -261,7 +261,7 @@ const OutputControl = ({ force_expanded }) => {
   if (expanded) {
     return (
       <span className="output-control">
-        {!force_expanded && <div className="click-outside" onClick={() => setExpanded(false)} />}
+        <div className="click-outside" onClick={() => setExpanded(false)} />
         <button
           className="control speakers active"
           onClick={() => setExpanded(false)}
