@@ -68,13 +68,18 @@ const makeLibrarySelector = (name, filtered = true) => createSelector(
   },
 );
 
-const makeSearchResultsSelector = (providers, term, type) => createSelector(
-  [getSearchResults],
-  (searchResults) => providers.reduce(
-    (acc, curr) => [
-      ...acc,
-      ...searchResults[getSearchResultKey({ provider: curr, term, type })] || [],
-    ], []),
+const makeSearchResultsSelector = (providers, term, type) =>
+  createSelector(
+    [getSearchResults, getItems],
+    (searchResults, items) =>
+      providers.reduce((acc, provider) => {
+        const resultsForProvider = searchResults[getSearchResultKey({ provider, term, type })] || [];
+        const enrichedResults = resultsForProvider.map(result => ({
+          ...result,
+          ...(items[result.uri] || {}), // merge item details if loaded, so we get images in the search result window
+        }));
+        return [...acc, ...enrichedResults];
+      }, [])
   );
 
 const makeProcessProgressSelector = (keys) => createSelector(
