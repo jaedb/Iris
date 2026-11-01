@@ -26,41 +26,39 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
 
   event.respondWith(
+    caches.open('iris').then((cache) => fetch(request)
+      // Network-first: always prefer a live response so app updates (new
+      // JS/CSS bundles, fresh API data) are visible immediately, rather
+      // than being masked by a stale cache indefinitely. This cache is
+      // now purely an offline fallback, not a source of truth.
+      .then((liveResponse) => {
+        const isBlacklisted = inBlacklist(request.url);
 
-    // Opens Cache objects that start with 'font'.
-    caches.open('iris').then((cache) => cache.match(request)
-      .then((response) => {
-        if (response) {
-          return response;
+        // Only cache successful GET requests
+        if (
+          !isBlacklisted
+            && request.method === 'GET'
+            && liveResponse.status >= 200
+            && liveResponse.status < 400
+        ) {
+          // Fixes Edge browser "'chrome-extension' is unsupported" issue
+          // See https://stackoverflow.com/questions/49157622/service-worker-typeerror-when-opening-chrome-extension
+          if (!/^https?:$/i.test(new URL(request.url).protocol)) return liveResponse;
+
+          cache.put(request, liveResponse.clone());
+        } else {
+          console.info(`Not caching ${isBlacklisted ? '(blacklisted) ' : ''}${request.method} ${request.url}`);
         }
 
-        // Not cached, so we make the request, return that and also save response in cache
-        return fetch(request)
-          .then((liveResponse) => {
-            const isBlacklisted = inBlacklist(request.url);
+        return liveResponse;
+      })
+      // Network unavailable (offline): fall back to whatever we have cached.
+      .catch(() => cache.match(request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
 
-            // Only cache successful GET requests
-            if (
-              !isBlacklisted
-                && request.method === 'GET'
-                && liveResponse.status >= 200
-                && liveResponse.status < 400
-            ) {
-              // Fixes Edge browser "'chrome-extension' is unsupported" issue
-              // See https://stackoverflow.com/questions/49157622/service-worker-typeerror-when-opening-chrome-extension
-              if (!/^https?:$/i.test(new URL(request.url).protocol)) return;
-
-              cache.put(request, liveResponse.clone());
-            } else {
-              console.info(`Not caching ${isBlacklisted ? '(blacklisted) ' : ''}${request.method} ${request.url}`);
-            }
-
-            return liveResponse;
-          });
-
-        // Exceptions from match() or fetch()
-      }).catch((error) => {
-        throw error;
-      })),
+        throw new Error(`Network request failed and no cached response is available for ${request.url}`);
+      }))),
   );
 });

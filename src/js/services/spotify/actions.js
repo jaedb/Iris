@@ -122,7 +122,9 @@ const request = ({
         },
         (error) => {
           dispatch(coreActions.handleException(
-            error.error,
+            'Could not refresh your Spotify authorization',
+            error,
+            'This usually means your Spotify authorization has expired or been revoked. Try reconnecting Spotify in Settings.',
           ));
 
           reject(error);
@@ -329,8 +331,9 @@ export function getMe() {
         },
         (error) => {
           dispatch(coreActions.handleException(
-            'Could not load your profile',
+            'Could not load your Spotify profile',
             error,
+            'This usually means your Spotify authorization has expired or is invalid. Try reconnecting Spotify in Settings.',
           ));
         },
       );
@@ -467,6 +470,10 @@ export function getLibraryMoods(forceRefetch) {
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
+      })
+      .catch((error) => {
+        dispatch(uiActions.processFinished(processKey));
+        dispatch(coreActions.handleException('Could not load library moods', error));
       });
 
     let endpoint = `browse/categories?limit=50&country=${country}&locale=${locale}`;
@@ -641,6 +648,12 @@ export function getSearchResults(query, limit = 50, offset = 0) {
     request({ dispatch, getState, endpoint })
       .then(
         (response) => {
+          const processor = getState().ui.processes[processKey];
+          if (processor && processor.status === 'cancelling') {
+            dispatch(uiActions.processCancelled(processKey));
+            return;
+          }
+
           if (response.tracks !== undefined) {
             dispatch(coreActions.searchResultsLoaded(
               getSearchResultKey({ provider: 'spotify', type: 'tracks', term }),
@@ -676,6 +689,7 @@ export function getSearchResults(query, limit = 50, offset = 0) {
           dispatch(uiActions.processFinished(processKey));
         },
         (error) => {
+          dispatch(uiActions.processFinished(processKey));
           dispatch(coreActions.handleException(
             'Could not load search results',
             error,
@@ -1730,6 +1744,10 @@ export function getLibraryPlaylists(forceRefetch) {
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
+      })
+      .catch((error) => {
+        dispatch(uiActions.processFinished(processKey));
+        dispatch(coreActions.handleException('Could not load library playlists', error));
       });
 
     fetch(`me/playlists?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
@@ -1775,6 +1793,10 @@ export function getLibraryAlbums(forceRefetch) {
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
+      })
+      .catch((error) => {
+        dispatch(uiActions.processFinished(processKey));
+        dispatch(coreActions.handleException('Could not load library albums', error));
       });
 
     fetch(`me/albums?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
@@ -1822,6 +1844,10 @@ export function getLibraryArtists(forceRefetch) {
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
+      })
+      .catch((error) => {
+        dispatch(uiActions.processFinished(processKey));
+        dispatch(coreActions.handleException('Could not load library artists', error));
       });
 
     fetch(`me/following?type=artist&limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
@@ -1866,6 +1892,10 @@ export function getLibraryTracks(forceRefetch) {
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
+      })
+      .catch((error) => {
+        dispatch(uiActions.processFinished(processKey));
+        dispatch(coreActions.handleException('Could not load library tracks', error));
       });
 
     fetch(`me/tracks?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
