@@ -9,14 +9,23 @@ import sys
 import tornado.web
 import tornado.ioloop
 import time
+import packaging
 import pickle
-from pkg_resources import parse_version
 from tornado.escape import json_encode
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
-from mopidy.models.serialize import ModelJSONEncoder
 
 from . import Extension
 from .system import IrisSystemThread
+
+# Check for Mopidy v4+ compatibility.
+# We try to import the old serialization class.
+# If it fails, we assume we're running on Mopidy v4+.
+try:
+    from mopidy.models.serialize import ModelJSONEncoder
+    MOPIDY_V4 = False
+except ImportError:
+    ModelJSONEncoder = None
+    MOPIDY_V4 = True
 
 if sys.platform == "win32":
     import ctypes
@@ -428,9 +437,9 @@ class IrisCore(pykka.ThreadingActor):
             current_version = Extension.version
 
             # compare our versions, and convert result to boolean
-            upgrade_available = parse_version(latest_version) > parse_version(
-                current_version
-            )
+            upgrade_available = packaging.version.parse(
+                latest_version
+            ) > packaging.version.parse(current_version)
             upgrade_available = upgrade_available == 1
 
         except (urllib.request.HTTPError, urllib.request.URLError):
@@ -1165,19 +1174,31 @@ class IrisCore(pykka.ThreadingActor):
         meta = {}
 
         if track:
-            # Convert the Track to JSON, but to make it a response-ready JSON we need to load it.
-            # Required because ModelJSONEncoder produces single-quote JSON, and we need standard
-            # double-quoted json.
-            track = json.loads(json.dumps(track, cls=ModelJSONEncoder))
-            images = self.core.library.get_images([track["uri"]]).get()
-            if images:
-                meta["images"] = json.loads(
-                    json.dumps(images[track["uri"]], cls=ModelJSONEncoder)
-                )
-            meta["name"] = track["name"]
-            meta["uri"] = track["uri"]
-            meta["artists"] = track["artists"]
-            meta["album"] = track["album"]
+            # Convert the Track to JSON, 
+            # We use different serialization methods depending on the Mopidy version
+            if MOPIDY_V4:
+                # Mopidy v4+ uses Pydantic models with .model_dump()
+                track_data = track.model_dump()
+                images_result = self.core.library.get_images([track_data["uri"]]).get()
+                if images_result and track_data["uri"] in images_result:
+                    images = images_result[track_data["uri"]]
+                    # Images in Mopidy v4 are a list of Image objects
+                    meta["images"] = [img.model_dump() for img in images]
+            else:
+                # Older versions use the legacy ModelJSONEncoder:
+                # Convert the Track to JSON, but to make it a response-ready JSON we need to load it.
+                # Required because ModelJSONEncoder produces single-quote JSON, and we need standard
+                # double-quoted json.
+                track_data = json.loads(json.dumps(track, cls=ModelJSONEncoder))
+                images_result = self.core.library.get_images([track_data["uri"]]).get()
+                if images_result and track_data["uri"] in images_result:
+                    images = images_result[track_data["uri"]]
+                    meta["images"] = json.loads(json.dumps(images, cls=ModelJSONEncoder))
+
+            meta["name"] = track_data["name"]
+            meta["uri"] = track_data["uri"]
+            meta["artists"] = track_data["artists"]
+            meta["album"] = track_data["album"]
 
         url = "http"
         if self.config["iris"]["snapcast_ssl"]:

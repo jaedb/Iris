@@ -32,8 +32,10 @@ RUN apt update \
 WORKDIR /usr/src/gst-plugins-rs
 
 # Clone source of gst-plugins-rs to workdir
+
+ARG GST_PLUGINS_BRANCH=spotify-logging
 RUN git clone -c advice.detachedHead=false \
-	--single-branch --depth 1 \
+	--single-branch -b ${GST_PLUGINS_BRANCH} --depth 1 \
 	https://gitlab.freedesktop.org/kingosticks/gst-plugins-rs ./
 
 # Build GStreamer plugins written in Rust (optional with --no-default-features)
@@ -78,6 +80,7 @@ RUN apt-get update \
     python3-setuptools \
     python3-pip \
     python3-venv \
+    python3-cairo \
     # GStreamer (Plugins)
     gstreamer1.0-plugins-good \
     gstreamer1.0-plugins-bad \
@@ -101,7 +104,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
 # see https://docs.mopidy.com/en/latest/installation/debian/
 RUN mkdir -p /etc/apt/keyrings \
  && wget -q -O /etc/apt/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg \
- && wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/bullseye.list \
+ && wget -q -O /etc/apt/sources.list.d/mopidy.sources https://apt.mopidy.com/bookworm.sources \
  && apt-get update \
  && apt-get install -y mopidy \
  && rm -rf /var/lib/apt/lists/*
@@ -130,7 +133,7 @@ RUN git clone --depth 1 --single-branch -b ${IRIS_VERSION} https://github.com/ja
 ARG MOPIDY_SPOTIFY_TAG=v5.0.0a3
 RUN git clone --depth 1 --single-branch -b ${MOPIDY_SPOTIFY_TAG} https://github.com/mopidy/mopidy-spotify.git mopidy-spotify \
  && cd mopidy-spotify \
- && python3 setup.py install \
+ && python3 -m pip install . \
  && cd .. \
  && rm -rf mopidy-spotify
 

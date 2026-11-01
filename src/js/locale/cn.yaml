@@ -1,0 +1,658 @@
+name: Chinese
+
+##
+# Common and reusable phrases
+##
+errors:
+  uri_not_found: '找不到 URI %{uri} 的任何内容'
+  could_not_load: '无法加载 %{name}'
+  could_not_load_library: '无法从 %{provider} 加载 %{name}'
+  no_results: 没有找到结果
+  authorization_required: '您必须先授权%{provider}'
+  enable_first: '首先启用 %{provider}'
+  no_service_worker: 不支持 Service Worker
+  required: 需要
+  unknown_error: 未知错误
+  need_to_be_online: 您需要互联网连接才能加载此资源
+  nothing_selected: 未选择任何内容
+  cannot_reorder:
+    title: 无法重新订购商品
+    description: 删除排序/过滤器并重试
+actions:
+  play: 播放
+  play_all: 播放全部
+  play_next: 下一首
+  shuffle_play: 随机播放
+  pause: 暂停
+  stop: 停止播放
+  add_to_playlist: 添加到播放列表
+  add_to_library: 添加到音乐库
+  added_tracks_to: '已添加 %{count} 首歌曲至 '
+  remove_from_library: 从音乐库移除
+  add_to_queue: 添加到队列
+  reset: 重置
+  back: 返回
+  refresh: 重新播放
+  enable: 启用
+  disable: 禁用
+  send: 发送
+  save: 保存
+  start: 开始
+  edit: 退出
+  add: 添加
+  confirm: 你确定吗？
+  delete: 删除
+  remove: 移除
+  cancel: 取消
+  created: 已创建 %{name}
+  saved: 已保存 %{name}
+  deleted: 已删除 %{name}
+common:
+  popularity: 流行度
+  name: 名称
+  artist: 艺术家
+  duration: 时长
+  source: 来源
+  sources: 来源
+  sort: 分类
+  filter: 过滤器
+  by: ' 来自 '
+  loading_library: '正在加载 %{provider} %{type} '
+  play_state:
+    playing: 播放中
+    paused: 暂停中
+    stopped: 停止中
+    idle: 空闲中
+fields:
+  start_typing: '开始输入...'
+  search: '搜索...'
+  sort: 分类
+  view: 查看
+  source: 来源
+  uri: URI(s)
+  items_to_add:
+    label: 要添加的项目
+    placeholder: 无项目
+  filter: 过滤
+  filters:
+    all: 全部
+    thumbnails: 缩略图
+    list: 列表
+    as_loaded: 已加载
+    name: 名称
+    artist: 艺术家
+    album: 相册
+    updated: 更新
+    tracks: 单曲
+    source: 源
+    editable: 可编辑
+    owner: 所有者
+    followers: 关注者
+    popularity: 人气
+time:
+  seconds:
+    short: 秒
+    singular: 秒
+    plural: 秒
+  minutes:
+    short: 分
+    singular: 分钟
+    plural: 分钟
+  hours:
+    short: 时
+    singular: 小时
+    plural: 小时
+  days:
+    short: 天
+    singular: 天
+    plural: 天
+  weeks:
+    short: 周
+    singular: 周
+    plural: 周
+  years:
+    short: 年
+    singular: 年
+    plural: 年
+
+specs:
+  tracks: '%{count} 歌曲'
+  albums: '%{count} 专辑'
+  followers: '%{count} 关注者'
+  listeners: '%{count} 听众'
+  playlists: '%{count} 播放列表'
+  plays: '%{count} plays'
+  popularity: '%{percent}% 人气'
+  added_from: '添加自 '
+  added_by: '从 %{by}添加'
+  added_ago: ' %{time} 前添加'
+  edited: '已编辑 '
+  edited_ago: ' %{time} 前编辑'
+  played_ago: ' %{time} 前播放'
+services:
+  restore_defaults: 恢复默认设置
+  mopidy:
+    title: Mopidy
+    local: 本地
+    adding_uris: '添加 %{count} URI(s)'
+    adding_uris_broadcast: '%{username} 已经登录在 %{count} URI(s)'
+    searching: '正在搜索 %{provider} %{type}'
+    searching_providers: '正在搜索 %{count} 个Mopidy提供商'
+    loading_albums: '正在加载 %{count}个本地相册'
+    loading_artwork: '正在加载封面'
+  spotify:
+    title: Spotify
+  pusher:
+    title: Pusher
+  snapcast:
+    title: Snapcast
+  genius:
+    title: Genius
+    switch_lyrics_result: 切换到另一个歌词搜索结果
+    want_lyrics: '想要歌词? 授权 Genius 于 '
+  google:
+    title: Google
+  lastfm:
+    title: LastFM
+    love: Love
+    unlove: Unlove
+  youtube:
+    title: YouTube
+  tidal:
+    title: Tidal
+  jellyfin:
+    title: Jellyfin
+
+##
+# Components
+##
+sidebar:
+  now_playing: 正在播放
+  search: 搜索
+  discover: 发现
+  moods: 类型 / 情绪
+  featured_playlists: 精选播放列表
+  new_releases: 新发布
+  my_music: 我的音乐
+  playlists: 播放列表
+  artists: 艺术家
+  albums: 相册
+  tracks: 单曲
+  browse: 浏览
+  settings: 设置
+  servers: 服务器
+  not_connected: '%{name} 无连接'
+  browser_offline: 浏览器离线
+  update_available: 可更新
+context_menu:
+  add_to_playlist:
+    title: 添加到播放列表
+    new_playlist: 新建播放列表
+    no_playlists: 没有可写入的播放列表
+  play_next: 下一首
+  play_top_tracks: 播放热门曲目
+  play_all_tracks: 播放全部
+  love_track: 标记为喜欢
+  unlove_track: 不喜欢
+  pin: 贴
+  unpin: Unpin
+  go_to_artist: 前往艺术家页面
+  go_to_user: 前往用户页面
+  go_to_track: 前往歌曲页
+  track_info: 歌曲属性
+  discover_similar: 发现类似
+  start_radio: 启动收音机
+  copy_uri: 复制链接地址
+  refresh: 刷新
+playback_controls:
+  consume: 播放后移除
+  shuffle: 随机播放
+  repeat: 单曲循环
+  snapcast_not_enabled: 无流（Snapcast 已禁用）
+  mute: 静音
+  unmute: 取消静音
+snapcast:
+  enabled: 已启用
+  streaming_enabled: 启用流媒体
+  stream_on_this_device: 在此设备上串流
+  show_disconnected_clients: 显示断开连接的客户端
+  no_connected_clients: 没有连接的客户端
+  host: 主机
+  port: 端口
+  name: 名称
+  name_disconnected: 名称 (已断开)
+  group: 组
+  new_group: '+ 新组'
+  latency: 延迟
+  stream: 数据流
+  volume: 音量
+  not_controllable: 不可控
+  encryption:
+    label: 加密
+    sublabel: 使用 SSL
+    description: 需要一个SSL代理
+    incompatible: ' (从 HTTPS 浏览器会话连接时需要)'
+authentication:
+  popup_blocked: 弹出窗口被阻止。请允许弹出窗口并重试。
+  failed: 授权失败. %{origin} 不是配置的授权地址.
+  log_out: 退出登录
+  log_in: 登录
+
+
+##
+# Views
+##
+now_playing:
+  title: 正在播放
+  context_actions:
+    radio: 电台
+    history: 历史记录
+    add_uri: 添加 URI
+  current_track:
+    playing_from: 播放来自
+    shuffle: 随机播放
+    clear: 清除
+    radio: 电台
+album:
+  title: 专辑
+  title_window: '%{name} 来自 %{artist} (专辑)'
+  wiki:
+    title: 关于
+    published: '发布于: %{date}'
+  tracks:
+    title: 时长
+    sort:
+      disc_track: 曲目编号
+      name: 名称
+artist:
+  title: 艺术家
+  title_window: '%{name} (艺术家)'
+  overview:
+    title: 视图
+    top_tracks: 热门曲目
+    albums: '专辑 (%{count})'
+    related_artists:
+      title: 相关艺术家
+      more: 所有相关艺术家
+  tracks:
+    title: 曲目
+    sort:
+      disc_track: 曲目编号
+      name: 名称
+      album: 专辑
+  related_artists:
+    title: 相关艺术家
+  about:
+    title: 关于
+    source: '%{source} 艺术家'
+    wiki:
+      published: '发布于: %{date}'
+      origin: '源自: '
+  albums:
+    sort:
+      default: 默认
+      name: 名称
+      release_date: 日期
+      track_count: 曲目
+    filter:
+      all: 全部
+      albums: 专辑
+      singles: 单个
+      compilations: 精选集
+debug:
+  title: Debug
+  ui:
+    title: 用户界面
+  debug:
+    title: Debug
+    overlay: 显示Debug界面
+  logging:
+    title: 日志
+    mopidy: Mopidy日志
+    pusher: Pusher日志
+    actions: Actions日志
+    snapcast: Snapcast日志
+  create_notification: 创建通知
+  create_process: 创建流程通知
+  run_test: 运行测试流程
+  call: 调用
+  data: 日期
+  examples: 例子
+playlist:
+  title: 播放列表
+  title_window: '%{name} (播放列表)'
+  title_plural: 播放列表
+  tracks:
+    title: 曲目
+    sort:
+      default: 默认
+      sort_id: 已加载
+      added_at: 添加日期
+      name: 名称
+      artist: 艺术家
+      album: 专辑
+queue_history:
+  title: 播放历史记录
+search:
+  title: 搜索
+  title_window: '搜索: %{term}'
+  context_actions:
+    sort: 分类
+    source: 源
+  placeholder: 搜索
+  no_results: 没有结果
+  all:
+    title: 所有的
+  artists:
+    title: 艺术家
+    more: '所有艺术家 (%{count})'
+  albums:
+    title: 专辑
+    more: '所有专辑 (%{count})'
+  playlists:
+    title: 播放列表
+    more: '所有播放列表 (%{count})'
+  tracks:
+    title: 曲目
+track:
+  title: 曲目
+  title_window: '%{name} 来自 %{artists} (曲目)'
+  lyrics_origin: '源自: '
+  explicit: 清楚地
+  unplayable: 无法播放
+  disc_number: 'Disc %{number}'
+  track_number: '单曲 %{number}'
+  unknown_album: 未知专辑
+  want_lyrics: '想要歌词？ 授权 Genius 下 '
+  lyrics: 歌词
+settings:
+  title: 设置
+  help: 帮助
+  server:
+    title: 服务器
+    username:
+      label: 用户名
+      description: 用于识别该客户端的非唯一字符串（无特殊字符）
+  interface:
+    title: 接口
+    language:
+      label: 语言
+    theme:
+      label: 主题
+      auto: 自动
+      auto_tooltip: 检测您的浏览器或操作系统偏好
+      dark: 深色
+      light: 浅色
+    behavior:
+      label: 行为
+      clear_tracklist: 清除播放 URI 时的曲目列表
+      clear_tracklist_tooltip: 播放一个或多个 URI 将首先清除当前播放队列
+      hotkeys: 启用热键
+      touch_events: 在播放控件上启用触摸事件
+      touch_events_tooltip: 允许向左和向右滑动来更改曲目
+      grid_glow: 缩略图发光效果
+      grid_glow_tooltip: 禁用低功耗设备或旧版浏览器的效果
+    scrolling:
+      label: 滚动
+      wide: 宽滚动条
+      hidden: 隐藏滚动条
+      smooth_scrolling: 平滑滚动
+    reporting:
+      label: 报告
+      sublabel: 允许报告匿名使用统计数据
+      description: ' 这些匿名使用数据对于识别错误和潜在功能非常重要，从而使 Iris 更好地服务于每个人。想了解更多吗？阅读 '
+      privacy_policy: 隐私政策
+      are_you_sure: 您确定不想支持这个吗？
+    commands:
+      label: 命令
+  advanced:
+    title: 高级
+    start_local_scan: 开始本地扫描
+    artist_uri:
+      label: 艺术家库 URI
+      description: 用于收集图书馆艺术家的 URI
+    album_uri:
+      label: 专辑库 URI
+      description: 用于收集图书馆相册的 URI
+    track_uri:
+      label: 轨道库 URI
+      description: 用于收集库曲目的 URI
+    connections:
+      label: 连接
+    version:
+      label: 版本
+      upgrade_available: '可升级到 (%{version})'
+      upgrade: '升级至 %{version}'
+      up_to_date: 更新
+    shared_configuration:
+      label: 共享配置
+      share: 导出/共享
+      import: 从服务器导入
+    restart: 重启服务器
+    reset: 重置设置
+  about:
+    title: 关于
+    blurb_1: ' 是一个开源项目 '
+    blurb_2: '.它是免费提供的，并且绝对不提供任何保修。如果您向某人支付了该软件的费用，请告诉我。 '
+    sponsor: 成为赞助商
+    github: GitHub
+  pusher_connection_list:
+    not_connected: 未连接
+    no_connections: 未连接
+    you: ' (你)'
+  servers:
+    current_track: 当前曲目
+    inactive: 不活跃的
+    connecting: 连接中
+    disconnected: 断开的
+    connected: 断开
+    new_server: 新服务器
+    name: 名称
+    host: 主机
+    port: 端口
+    encryption:
+      label: 加密
+      sublabel: 使用SSL
+      description: 需要 SSL 代理
+      incompatible: ' (从 HTTPS 浏览器会话连接时需要)'
+    switch: 切换到该服务器
+    reconnect: 重新连接
+  services:
+    title: 服务
+    limited_access: 访问权限有限
+    unknown: 未知
+    current_user: 当前用户
+    authorization: 授权
+    refresh_token: 刷新令牌
+    authorized: 授权
+    read_only: 只读
+    unauthorized: 未授权
+    enabled: 启用
+    disabled: 禁用
+    connected: 已连接
+    disconnected: 断开的
+    spotify:
+      mopidy_spotify_not_running: Mopidy-Spotify 扩展未运行 - 您将无法播放任何 Spotify 曲目
+      country:
+        label: 国家
+        description: ISO 3166-1 alpha-2 国家/地区代码（例如“NZ”）
+      locale:
+        title: 本地的
+        description: 小写 ISO 639 语言代码和大写 ISO 3166-1 alpha-2 国家/地区代码，并用下划线连接（例如“en_NZ”）
+user:
+  title: 用户
+  title_window: '%{name} (用户)'
+  you: 你
+discover:
+  title: 发现
+  moods:
+    title: '类型/情绪'
+  featured_playlists:
+    title: 精选播放列表
+  new_releases:
+    title: 新发布
+  recommendations:
+    title: 发现
+    tracks: 曲目
+    artists: 艺术家
+    albums: 专辑
+    body_title: 探索新音乐
+    body_subtitle: 添加下面的种子和音乐属性来构建您的声音
+    too_many_seeds: 种子太多了！您最多可以使用 5 首种子曲目、艺术家和流派。
+    find_recommendations: 查找推荐
+library:
+  albums:
+    title: 我的专辑
+  artists:
+    title: 我的艺术家
+  browse:
+    title: 浏览
+  browse_directory:
+    title: 目录
+  playlists:
+    title: 我的播放列表
+  tracks:
+    title: 我的足迹
+modal:
+  add_to_playlist:
+    title: 添加到播放列表
+    subtitle: '选择要添加 %{count} 项%{plural} 的播放列表'
+    no_playlists: 没有可用的播放列表
+    no_editable_playlists: 没有可编辑的播放列表
+  add_to_queue:
+    title: 添加到队列
+    subtitle: 将逗号分隔的 URI 列表添加到播放队列
+    uris: URI(s)
+    add_random: 查找随机曲目
+    position:
+      label: 发现
+      end: 结尾
+      next: 当前曲目之后
+  edit_playlist:
+    title: 编辑播放列表
+    title_create: 创建播放列表
+    subtitle: '并添加 %{count} 项%{plural}'
+    name_required: 名称为必填项
+    name: 名称
+    description: 描述
+    provider: 提供者
+    image:
+      label: 封面
+      description: JPEG 格式, 最大256kB . .留空以保持封面图像不变
+    options:
+      label: 选项
+      public: 公开的
+      collaborative: 共同
+    create_playlist: 创建播放列表
+  edit_command:
+    title: 编辑命令
+    title_create: 创建命令
+    name: 名称
+    colour: 颜色
+    icon: 图标
+    url: URL
+    method:
+      label: 方法
+      get: 获取
+      post: POST
+    data: 数据
+    headers: 附加标头
+  edit_radio:
+    title: 电台
+    subtitle: 添加和删​​除种子来塑造收音机的声音。 电台 使用 Spotify 的推荐引擎来推荐与您的种子类似的曲目。
+    invalid_seed_uri: 种子 URI 无效
+    too_many_seeds: 提供超过 5 个种子，忽略休息
+    only_spotify_uris: 仅支持 Spotify URI
+    already_added: URI 已添加
+    no_seeds: 无种子
+  initial_setup:
+    title: 欢迎使用 Iris
+    username: 用户
+  kiosk:
+    title: 正在播放
+    title_window: '%{artist} 创作的 %{name}（正在播放）'
+    lyrics: 歌词
+  import_configuration:
+    title: 导入配置
+    configurations: 要导入的配置
+    import_now: 立即导入
+  shared_config:
+    no_peers: 无对等连接
+    recipients: 接受者
+    configurations: 工程配置
+    import_now: 正在导入
+    imported: 导入成功
+    share: 正在分享
+    shared: 分享成功
+    push:
+      title: 共享配置
+      subtitle: 将您的授权和界面设置推送给另一个已连接的用户
+    pushed:
+      title: 收到配置
+      subtitle: 另一位用户已与您分享了他们的配置
+    server:
+      title: 导入配置
+      subtitle: 导入第三方授权及其他设置
+      label: 服务器
+      description: 保存到服务器以供任何用户导入
+    config:
+      label: 配置文件
+      ui:
+        label: 用户界面
+        description: 主题、排序、过滤器等
+      spotify:
+        label: Spotify 授权
+        description: '以 %{name} 身份登录'
+      lastfm:
+        label: LastFM 授权
+        description: '以 %{name} 身份登录'
+      genius:
+        label: Genius 授权
+        description: '以 %{name} 身份登录'
+      snapcast:
+        label: Snapcast
+        description: 服务器连接详细信息
+  reset:
+    title: 重置 Iris
+    subtitle: 清除本地配置、存储信息或缓存
+    items: 重置为默认值
+    preferences:
+      label: 首选项
+      description: 界面自定义
+    database:
+      label: 数据库
+      description: 基于本地浏览器的图书馆和资产数据库
+    service_worker:
+      label: 服务
+      description: 重新安装服务
+    cache:
+      label: 获取缓存
+      description: 外部 API 请求缓存（需要 Service Worker）
+    test_mode:
+      label: 测试模式
+      description: 用于诊断问题的详细日志记录
+  hotkeys_info:
+    title: 热键
+    keys:
+      info: 热键信息（此对话框）
+      now_playing: 正在播放
+      search: 搜索
+      kiosk_mode: 展台模式
+      exit: 取消当前交互
+      play_pause: 播放/暂停
+      stop: 停止
+      next: 下一首
+      previous: 上一首
+      rewind: 快退 30 秒
+      fastforward: 快进 30 秒
+      volume_up: 音量增加 5%
+      volume_down: 音量减少 5%
+      mute: 切换静音
+      snapcast_volume_up: 为 Snapcast 客户端调高音量（n 为 1–9）
+      snapcast_volume_down: 为 Snapcast 客户端调低音量（n 为 1–9）
+      snapcast_mute: 为 Snapcast 客户端切换静音（n 为 1–9）
+  servers:
+    title: 服务器选择
+    current: 当前服务器
+    nothing_playing: 无播放
+

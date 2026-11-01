@@ -2,6 +2,7 @@ Mopidy-Local
 Mopidy-Mpd
 Mopidy-MusicBox-Webclient
 Mopidy-Soundcloud
+Mopidy-Tidal
 Mopidy-Youtube
 Mopidy-YTMusic
 ytmusicapi
