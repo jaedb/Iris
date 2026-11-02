@@ -122,7 +122,9 @@ const request = ({
         },
         (error) => {
           dispatch(coreActions.handleException(
-            error.error,
+            'Could not refresh your Spotify authorization',
+            error,
+            'This usually means your Spotify authorization has expired or been revoked. Try reconnecting Spotify in Settings.',
           ));
 
           reject(error);
@@ -329,8 +331,9 @@ export function getMe() {
         },
         (error) => {
           dispatch(coreActions.handleException(
-            'Could not load your profile',
+            'Could not load your Spotify profile',
             error,
+            'This usually means your Spotify authorization has expired or is invalid. Try reconnecting Spotify in Settings.',
           ));
         },
       );
