@@ -7,6 +7,7 @@ import urllib
 import os
 import sys
 import tornado.web
+import tornado.websocket
 import tornado.ioloop
 import time
 import packaging
@@ -232,7 +233,8 @@ class IrisCore(pykka.ThreadingActor):
                 "params": data["params"] if "params" in data else None,
             }
 
-        for connection in self.connections.values():
+        closed = []
+        for connection in list(self.connections.values()):
 
             send_to_this_connection = True
 
@@ -242,7 +244,19 @@ class IrisCore(pykka.ThreadingActor):
                     send_to_this_connection = False
 
             if send_to_this_connection:
-                connection["connection"].write_message(json_encode(message))
+                try:
+                    connection["connection"].write_message(
+                        json_encode(message)
+                    )
+                except tornado.websocket.WebSocketClosedError:
+                    # A client that vanished without on_close ever running
+                    # must not break delivery to (or the opening of) every
+                    # other connection - drop it instead.
+                    closed.append(connection["connection_id"])
+
+        for connection_id in closed:
+            logger.debug("Dropping closed connection " + connection_id)
+            self.connections.pop(connection_id, None)
 
         response = {
             "message": "Broadcast to "
