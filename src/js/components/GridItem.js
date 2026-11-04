@@ -12,6 +12,7 @@ import { isTouchDevice } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import * as discogsActions from '../services/discogs/actions';
 
 const SecondaryLine = ({
   sourceIcon = true,
@@ -99,6 +100,8 @@ const GridItem = ({
         case 'artist':
           if (spotify_available) {
             dispatch(spotifyActions.getArtistImages(item));
+          } else {
+            dispatch(discogsActions.getArtistImages(item.uri, item));
           }
           break;
         case 'playlist':

@@ -17,6 +17,7 @@ import { updateScrollPosition } from './Link';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import * as discogsActions from '../services/discogs/actions';
 import { isTouchDevice } from '../util/helpers';
 
 const getValue = (item = {}, name = '') => {
@@ -112,6 +113,8 @@ const ListItem = ({
         case 'artist':
           if (spotify_available) {
             dispatch(spotifyActions.getArtistImages(item));
+          } else {
+            dispatch(discogsActions.getArtistImages(item.uri, item));
           }
           break;
         case 'album':
