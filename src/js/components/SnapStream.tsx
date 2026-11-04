@@ -46,6 +46,22 @@ function getChromeVersion(): number | null {
   return raw ? parseInt(raw[2]) : null;
 }
 
+// Name this web player shows up as in Snapcast: the Iris username ("Iris alice"),
+// or, without one, e.g. "Iris Firefox/Linux x86_64 3f9a". The short id suffix comes
+// from the persistent uniqueId, so several browsers on the same OS stay distinguishable.
+function getClientName(uniqueId: string, username?: string): string {
+  if (username) return `Iris ${username}`;
+  const ua = navigator.userAgent;
+  let browser = "Browser";
+  if (/Firefox\//.test(ua)) browser = "Firefox";
+  else if (/Edg\//.test(ua)) browser = "Edge";
+  else if (/OPR\//.test(ua)) browser = "Opera";
+  else if (/Chrom(e|ium)\//.test(ua)) browser = "Chrome";
+  else if (/Safari\//.test(ua)) browser = "Safari";
+  const platform = navigator.platform || "unknown";
+  return `Iris ${browser}/${platform} ${uniqueId.replace(/-/g, "").slice(0, 4)}`;
+}
+
 function uuidv4(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -813,8 +829,10 @@ class PcmDecoder extends Decoder {
 
 
 class SnapStream {
-  constructor(baseUrl: string) {
+  private username?: string;
+  constructor(baseUrl: string, username?: string) {
       this.baseUrl = baseUrl;
+      this.username = username;
       this.timeProvider = new TimeProvider();
 
       if (this.setupAudioContext()) {
@@ -861,8 +879,8 @@ class SnapStream {
           hello.mac = "00:00:00:00:00:00";
           hello.arch = "web";
           hello.os = navigator.platform;
-          hello.hostname = "Snapweb client";
           hello.uniqueId = getPersistentValue("uniqueId", uuidv4());
+          hello.hostname = getClientName(hello.uniqueId, this.username);
           this.sendMessage(hello);
           this.syncTime();
           this.syncHandle = window.setInterval(() => this.syncTime(), 1000);

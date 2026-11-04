@@ -11,12 +11,13 @@ const Stream = () => {
     port,
     ssl,
   } = useSelector((state) => state?.snapcast || {});
+  const username = useSelector((state) => state?.pusher?.username);
 
   const start = () => {
     if (stream) {
       stream.play();
     } else {
-      setStream(new SnapStream(`${ssl ? 'wss' : 'ws'}://${host}:${port}`));
+      setStream(new SnapStream(`${ssl ? 'wss' : 'ws'}://${host}:${port}`, username));
     }
   }
 
