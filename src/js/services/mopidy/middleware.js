@@ -44,6 +44,9 @@ const lastfmActions = require('../lastfm/actions.js');
 const geniusActions = require('../genius/actions.js');
 const discogsActions = require('../discogs/actions.js');
 
+const LIBRARY_TRACK_LOOKUP_BATCH_SIZE = 100;
+const LIBRARY_TRACK_ITEMS_BATCH_SIZE = 5000;
+
 /**
  * Fetch the method of our Mopidy API that is being called, by string
  *
@@ -2291,6 +2294,33 @@ const MopidyMiddleware = (function () {
         request(store, 'library.browse', { uri: action.uri })
           .then((browseResponse) => {
             const allUris = arrayOf('uri', browseResponse);
+            let nextUriIndex = 0;
+            let libraryItemsBuffer = [];
+
+            const cancel = () => {
+              store.dispatch(uiActions.processCancelled(action.type));
+              store.dispatch(uiActions.stopLoading(action.uri || 'mopidy:library:tracks'));
+            };
+
+            const isCancelling = () => {
+              const processor = store.getState().ui.processes[action.type];
+              if (processor && processor.status === 'cancelling') {
+                cancel();
+                return true;
+              }
+              return false;
+            };
+
+            const flushItems = (flushRemainder = false) => {
+              while (
+                libraryItemsBuffer.length >= LIBRARY_TRACK_ITEMS_BATCH_SIZE
+                || (flushRemainder && libraryItemsBuffer.length)
+              ) {
+                const items = libraryItemsBuffer.slice(0, LIBRARY_TRACK_ITEMS_BATCH_SIZE);
+                libraryItemsBuffer = libraryItemsBuffer.slice(items.length);
+                store.dispatch(coreActions.itemsLoaded(items));
+              }
+            };
 
             store.dispatch(uiActions.updateProcess(
               action.type,
@@ -2301,38 +2331,45 @@ const MopidyMiddleware = (function () {
             ));
 
             const run = () => {
-              if (allUris.length) {
-                const uris = allUris.splice(0, 100);
-                const processor = store.getState().ui.processes[action.type];
+              if (isCancelling()) return;
 
-                if (processor && processor.status === 'cancelling') {
-                  store.dispatch(uiActions.processCancelled(action.type));
-                  store.dispatch(uiActions.stopLoading('mopidy:library:tracks'));
-                  return;
-                }
-                store.dispatch(uiActions.updateProcess(action.type, { remaining: allUris.length }));
+              if (nextUriIndex < allUris.length) {
+                const uris = allUris.slice(
+                  nextUriIndex,
+                  nextUriIndex + LIBRARY_TRACK_LOOKUP_BATCH_SIZE,
+                );
+                nextUriIndex += uris.length;
+                store.dispatch(uiActions.updateProcess(
+                  action.type,
+                  { remaining: allUris.length - nextUriIndex },
+                ));
 
                 request(store, 'library.lookup', { uris })
                   .then(
                     (lookupResponse) => {
+                      if (isCancelling()) return;
+
                       const libraryItems = compact(
                         indexToArray(lookupResponse).map(
                           (results) => (results.length ? formatTrack(results[0]) : null),
                         ),
                       );
 
-                      if (libraryItems.length) {
-                        store.dispatch(coreActions.itemsLoaded(libraryItems));
+                      libraryItemsBuffer.push(...libraryItems);
+                      if (libraryItemsBuffer.length >= LIBRARY_TRACK_ITEMS_BATCH_SIZE) {
+                        flushItems();
                       }
                       run();
                     },
                   );
               } else {
+                flushItems(true);
+                if (isCancelling()) return;
                 store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: action.uri,
                   type: 'tracks',
-                  items_uris: arrayOf('uri', browseResponse),
+                  items_uris: allUris,
                 }));
               }
             };
