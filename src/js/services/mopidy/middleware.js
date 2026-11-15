@@ -1548,7 +1548,7 @@ const MopidyMiddleware = (function () {
             response = sortItems(response, 'track_number');
 
             const album = {
-              ...response[0].album,
+              ...formatAlbum(response[0].album),
               source: 'local',
               artists: formatArtists(response[0].artists),
               tracks: formatTracks(response),
