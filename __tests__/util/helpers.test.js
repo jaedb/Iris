@@ -159,7 +159,7 @@ describe('buildLink', () => {
   it('should handle special characters', () => {
     let link = helpers.buildLink('spotify:album:http://test.com/123!@#$%^&[];<>/?" .mp3');
     expect(typeof (link)).toBe('string');
-    expect(link).toBe('/album/c3BvdGlmeTphbGJ1bTpodHRwOi8vdGVzdC5jb20vMTIzIUAjJCVeJltdOzw+Lz8iIC5tcDM=');
+    expect(link).toBe('/album/c3BvdGlmeTphbGJ1bTpodHRwOi8vdGVzdC5jb20vMTIzIUAjJCVeJltdOzw-Lz8iIC5tcDM=');
   });
 });
 
